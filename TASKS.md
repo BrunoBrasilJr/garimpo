@@ -11,7 +11,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
 | 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
-| 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | BLOCKED |
+| 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | IN_REVIEW |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | BLOCKED |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | BLOCKED |
@@ -534,7 +534,7 @@ Next Eligible TASK: NONE promovida neste fechamento. TASK-004 é a próxima cand
 
 #### Status
 
-BLOCKED
+IN_REVIEW
 
 #### Phase
 
@@ -599,7 +599,85 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR em 2026-10-25: TASK-003 DONE/49ec5af, artefatos presentes e 30 testes aprovados pelo responsável na revisão a50936b, sem alteração de código posterior. ADR-001/005 ACCEPTED, parâmetros de scrypt/sessão/HTTPS ratificados; PD-005 resolvida. Sem PD impeditiva deste recorte. BLOCKED → READY → IN_PROGRESS sob autorização contínua, branch real feature/TASK-004-contas-autenticacao. Estado Git limpo antes do início.
+
+Plano primário: accounts/staff, contratos accounts materializados no src estabelecido, bootstrap ADMIN explícito, testes/accounts, schema/migration somente User/Session/Address. Cadastro público só CUSTOMER/USER; estado email pendente e evento persistido, entrega/confirmação/reset ficam TASK-005. Sessões opacas com acesso 15min/renovação absoluta sete dias, hashes por propósito, rotação e detecção de reutilização; bloqueado/encerrado/inativo negados em cada comando. Último ADMIN protegido com transação SERIALIZABLE e concorrência real. HTTPS obrigatório, cookies Secure/HttpOnly/SameSite com Origin/CSRF para web e cabeçalho para mobile; nenhuma dispensa de transporte. Configuração técnica desta implementação: senha 15–128 caracteres sem regras artificiais de composição, scrypt ratificado; limites configuráveis persistidos de login por conta/IP e registro/refresh por IP, com janelas e valores documentados nos testes, sem tratar como regra do PDF. Parâmetros de segurança consultados nas fontes oficiais Node 24/Express e OWASP; sem mudar arquitetura para provedor externo.
+
+Incidental Changes previstas antes da edição: registro mínimo do router accounts em apps/api/src/app.ts, sem lógica de segurança independente fora do módulo primário; manifests/lock somente Zod 4.6.7 e comandos de testes; export dos novos contratos; fixture/assert de tests/core para conferir as oito tabelas da migration inicial e permitir a evolução declarada Address, sem remover cobertura; configuração do runner de integração para suite accounts. Só ligações/tipos/config/fixtures causalmente necessários, não correção alheia, lógica comercial, autenticação independente ou alteração de proteção de dados em outro módulo. Nenhum endpoint de compra, fechamento comercial, reset/mensagens ou interface antecipado. Testes HTTPS reais com certificado de teste confiado explicitamente (sem TLS desativado), base/schemas separados e relógio de teste injetado, sem rota pública de relógio.
+
+Gates locais: 001 prontidão APROVADO, 002 planejamento APROVADO, 003 implementação APROVADO, 004 revisão APROVADO, 005 manual PENDENTE, 006 fechamento PENDENTE. Sem resultado futuro aprovado.
+
+##### TASK Execution Report — implementação e revisão, aceite manual pendente
+
+TASK: TASK-004
+Status: IN_REVIEW
+Branch: feature/TASK-004-contas-autenticacao
+Commits: 6718527 (implementação, testes e roteiro); base 49ec5af.
+
+###### Primary Changes
+
+- apps/api/src/modules/accounts/** e staff/**: cadastro CUSTOMER/USER, scrypt ratificado, sessões opacas com rotação/revogação e detecção de reutilização, controle persistente de tentativas, perfil e endereços do titular, administração web por ADMIN e proteção do último administrador em concorrência real. HTTPS, Origin, cookies e CSRF definidos no próprio módulo primário.
+- apps/api/prisma/schema.prisma e migrations/202610250002_accounts/migration.sql: evolução de User/Session e novo Address, sem modelos comerciais. Migration aplicada em schemas novos de garimpo_test e na base isolada garimpo_dev após conferir ausência de sessões anteriores; sem reset/drop/backfill presumido. Migration inicial preservada.
+- packages/contracts/src/accounts/index.ts: materialização no src já estabelecido do escopo semântico packages/contracts/accounts/**, com tipos de conta/endereço.
+- scripts/bootstrap-admin.mjs: primeiro ADMIN somente por comando local explícito, senha fornecida pelo operador e recusa se já existir STAFF; nenhum administrador real criado automaticamente.
+- tests/accounts/**: testes unitários, integração HTTPS/PostgreSQL, concorrência com duas conexões bloqueadas simultaneamente, certificado confiado explicitamente pelo cliente, roteiro e documentação operacional. Chaves/logs somente em test-results ignorado.
+- TASKS.md: estado, evidências e relatório deste incremento.
+
+E-mail permanece pendente: somente evento durável criado; confirmação, recuperação e mensagens pertencem à TASK-005. Interface, armazenamento SecureStore e testes de autenticação nos clientes pertencem à TASK-006. Encerramento comercial integrado pertence à TASK-022. Nenhum desses fluxos futuros foi declarado aprovado.
+
+###### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/api/src/app.ts | Import/registro do router e opção de injeção | Ligação mínima necessária; decisões de autenticação e proteção permanecem em accounts, sem segurança independente neste arquivo. |
+| apps/api/package.json | Dependência direta Zod 4.6.7 | Validação do novo módulo usa a mesma versão já presente no lock; nenhuma atualização oportunista. |
+| package-lock.json | Declaração da dependência direta | Somente referência Zod no workspace API; versões dos pacotes instalados preservadas. |
+| package.json | Comandos de integração/bootstrap e inclusão de scripts no lint | Execução e validação reproduzíveis dos artefatos primários, sem novos fluxos de produto. |
+| packages/contracts/src/index.ts | Export de tipos accounts | Exposição mínima dos novos contratos sem quebra dos existentes. |
+| tests/core/run-integration.mjs | Seleção validada da suíte accounts | Reuso da preparação isolada existente, sem nova infraestrutura nem fallback para dev. |
+| tests/core/database.integration.ts | Conferir as oito tabelas no SQL inicial e sua presença na base evoluída | Compatibilidade com Address autorizado, mantendo prova exata do escopo original e os demais testes. |
+
+Todos os sete ajustes são indispensáveis e diretamente causados pela TASK, mínimos, sem funcionalidade/regra/arquitetura independente ou quebra pública, sem alterar proteção em módulo alheio e sem Forbidden Change. Teste incidental de nove critérios: PASS. Orçamento excepcional limitado às ligações/configurações/fixture acima.
+
+###### Tests Executed
+
+Ubuntu WSL2, Node 24.22.1/npm 11.19.1, PostgreSQL 17.11. Evidências locais em test-results/accounts (ignoradas no Git): compile-02.log, quality-02.log, build-final.log e dev-migration.log.
+
+- npm run build: geração Prisma, contratos, API e web; ver build-final.log.
+- npm run typecheck e npm run lint: PASS, incluindo workspaces, tipos dos testes e bootstrap.
+- npm test: 24 PASS (23 unitários/segurança e uma API de health), incluindo três novos testes de credenciais. Derivações scrypt do caso agregado: 2325 ms, sem inferir SLA.
+- npm run test:integration: 9 PASS, schema task003_e27c48487f3c40ae98bb38a67a4b7e03, migrações completas e recuperação de consumidor interrompido preservadas.
+- npm run test:accounts: 14 PASS, schema task004_884c98c595554297b3cc4ecd4dab635a, banco e HTTPS reais, relógio controlado. Inclui reutilização concorrente de refresh e duas transações realmente sobrepostas tentando inativar os dois ADMINs: exatamente um ativo preservado. Total distinto: 47 testes PASS.
+- npm run audit:toolchain: classificação restrita PASS; npm audit bruto continua FAIL/exit 1, quatro ocorrências high do aviso de versão de node-forge já mitigado pelo patch autorizado. Hash/assinaturas/Zod/regressão conferidos; nenhum aviso novo aceito. Não é auditoria limpa.
+- bash -n tests/accounts/manual-accounts.sh e git diff --check: PASS. npm run db:migrate: PASS em garimpo_dev/loopback:55432, após preflight sem sessões existentes. Nenhuma base original substituída.
+- Falha inicial de compilação TS2352 na conversão de AddressInput preservada em compile-01.log/verification-01.log; corrigida com validação explícita e atribuição de campos, seguida pelos resultados aprovados acima.
+- Responsável: roteiro tests/accounts/manual-accounts.sh NÃO EXECUTADO nesta revisão; cinco grupos de conferência descritos em tests/accounts/README.md. Execução do agente não substitui o aceite.
+
+###### Quality Gates
+
+Build: PASS conforme build-final.log.
+Lint: PASS.
+Unit Tests: PASS, 23 casos.
+Integration Tests: PASS, nove de fundação e 14 de contas com banco real.
+API Tests: PASS, health e suíte HTTPS de contas.
+Security: PASS qualificado pelo critério de mitigação ratificado; auditoria bruta FAIL explicitamente preservada, conferência manual ainda pendente.
+Acceptance Criteria: FAIL para fechamento, pois falta conferência do responsável; critérios automatizados PASS no recorte desta TASK.
+Regression Tests: PASS, fundação/bootstrap preservados; interfaces não alteradas.
+
+###### Scope Validation
+
+Allowed Changes: PASS.
+Incidental Changes: PASS, sete ajustes classificados acima.
+Forbidden Changes: PASS, nenhuma violação.
+Scope Creep: NONE.
+
+###### Definition of Done
+
+FAIL enquanto o responsável não executar/conferir o roteiro e enviar evidência real. Manter IN_REVIEW, sem contabilizar esta TASK como DONE.
+
+###### Next Eligible TASK
+
+NONE até o fechamento da TASK-004. TASK-005 permanece BLOCKED; após aceite, validar DoR própria sob autorização contínua vigente.
 
 ### TASK-005 Implementar recuperação, confirmação e mensagens de acesso
 
