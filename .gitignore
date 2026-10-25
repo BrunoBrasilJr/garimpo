@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.expo/
+.vite/
+coverage/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
+*.log
+*.tsbuildinfo
+apps/api/.certs/
+apps/api/.data/

@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Garimpo",
+    "slug": "garimpo",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "platforms": ["android", "ios"],
+    "android": { "package": "br.com.garimpo.app" },
+    "ios": { "bundleIdentifier": "br.com.garimpo.app", "supportsTablet": true }
+  }
+}

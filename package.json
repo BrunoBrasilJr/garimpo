@@ -1,0 +1,29 @@
+{
+  "name": "garimpo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.22.1 <25", "npm": ">=11 <12" },
+  "workspaces": ["apps/api", "apps/web", "apps/mobile", "packages/contracts"],
+  "scripts": {
+    "preinstall": "node tests/bootstrap/check-runtime.mjs",
+    "dev:api": "npm run dev --workspace @garimpo/api",
+    "dev:web": "npm run dev --workspace @garimpo/web",
+    "dev:mobile": "npm run start --workspace @garimpo/mobile",
+    "build": "npm run build --workspace @garimpo/contracts && npm run build --workspace @garimpo/api && npm run build --workspace @garimpo/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint --config tests/eslint.config.mjs apps packages tests",
+    "test": "vitest run --config tests/vitest.config.ts",
+    "bundle:android": "npm run bundle:android --workspace @garimpo/mobile",
+    "verify": "npm run build && npm run typecheck && npm run lint && npm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "^24.0.0",
+    "eslint": "10.13.0",
+    "globals": "^16.5.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0",
+    "vitest": "^4.0.0"
+  }
+}

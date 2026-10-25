@@ -9,7 +9,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | Ordem | TASK | Fase | Prioridade | Dependências | Estado |
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
-| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | IN_PROGRESS |
+| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | BLOCKED |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | BLOCKED |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | BLOCKED |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
@@ -159,7 +159,7 @@ Gates locais: prontidão, planejamento, decisões documentais, revisão, testes 
 
 #### Status
 
-IN_PROGRESS
+BLOCKED
 
 #### Phase
 
@@ -229,6 +229,55 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Iniciada em 2026-10-25 sob autorização contínua. DoR PASS: TASK-001 DONE, seis ADRs ACCEPTED e DOC-001/002 confirmados pelo responsável; parâmetros/plataformas necessários definidos. Baseline de software: inexistente, primeiro bootstrap. Plano PRIMARY: package.json/lock, tsconfig, API/web/mobile bootstrap, contracts, configuração de testes e docs/architecture/execution.md. Incidental previsto: .gitignore para excluir dependências/segredos/builds da estrutura Git (necessário, causal, mínimo, sem funcionalidade/negócio/arquitetura/contrato/segurança alterados; nenhum Forbidden). Git será inicializado nesta tarefa; branch real registrada após criação. Sem banco/migrations/contas/catálogo nesta tarefa. Gates e testes manuais ainda pendentes.
+
+
+Falha de validação em 2026-10-25: npm run verify PASS (build/tipos/lint e 1 teste real de socket), bundle Android PASS (580 módulos), página inicial renderizada no navegador. npm audit --audit-level=high FAIL, saída 1: cinco avisos altos transitivos do Expo, origens node-forge (GHSA-86w9-cpqp-85rv) e zod (GHSA-mrhx-c7xc-m3w5). Diagnóstico em andamento; não usar npm audit fix --force (sugere downgrade incompatível para Expo 44), não desabilitar auditoria. Gate de segurança falhou; revisão/manual/conclusão não aprovados. Preservar correção no escopo da configuração de dependências e repetir gates afetados. Evidência: test-results/bootstrap/agent-verification.log.
+
+##### SCOPE ESCALATION
+
+TASK: TASK-002
+Necessidade identificada: mitigar avisos altos de node-forge/Zod transitivos do Expo e comprovar correção reprodutível.
+Motivo: npm audit falhou; node-forge 1.4.0 não tem release corrigida publicada.
+Arquivos/módulos afetados: patches/node-forge+1.4.0.patch, tests/bootstrap/security/**, package.json/lock, docs/architecture/execution.md, esta TASK.
+Allowed Changes atual: bootstrap/configuração nos workspaces, contratos, testes e documento de execução; não inclui patch de verificação criptográfica de terceiro.
+Forbidden Changes relacionado: não refatorar módulos alheios, não desabilitar validação nem alterar arquitetura/requisitos; nenhuma dessas proibições será dispensada pela proposta.
+Por que não é uma Incidental Change: critério 8 de segurança reprovado; requer escopo primário explícito para patch/testes.
+Impacto se não realizada: gate de segurança continua falhando, TASK-002 não DONE e TASK-003 bloqueada.
+Alternativas: ampliar escopo com patch reprodutível/testes e evidência de mitigação; aguardar release upstream; decisão específica de ferramenta. Downgrade forçado Expo 44 descartado.
+Recomendação: aprovar correção mínima revisada, com testes antes/depois, instalação limpa, schemas Expo e auditoria mantida; detalhes e diff proposto em docs/architecture/execution.md.
+Decisão necessária: responsável autorizar esses caminhos como PRIMARY e avaliar o aviso de versão remanescente somente com evidência de patch/hash/testes, sem chamar auditoria falha de PASS nem dispensar teste manual. Nenhuma correção de dependência fora do escopo aplicada.
+
+##### BLOCKER
+
+TASK: TASK-002
+Problema: falha de segurança de dependência transitiva; release de node-forge corrigida ausente e mitigação requer ampliação explícita do escopo.
+Impacto: não concluir estrutura nem iniciar TASK-003; código de bootstrap e testes preservados.
+RF/RN/RNF/UC/ADR afetados: RNF-001, RNF-002, RNF-008, RNF-012; ADR-001/005; tarefa técnica sem RF autônomo.
+Alternativas: as descritas em SCOPE ESCALATION.
+Recomendação: correção mínima com teste/revisão e evidência verificável; não ignorar gate.
+Decisão necessária: aprovação do responsável sobre proposta concreta de ampliação/mitigação; enquanto ausente, manter BLOCKED.
+
+##### TASK Execution Report — interrupção por bloqueio
+
+TASK: TASK-002. Status: BLOCKED (histórico: IN_PROGRESS, FAILED por audit, depois BLOCKED por release/decisão externa). Branch: chore/TASK-002-estrutura-desenvolvimento. Commit documental de base: 218052f; implementação ainda não marcada como concluída.
+
+Primary Changes: API operacional /health, contratos operacionais, telas iniciais web/mobile, manifests/tsconfig, lockfile, configuração ESLint/Vitest, teste real de socket, preflight/roteiro manual e docs/architecture/execution.md. Sem banco, migration, negócio ou tarefa futura.
+
+Incidental Changes:
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| .gitignore | Excluir dependências, artefatos e configuração local | Indispensável à estrutura Git, consequência direta, mínima; sem regra, contrato, arquitetura ou comportamento de autenticação alterados; nenhum Forbidden |
+| .gitattributes | Binários preservados e LF para fontes/scripts | Compatibilidade Windows/WSL e preservação dos bytes; mínima e direta; sem funcionalidade/negócio/contrato/segurança de runtime alterados; nenhum Forbidden |
+| .nvmrc | Fixar runtime ratificado | Preparação reproduzível do bootstrap; mínima e direta; sem funcionalidade ou mudança de decisão; nenhum Forbidden |
+
+Tests Executed: npm install no Ubuntu WSL2/Node 24.22.1; npm run verify PASS (build/tipos/lint, 1 teste de API real); npm run bundle:android PASS (580 módulos); página inicial observada por browser/árvore acessível e screenshot; JSON/configuração válidos; PDF original e blob Git com SHA-256 idênticos. npm audit --audit-level=high FAIL, saída 1, cinco avisos altos. Evidência: test-results/bootstrap/agent-verification.log e web.png. Testes manuais do responsável: NÃO EXECUTADOS.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests N/A (nenhuma regra de negócio/função unitária no incremento; teste existente é integração HTTP); Integration Tests PASS (socket real, sem banco no escopo); API Tests PASS operacional (/health, cabeçalho e ausência de rota comercial); Security FAIL (auditoria); Acceptance Criteria FAIL/PENDENTE (segurança e gate manual impedem DoD); Regression Tests N/A de software anterior (não havia implementação), preservação documental/binária conferida.
+
+Scope Validation: Allowed Changes PASS no que foi aplicado; Incidental Changes PASS nos três arquivos listados, sem efeito funcional independente; Forbidden Changes PASS; Scope Creep NONE. Patch de segurança é só proposta, não aplicado.
+
+Definition of Done: FAIL. Gates locais: prontidão/planejamento aprovados; implementação/revisão sem aprovação final por segurança; testes manuais/conclusão pendentes. Next Eligible TASK: NONE enquanto TASK-002 não DONE. Nenhuma implementação posterior iniciada.
 
 ### TASK-003 Criar persistência e fundação transacional
 

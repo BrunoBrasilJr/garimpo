@@ -1,0 +1,9 @@
+{
+  "name": "@garimpo/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite --host 127.0.0.1", "build": "vite build", "typecheck": "tsc --noEmit", "preview": "vite preview --host 127.0.0.1" },
+  "dependencies": { "react": "19.2.3", "react-dom": "19.2.3" },
+  "devDependencies": { "@types/react": "~19.2.0", "@types/react-dom": "~19.2.0", "vite": "8.3.5" }
+}
