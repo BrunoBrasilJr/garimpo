@@ -12,7 +12,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
-| 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
+| 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | IN_REVIEW |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | BLOCKED |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | BLOCKED |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | BLOCKED |
@@ -695,7 +695,7 @@ Next Eligible TASK: NONE promovida neste fechamento. TASK-005 é a próxima cand
 
 #### Status
 
-BLOCKED
+IN_REVIEW
 
 #### Phase
 
@@ -763,6 +763,80 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+DoR TASK-005 em 2026-10-25: TASK-004 DONE/fb10724, 47 testes novamente aprovados na execução do responsável em 91c30ce, sem mudança posterior de implementação. ADR-002/005 ACCEPTED e PD-005 ratificada; prazos e canal técnico definidos. Branch feature/TASK-005-mensagens-acesso, estado Git limpo antes do início. BLOCKED → READY → IN_PROGRESS sob autorização contínua.
+
+Plano primário: messaging/**, password-reset*, email-verification*, email-change*, contratos messaging materializados em src e tests/messaging/**. Reutilizar PasswordReset/EmailToken/DemoMessage existentes, sem nova tabela. Tokens de uso único com hash por propósito; corpo sensível cifrado no canal local com chave fora do Git, separado do segredo técnico de consulta. Worker explícito local, falhas/repetição/deduplicação auditadas e sem envio real. Reset revoga sessões e tokens ativos atomicamente. ADMIN pode iniciar correção de e-mail interno pelo recorte de e-mail do PATCH existente; demais campos continuam no módulo accounts. Interface de caixa de mensagens é opcional no escopo permitido; API protegida e roteiro de terminal materializam o canal nesta entrega, clientes gerais ficam TASK-006.
+
+Incidental Changes previstas: registro mínimo do novo router em apps/api/src/app.ts (sem lógica de segurança fora do módulo primário), export dos contratos, comandos de worker/teste em package.json e seleção de suite messaging no runner isolado. Sem alterar segurança em accounts/router, validação existente ou módulo de fundação. Nove critérios aplicados: causalidade, necessidade, minimalidade e ausência de funcionalidade/regra/arquitetura/quebra/segurança independente ou proibição. Gates locais 001/002 APROVADOS; implementação/revisão/manual/fechamento PENDENTES.
+
+##### TASK Execution Report — acesso e mensagens implementados, conferência pendente
+
+TASK: TASK-005
+Status: IN_REVIEW
+Branch: feature/TASK-005-mensagens-acesso
+Commits: 3905cb2 (implementação, testes e operação); base fb10724. Nenhuma implementação da TASK-006.
+
+###### Primary Changes
+
+- apps/api/src/modules/accounts/password-reset.ts: solicitação genérica e reset de 30min, uso único, scrypt existente, revogação atômica de todas as sessões/renovações e tokens ativos. Não autentica nem confirma e-mail automaticamente.
+- apps/api/src/modules/accounts/email-verification.ts e email-change.ts: confirmação inicial/reenvio de 24h, hashes por propósito, novo e-mail confirmado antes de substituir antigo, unicidade novamente validada no commit. ADMIN inicia correção de interno pelo recorte de e-mail do PATCH existente; OPERATOR negado. Ligação da correção comercial de clientes pertence à TASK-022.
+- apps/api/src/modules/messaging/**: proteção e configuração do canal técnico, rotas HTTPS/Origin/CSRF, caixa restrita com segredo distinto dos papéis comerciais, limites persistentes, consumidor de eventos de acesso e entrega local recuperável. Corpo cifrado AES-256-GCM versionado e autenticado por identidade, chave separada fora do Git; tokens só em hash nos registros de validação. Nenhuma credencial/corpo em auditoria ou logs gerais.
+- packages/contracts/src/messaging/**: contratos tipados materializados na estrutura src existente, sem quebra dos contratos anteriores.
+- tests/messaging/**: unidade criptográfica, 15 casos de integração HTTPS/PostgreSQL, relógio injetado, falha/repetição e duas corridas forçadas com conexões independentes. Documentação operacional, configuração protegida e roteiro do responsável. Certificado explicitamente confiado pelo cliente; nenhum TLS desativado.
+- TASKS.md: DoR, estado e evidências desta tarefa.
+
+Nenhuma nova migration/modelo, dependência instalada ou alteração de versão. PasswordReset/EmailToken/DemoMessage existentes usados no escopo autorizado. Nenhuma chave real instalada no ambiente do responsável pelo agente; caixa desligada por padrão e negada em produção. Exemplo opcional de configuração preserva arquivo existente e não grava valores no histórico/Git. Interface para abrir os links é TASK-006; envio pela Internet e mensagens comerciais futuras não implementados nem declarados aprovados.
+
+###### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/api/src/app.ts | Import/registro do router de messaging e injeção de opções | Ligação mínima do módulo primário, sem lógica independente de segurança no arquivo compartilhado. |
+| package.json | Comandos test:messaging/messages:work e gate na verify | Execução/validação reproduzíveis dos artefatos primários; sem infraestrutura/daemon/provedor novo. |
+| packages/contracts/src/index.ts | Export dos novos tipos | Exposição mínima dos contratos sem alterar os existentes. |
+| tests/core/run-integration.mjs | Seleção validada de suíte/prefixo TASK-005 | Reutiliza preparação isolada existente, sem reset, fallback dev ou mudança de comportamento das suítes anteriores. |
+
+Teste incidental de nove critérios: PASS nos quatro arquivos, necessários e diretamente causados, mínimos e sem funcionalidade/regra/arquitetura/quebra/segurança independente ou proibição. Nenhuma edição de accounts/router, staff/service, credentials, core/outbox ou requisitos originais.
+
+###### Tests Executed
+
+Ubuntu WSL2, Node 24.22.1/npm 11.19.1/PostgreSQL 17.11. Logs locais ignorados em test-results/messaging:
+
+- compile-01.log: npm run build (geração Prisma/contratos/API/web), npm run typecheck (todos os workspaces e testes) e npm run lint: PASS.
+- quality-01.log: npm test 25 PASS (24 unidade/segurança + health), incluindo cifra aleatória/autenticada, chave/identidade/adulteração rejeitadas. npm run test:messaging 15 PASS no schema task005_269bad12ff5741d4823d4a5805f64e26; preparação/entrega falhas recuperadas, evento desconhecido preservado, reset e mudança concorrentes com barreira comprovada de duas operações esperando UPDATE.
+- regression-01.log: npm run test:integration nove PASS no schema task003_a7184944e67647b8ae8830219d4392cc; npm run test:accounts 14 PASS no schema task004_10fffd407e034777a5b514cd1be8e655. Inclui último ADMIN e retomada após interrupção real, sem regressão conhecida. Total distinto acumulado: 63 PASS.
+- npm run audit:toolchain: classificação restrita PASS; npm audit bruto FAIL/exit 1, quatro ocorrências high conhecidas de versão de node-forge sob o patch/hash ratificados, sem avisos novos. Não é auditoria limpa, nem dispensa o responsável.
+- review-01.log: tipos finais dos testes e lint direcionado tests/messaging PASS após as últimas asserções. bash -n tests/messaging/manual-messaging.sh PASS. Git diff --check final PASS após retirar uma linha vazia adicional no EOF do helper HTTP; correção apenas de formatação, sem novo comportamento que exija repetir testes.
+- Responsável: tests/messaging/manual-messaging.sh NÃO EXECUTADO. Cinco grupos e limites de conferência descritos em tests/messaging/README.md. Execução automática do agente não substitui essa conferência.
+
+Limitações explícitas: entrega significa disponibilização na caixa local, não envio externo. Chaves de operação devem ser configuradas separadamente e preservadas para ler mensagens antigas; política definitiva de rotação/backup/retenção permanece nas tarefas responsáveis. Filtro técnico por destinatário cifrado examina até 1000 mensagens recentes e informa recipientScanLimit, sem prometer busca histórica completa/escala ainda não decidida. Resposta pública genérica não certifica latência constante de banco sob carga. UI/Android desta funcionalidade não testados nesta tarefa de API.
+
+###### Quality Gates
+
+Build: PASS.
+Lint: PASS.
+Unit Tests: PASS, 24 casos.
+Integration Tests: PASS, nove fundação + 14 contas + 15 mensagens, banco real separado.
+API Tests: PASS, health e suítes HTTPS de contas/mensagens.
+Security: PASS qualificado pelo critério ratificado de mitigação, auditoria bruta FAIL preservada; conferência humana pendente.
+Acceptance Criteria: FAIL para fechamento enquanto faltar conferência do responsável; critérios automatizados PASS no recorte atual.
+Regression Tests: PASS.
+
+###### Scope Validation
+
+Allowed Changes: PASS.
+Incidental Changes: PASS, quatro ligações/configurações acima.
+Forbidden Changes: PASS, nenhuma violação.
+Scope Creep: NONE.
+
+###### Definition of Done
+
+FAIL enquanto o responsável não executar/conferir o roteiro e enviar evidência. Gates locais 001/002/003/004 APROVADOS, 005 manual e 006 fechamento PENDENTES. Manter IN_REVIEW e não contar esta TASK como DONE.
+
+###### Next Eligible TASK
+
+NONE até o fechamento da TASK-005. TASK-006 continua BLOCKED; após aceite, conferir DoR própria sob a autorização contínua vigente.
 
 ### TASK-006 Criar interfaces de contas e administração interna
 

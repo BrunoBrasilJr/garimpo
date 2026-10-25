@@ -61,4 +61,3 @@ export async function openServer(options: AccountsOptions, messaging?: Messaging
     }
   };
 }
-
