@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { fork } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import { createDatabase } from '../../apps/api/src/persistence/client';
 import type { Database, Prisma } from '../../apps/api/src/persistence/client';
@@ -29,12 +30,16 @@ beforeAll(async () => {
 });
 afterAll(async () => { await Promise.all([db?.$disconnect(), other?.$disconnect()]); });
 
-test('PostgreSQL 17 and only authorized model tables are migrated', async () => {
+test('PostgreSQL 17 preserves the eight-table foundation migration as the schema evolves', async () => {
   const version = await db.$queryRaw<{ server_version: string }[]>`SHOW server_version`;
   expect(version[0]?.server_version).toMatch(/^17\./);
   const tables = await db.$queryRaw<{ tablename: string }[]>`SELECT tablename FROM pg_tables WHERE schemaname = current_schema() ORDER BY tablename`;
-  expect(tables.map(row => row.tablename)).toEqual([
+  expect(tables.map(row => row.tablename)).toEqual(expect.arrayContaining([
     'AuditLog', 'DemoMessage', 'DomainEvent', 'EmailToken', 'IdempotencyRecord', 'PasswordReset', 'Session', 'User', '_prisma_migrations'
+  ]));
+  const initial = readFileSync(new URL('../../apps/api/prisma/migrations/202610250001_foundation/migration.sql', import.meta.url), 'utf8');
+  expect([...initial.matchAll(/CREATE TABLE "(\w+)"/g)].map(match => match[1]).sort()).toEqual([
+    'AuditLog', 'DemoMessage', 'DomainEvent', 'EmailToken', 'IdempotencyRecord', 'PasswordReset', 'Session', 'User'
   ]);
 });
 

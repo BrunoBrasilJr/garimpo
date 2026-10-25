@@ -12,7 +12,9 @@ const url = new URL(value);
 if (url.pathname !== '/garimpo_test' || !['localhost', '127.0.0.1'].includes(url.hostname)) {
   throw new Error('Integration tests require a separate loopback/garimpo_test database. No development fallback.');
 }
-const schema = `task003_${randomUUID().replaceAll('-', '')}`;
+const suite = process.argv[2] ?? 'core';
+if (!['core', 'accounts'].includes(suite)) throw new Error('Unknown integration suite.');
+const schema = `task${suite === 'core' ? '003' : '004'}_${randomUUID().replaceAll('-', '')}`;
 url.searchParams.set('schema', schema);
 const admin = new Client({ connectionString: value });
 try {
@@ -26,7 +28,7 @@ console.info(`Isolated integration schema: ${schema}; retained for evidence, no 
 const env = { ...process.env, DATABASE_URL: url.href, TEST_DATABASE_URL: url.href };
 for (const args of [
   ['node_modules/prisma/build/index.js', 'migrate', 'deploy', '--config', 'apps/api/prisma/prisma.config.ts'],
-  ['node_modules/vitest/vitest.mjs', 'run', '--config', 'tests/core/vitest.integration.config.ts']
+  ['node_modules/vitest/vitest.mjs', 'run', '--config', `tests/${suite}/vitest.integration.config.ts`]
 ]) {
   const result = spawnSync(process.execPath, args, { cwd: root, env, stdio: 'inherit' });
   if (result.error) throw result.error;

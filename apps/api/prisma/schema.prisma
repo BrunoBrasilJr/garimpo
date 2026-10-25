@@ -50,20 +50,42 @@ model User {
   emailTokens     EmailToken[]
   auditLogs       AuditLog[]
   messages        DemoMessage[]
+  addresses       Address[]
 }
 
 model Session {
-  id               String    @id @default(uuid()) @db.Uuid
-  userId           String    @db.Uuid
-  user             User      @relation(fields: [userId], references: [id], onDelete: Restrict)
-  credentialHash   String    @unique @db.Char(64)
-  refreshHash      String    @unique @db.Char(64)
-  expiresAt        DateTime  @db.Timestamptz(3)
-  refreshExpiresAt DateTime  @db.Timestamptz(3)
-  revokedAt        DateTime? @db.Timestamptz(3)
-  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+  id                String    @id @default(uuid()) @db.Uuid
+  userId            String    @db.Uuid
+  user              User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  credentialHash    String    @unique @db.Char(64)
+  refreshHash       String    @unique @db.Char(64)
+  usedRefreshHashes String[]  @default([])
+  csrfHash          String    @db.Char(64)
+  expiresAt         DateTime  @db.Timestamptz(3)
+  refreshExpiresAt  DateTime  @db.Timestamptz(3)
+  revokedAt         DateTime? @db.Timestamptz(3)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
 
   @@index([userId, expiresAt])
+}
+
+model Address {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @db.Uuid
+  user         User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  recipient    String
+  zip          String    @db.VarChar(8)
+  region       String    @db.VarChar(2)
+  city         String
+  neighborhood String
+  street       String
+  number       String
+  complement   String?
+  deletedAt    DateTime? @db.Timestamptz(3)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@index([userId, deletedAt])
 }
 
 model PasswordReset {
