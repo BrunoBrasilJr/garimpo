@@ -5,6 +5,7 @@
 *.jpeg binary
 *.webp binary
 *.sh text eol=lf
+*.patch text eol=lf
 *.ts text eol=lf
 *.tsx text eol=lf
 *.js text eol=lf

@@ -2,6 +2,9 @@
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
+mkdir -p test-results/bootstrap
+log_file="test-results/bootstrap/manual-$(date -u +%Y%m%dT%H%M%SZ).log"
+exec > >(tee "$log_file") 2>&1
 if [[ "$(uname -s)" != Linux ]]; then
   echo 'Execute este roteiro no Ubuntu WSL.' >&2
   exit 1
@@ -13,13 +16,11 @@ printf 'Ambiente: '; uname -sr
 node --version
 npm --version
 git rev-parse --short HEAD
+git status --short
 if [[ ! -d node_modules ]]; then
   echo 'Dependências ausentes. Execute npm ci neste diretório e repita.' >&2
   exit 1
 fi
-mkdir -p test-results/bootstrap
-log_file="test-results/bootstrap/manual-$(date -u +%Y%m%dT%H%M%SZ).log"
-exec > >(tee "$log_file") 2>&1
 for validation in verify bundle:android; do
   printf '\nExecutando npm run %s\n' "$validation"
   npm run "$validation"

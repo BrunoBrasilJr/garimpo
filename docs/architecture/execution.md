@@ -33,10 +33,11 @@ O primeiro bootstrap utiliza `npm install` para produzir o lockfile. Não usar `
 | Comando na raiz | Finalidade | Resultado esperado |
 | --- | --- | --- |
 | `npm run build` | Contratos, API e web | Saída zero e artefatos dist de cada workspace |
-| `npm run typecheck` | Tipos dos quatro workspaces | Saída zero, sem erro TypeScript |
+| `npm run typecheck` | Tipos dos quatro workspaces e arquivos de testes | Saída zero, sem erro TypeScript |
 | `npm run lint` | Fontes e configuração | Saída zero, sem erro ESLint |
 | `npm test` | Teste de integração do bootstrap | Health real por socket local, rota comercial ausente e nenhum x-powered-by |
-| `npm run verify` | Build, tipos, lint e teste acima | Todos aprovados, interrupção em falha |
+| `npm run verify` | Build, tipos, lint, testes e classificação restrita da auditoria | Saída zero somente com validações aprovadas e nenhum aviso desconhecido |
+| `npm run audit:toolchain` | Auditoria integral e conferência do único aviso explicitamente mitigado | Saída real salva em audit-patched.json; versão/hash e origem dos avisos conferidos, sem chamar auditoria falha de PASS |
 | `npm run bundle:android` | Compilar bundle Expo Android | Bundle exportado; isso não equivale a execução em aparelho |
 | `npm run dev:api` | Processo de bootstrap API | Probe em loopback 3001 ou servidor TLS quando configurado |
 | `npm run dev:web` | Vite web | Página local Garimpo, sem chamar API ou antecipar catálogo |
@@ -60,6 +61,8 @@ bash tests/bootstrap/manual-bootstrap.sh
 
 O script confere Linux/Node e dependências, registra revisão e saída em `test-results/bootstrap`, interrompe em falha e roda verify/bundle Android. Conferir que todos os comandos terminam com saída zero. Não mostra valores de variáveis secretas nem instala serviços. A probe do teste usa porta efêmera e não grava dados de negócio. A repetição cria um novo log; não remove evidência anterior.
 
+Exceção de interpretação explicitamente autorizada pelo responsável: a saída original do subprocesso npm audit pode continuar mostrando FAIL e quatro avisos derivados de node-forge 1.4.0. O verificador não altera essa saída; só aceita a origem GHSA-86w9-cpqp-85rv com bytes corrigidos de hash conhecido, após testes de regressão. Aviso novo, relatório incompleto ou hash divergente faz o comando falhar. Isso não autoriza ignorar erro do roteiro nem declarar a auditoria bruta aprovada.
+
 Resultado obtido: [PREENCHER PELO RESPONSÁVEL]. Evidência/log: [PREENCHER]. Status: NÃO EXECUTADO.
 
 ### BOOT-002 — página web e recorte TEST-028
@@ -70,7 +73,7 @@ Resultado obtido: [PREENCHER PELO RESPONSÁVEL]. Navegador/versão/evidência: [
 
 ### BOOT-003 — execução Android
 
-Executar `npm run dev:mobile` no Ubuntu preparado. Abrir no Android com cliente Expo compatível com SDK 57 ou development build correspondente; não aceitar cliente de SDK incompatível nem Expo web como teste nativo. Confirmar rede/URL acessível ao aparelho. Se o WSL não expuser Metro à rede, diagnosticar conectividade e registrar bloqueio; não dispensar validação nem alterar firewall silenciosamente. Um túnel externo exigiria configuração explícita, não é iniciado automaticamente.
+Executar `npm run dev:mobile` no Ubuntu preparado. Abrir no Android com cliente Expo compatível com SDK 57 ou development build correspondente; não aceitar cliente de SDK incompatível nem Expo web como teste nativo. O [site oficial do Expo Go](https://expo.dev/go) oferece seleção de SDK e plataforma; escolher SDK 57/Android para este projeto, sem presumir que o cliente mais recente da loja aceite esse SDK. Confirmar rede/URL acessível ao aparelho. Se o WSL não expuser Metro à rede, diagnosticar conectividade e registrar bloqueio; não dispensar validação nem alterar firewall silenciosamente. Um túnel externo exigiria configuração explícita, não é iniciado automaticamente.
 
 Conferir tela Garimpo, ausência de tela de erro, texto ampliado e leitura do título pelo TalkBack. Nenhuma conta/administração/catalogação disponível neste incremento. Registrar modelo/versão Android, cliente Expo e revisão. Encerrar Metro com Ctrl+C. Compatibilidade iOS preservada em app.json, mas nenhuma execução iOS é alegada.
 
@@ -98,7 +101,9 @@ Node Linux v24.22.1, npm 11.19.1, Ubuntu WSL2. `npm run verify`: PASS (contratos
 - [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5): zod <4.6.6; npm consultado oferece 4.6.7. A CLI instalada declara Zod 3, portanto trocar por 4 exige verificar suas schemas/CLI, sem pressupor compatibilidade.
 - `npm audit fix --force` sugere Expo 44.0.6: não executado por downgrade incompatível com SDK 57 ratificado.
 
-### Proposta concreta de correção, ainda NÃO autorizada/aplicada
+### Correção autorizada, em validação
+
+Em 2026-10-25, o responsável respondeu **“Autorizar correção e validação propostas”** à ampliação de escopo e ao critério explícito de avaliação do aviso residual por patch/hash/testes, mantendo a saída real da auditoria. Allowed Changes da TASK-002 atualizado antes da implementação. Este registro supera o estado pendente da proposta abaixo, preservando sua origem; aprovação da proposta não é aprovação antecipada dos testes.
 
 Ampliar exclusivamente o escopo primário da TASK-002 para um patch reprodutível da dependência de ferramenta e testes correspondentes, sem mudar SDK, requisitos, autenticação do produto, arquitetura ou avançar TASK-003. Não é alteração incidental: modifica validação criptográfica de terceiro e reprova o critério 8 do teste incidental de AGENTS.
 
@@ -124,4 +129,23 @@ Validações propostas antes de aceitar qualquer mitigação:
 4. Reexecutar auditoria integral e registrar saída original. Ela pode continuar indicando node-forge pela versão 1.4.0, mesmo com patch local; **não registrar npm audit como PASS** nesse caso. A aceitação do gate de segurança exigiria decisão explícita sobre evidência de mitigação verificada por patch/hash/testes para esse único aviso, sem dispensar auditoria nem aceitar avisos novos. Essa condição faz parte da aprovação solicitada, não está em vigor.
 5. Responsável executa roteiro manual atualizado e registra evidência; nenhum resultado manual ou DONE antecipado.
 
-Alternativas: aguardar release upstream e manter TASK-002 bloqueada; ou autorizar revisão da estratégia de ferramenta em decisão própria. Aguardar decisão do responsável sobre ampliar o escopo e o critério verificável de mitigação; a autorização contínua anterior não cobre a exceção ao limite incidental nem autoriza fingir gate aprovado.
+Alternativas consideradas: aguardar release upstream e manter TASK-002 bloqueada; ou revisão da estratégia de ferramenta em decisão própria. Responsável escolheu a correção revisada descrita acima. Nenhuma autorização permite fingir gate aprovado; nova falha, hash divergente ou aviso não coberto volta a bloquear avanço.
+
+### Evidências da correção autorizada
+
+- Antes do patch: `security-before-patch.log`, dois testes de rejeição falharam porque as estruturas aninhadas inválidas foram aceitas (com e sem NULL). É reprodução intencional do defeito, não resultado aprovado.
+- Depois: seis testes Forge passaram, preservando assinaturas válidas, rejeitando formatos inválidos e conferindo hash. Primeira rodada detectou Zod 3 retido pelo lockfile apesar do override; `npm update zod` recalculou somente essa dependência, e os três testes de versão/schema passaram em seguida. Falha e repetição preservadas no histórico.
+- Instalação limpa: `npm ci --no-fund --no-audit` reinstalou 651 pacotes e o postinstall reaplicou o patch verificando os hashes de origem/destino. Não usou force, legacy-peer-deps, fork remoto ou edição de metadados para ocultar aviso.
+- `security-clean-install.log`: build/tipos/lint aprovados; **15 testes aprovados** em quatro arquivos (API 1, Forge 6, schemas Zod 3, política de auditoria 5). A política rejeita avisos novos, evidência incompleta/inconsistente e ciclos sem origem conhecida.
+- Auditoria integral após correção: saída original 1; quatro avisos altos derivados exclusivamente de node-forge. Zod não aparece mais. `audit-patched.json` mantém o relatório bruto; classificação restrita autorizada conferiu origem e hash, sem registrar npm audit como PASS.
+- Bundle Android após instalação limpa: 580 módulos, exportação concluída. A conferência final da matriz instalada do SDK identificou patches nativos recomendados: React Native **0.86.3** e expo-status-bar **57.0.1**. Foram alinhados no mesmo SDK 57/React 19.2.3, sem mudança arquitetural. `expo install --check` confirmou **Dependencies are up to date**; resultados posteriores do incremento estão em `sdk-compatibility.log`.
+
+Aceitação funcional manual continua NÃO EXECUTADA; somente resposta/evidência do responsável pode aprovar BOOT-001/002/003 e concluir TASK-002. Compatibilidade compilada e auditoria mitigada não são evidência de aplicativo aberto em aparelho.
+
+### Verificação de inicialização e pré-requisitos Linux
+
+API compilada iniciada por `npm run start --workspace @garimpo/api`; probe real retornou `{"status":"ok","service":"garimpo-api"}` em loopback 3001. Roteiro validado com `bash -n` e conferência de sintaxe sem erro.
+
+A primeira tentativa de CLI combinou --offline/--localhost, opções mutuamente exclusivas, e falhou antes de iniciar; corrigida para variável `EXPO_OFFLINE=1` com --localhost. A tentativa seguinte iniciou Metro, mas o instalador auxiliar do React Native DevTools registrou bibliotecas Linux ausentes. Diagnóstico do ELF real identificou libnspr4, NSS e ALSA. Instalação específica autorizada: `libnspr4`, `libnss3`, `libasound2t64` e dependência `libasound2-data`, dos repositórios archive.ubuntu.com para Ubuntu 24.04; zero pacotes existentes atualizados e nenhum upgrade geral.
+
+Nova inicialização `EXPO_OFFLINE=1 CI=1 npm run start --workspace @garimpo/mobile -- --localhost --port 8081` chegou a **Waiting on http://localhost:8081**, sem o erro anterior. Evidência: `test-results/bootstrap/metro-startup.log`. Processo de teste encerrado intencionalmente após essa confirmação, liberando a porta para o responsável iniciar seu teste normal. Isso aprova inicialização da CLI, não execução nativa em aparelho. A web permanece disponível localmente para conferência.

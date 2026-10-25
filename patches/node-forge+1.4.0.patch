@@ -1,0 +1,7 @@
+--- a/node_modules/node-forge/lib/rsa.js
++++ b/node_modules/node-forge/lib/rsa.js
+@@ -1175,1 +1175,3 @@
+-            obj.value.length !== 2) {
++            obj.value.length !== 2 ||
++            obj.value[0].value.length !==
++              (('parameters' in capture) ? 2 : 1)) {

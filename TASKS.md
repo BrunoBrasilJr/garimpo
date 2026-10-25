@@ -9,7 +9,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | Ordem | TASK | Fase | Prioridade | Dependências | Estado |
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
-| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | BLOCKED |
+| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | IN_PROGRESS |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | BLOCKED |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | BLOCKED |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
@@ -159,7 +159,7 @@ Gates locais: prontidão, planejamento, decisões documentais, revisão, testes 
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -201,6 +201,16 @@ Preparar workspaces API/web/mobile e contratos conforme stack/plataforma ratific
 - tests configuração
 - docs/architecture/execution.md
 - TASKS.md — somente estado/evidência desta TASK e prontidão comprovada de dependentes
+
+Ampliação explícita autorizada pelo responsável em 2026-10-25, após proposta concreta e SCOPE ESCALATION: “Autorizar correção e validação propostas”. Acrescentar como PRIMARY exclusivamente:
+
+- patches/node-forge+1.4.0.patch e manifesto de versão/hashes da correção
+- tests/bootstrap/security/** — regressão ASN.1 e compatibilidade das schemas reais da CLI Expo
+- tests/bootstrap/apply-toolchain-patch.mjs — instalação determinística, conferência de versão/hash e falha em divergência
+- node_modules/node-forge/lib/rsa.js — aplicação derivada do patch na instalação, não versionar node_modules
+- package.json/lock — postinstall, override transitivo Zod corrigido e comandos de validação associados
+
+Critério complementar autorizado para GATE-06: manter auditoria integral e sua saída real. O aviso remanescente de versão de node-forge só pode ser avaliado como mitigado com patch/hash exatos, regressão antes/depois, instalação limpa e gates afetados aprovados; não registrar npm audit falho como PASS, não aceitar avisos novos/não mitigados e não dispensar revisão/testes manuais. Não amplia funcionalidades, não desativa validação e não muda SDK/arquitetura. Escalonamento anterior preservado como histórico; retornar à execução autorizada da correção.
 
 #### Incidental Changes Policy
 

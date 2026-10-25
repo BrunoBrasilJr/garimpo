@@ -7,16 +7,19 @@
   "workspaces": ["apps/api", "apps/web", "apps/mobile", "packages/contracts"],
   "scripts": {
     "preinstall": "node tests/bootstrap/check-runtime.mjs",
+    "postinstall": "node tests/bootstrap/apply-toolchain-patch.mjs",
     "dev:api": "npm run dev --workspace @garimpo/api",
     "dev:web": "npm run dev --workspace @garimpo/web",
     "dev:mobile": "npm run start --workspace @garimpo/mobile",
     "build": "npm run build --workspace @garimpo/contracts && npm run build --workspace @garimpo/api && npm run build --workspace @garimpo/web",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tests/tsconfig.json",
     "lint": "eslint --config tests/eslint.config.mjs apps packages tests",
     "test": "vitest run --config tests/vitest.config.ts",
     "bundle:android": "npm run bundle:android --workspace @garimpo/mobile",
-    "verify": "npm run build && npm run typecheck && npm run lint && npm test"
+    "audit:toolchain": "node tests/bootstrap/security/check-audit.mjs",
+    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run audit:toolchain"
   },
+  "overrides": { "@expo/cli": { "zod": "4.6.7" } },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/node": "^24.0.0",
