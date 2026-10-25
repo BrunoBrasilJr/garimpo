@@ -922,6 +922,14 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
 
+DoR TASK-006 em 2026-10-25: dependências TASK-004/005 DONE, revisão e884bc1, execução do responsável em 286d34d com build/tipos/lint e 63 testes PASS. ADR-001/005 ACCEPTED, contratos de contas/mensagens presentes e parâmetros de sessão/HTTPS definidos. Sem PD impeditiva do recorte. BLOCKED → READY → IN_PROGRESS sob autorização contínua; branch feature/TASK-006-interfaces-contas, Git limpo antes do início.
+
+Plano primário: features/account e navigation em web/mobile, admin/staff somente web, testes/e2e/account e staff. HTTPS e cookies web com CSRF; renovação mobile em Expo SecureStore, acesso somente em memória. Nenhuma credencial técnica de caixa no cliente. Testes de navegador com API/banco reais separados, sem substituir backend por mock nos fluxos de aceitação. Harness HTTPS de teste no escopo tests/e2e/account serve o build web e API na mesma origem, sem mudar configuração TLS de produção ou confiar certificados globalmente no Windows. Android requer conferência real do responsável com certificado confiável; não alegar aprovação antes dela. Encerramento comercial e catálogo ficam fora.
+
+Incidental Changes previstas: registro mínimo de navigation em apps/web/src/main.tsx e apps/mobile/App.tsx; manifests/lock somente expo-secure-store 57.0.4 compatível com bundledNativeModules do Expo instalado, contratos existentes e @playwright/test 1.64.1; comandos de teste/roteiro. São ligações e ferramentas necessárias, com decisões de sessão/proteção nos módulos primários; sem implementar segurança independente nos pontos de entrada ou mudar módulos de API. Gates locais 001/002 APROVADOS; demais PENDENTES. Sem criar/alterar migrations.
+
+BLOCKER de dependência encontrado durante a execução: npm run messages:work da TASK-005 falha com ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX porque AccessMessages usa propriedades de parâmetro, não suportadas pelo modo strip-only do Node 24.22.1. Evidência test-results/account-ui/worker-smoke.log. Trabalho parcial de telas preservado em commit WIP da TASK-006, sem alegar teste aprovado; retorno à branch própria da TASK-005 para correção autorizada no seu escopo. TASK-006 não avança até validar a dependência corrigida. Falha própria inicial de tipos TS2322 em Promise de Web Locks corrigida com normalização explícita de Promise<void>, pendente rechecagem. Nenhum gate futuro aprovado.
+
 ### TASK-007 Checkpoint PHASE-01
 
 #### Status

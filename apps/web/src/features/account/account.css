@@ -1,0 +1,40 @@
+.account-site { min-height: 100vh; }
+.account-header { max-width: 1240px; margin: auto; padding: 24px clamp(20px, 5vw, 64px); display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid #c9cbbd; }
+.account-brand { font-family: Georgia, serif; font-size: 1.7rem; font-weight: bold; text-decoration: none; }
+.account-brand span { margin-right: 8px; }
+.account-header nav, .account-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.account-site a { color: #173c32; text-underline-offset: 4px; }
+.account-shell { display: grid; grid-template-columns: minmax(240px, .85fr) minmax(300px, 1fr); gap: clamp(32px, 6vw, 96px); max-width: 1240px; padding: 48px clamp(20px, 5vw, 64px); margin: auto; }
+.account-intro { align-self: start; position: sticky; top: 24px; }
+.account-intro h1 { font-size: clamp(2.7rem, 4.7vw, 4.8rem); letter-spacing: -.04em; }
+.account-intro p { font-size: 1rem; }
+.account-panels { display: grid; gap: 24px; align-content: start; min-width: 0; }
+.account-record { width: min(100%, 300px); aspect-ratio: 1; border-radius: 50%; margin: 36px 0; background: repeating-radial-gradient(circle, #153a30 0 3px, #254d3f 4px 5px); display: grid; place-items: center; box-shadow: 12px 14px 0 #e4dac7; }
+.account-record span { display: grid; place-items: center; border-radius: 50%; width: 90px; aspect-ratio: 1; background: #b56b33; color: #fff8e9; font: italic bold 2.8rem Georgia, serif; border: 8px solid #c98d5c; }
+.account-caption { color: #48604f; }
+.account-form, .account-card { border: 1px solid #c9cbbd; background: #fcfaf4; border-radius: 16px; padding: clamp(20px, 3vw, 32px); min-width: 0; }
+.account-card .account-form { background: transparent; padding: 20px 0; border: 0; border-top: 1px solid #d5d7ca; border-radius: 0; }
+.account-form { display: grid; gap: 20px; }
+.account-site h2 { font: 1.8rem Georgia, serif; margin: 0 0 8px; }
+.account-site h3 { font-size: 1.3rem; }
+.account-field, .account-form > label { display: grid; gap: 8px; }
+.account-site label { font-weight: 600; font-size: .95rem; }
+.account-site input, .account-site select { min-height: 48px; width: 100%; border: 1px solid #829183; border-radius: 8px; background: #fffef9; padding: 11px 12px; color: #173c32; font: inherit; }
+.account-site input[aria-invalid=true] { border-color: #a0372a; }
+.account-site small { font-size: .85rem; line-height: 1.5; color: #52624e; }
+.account-site button { min-height: 48px; border-radius: 8px; border: 1px solid #173c32; background: #173c32; color: #fffbed; padding: 12px 20px; font: inherit; font-weight: 650; cursor: pointer; }
+.account-site button.secondary { color: #173c32; background: transparent; }
+.account-site button:disabled { opacity: .55; cursor: default; }
+.account-site :focus-visible { outline: 3px solid #b56b33; outline-offset: 4px; }
+.account-error { background: #f8e4dc; color: #752b21; padding: 14px; border-left: 4px solid #a0372a; border-radius: 6px; line-height: 1.5; }
+.account-notice { background: #e2e9d9; padding: 16px 20px; border-left: 4px solid #365f3f; border-radius: 8px; line-height: 1.6; }
+.account-badge { display: inline-block; background: #e2e9d9; border-radius: 30px; padding: 4px 12px; font-size: .9rem; }
+.address-list { list-style: none; padding: 0; }
+.address-list li { border-top: 1px solid #d5d7ca; padding: 24px 0; }
+.address-list button { margin: 8px 8px 0 0; }
+.account-card p { overflow-wrap: anywhere; }
+.account-footer { max-width: 1240px; padding: 32px clamp(20px, 5vw, 64px); margin: auto; font-size: .85rem; border-top: 1px solid #c9cbbd; }
+.account-skip { position: absolute; left: 16px; top: -100px; padding: 12px; background: #fffef9; z-index: 2; }
+.account-skip:focus { top: 12px; }
+@media (max-width: 720px) { .account-shell { grid-template-columns: minmax(0, 1fr); padding-top: 24px; gap: 24px; } .account-intro { position: static; } .account-intro h1 { font-size: 2.6rem; } .account-record, .account-caption { display: none; } .account-header { align-items: flex-start; flex-direction: column; gap: 16px; } .account-intro .eyebrow { margin-top: 8px; } }
+@media (prefers-reduced-motion: reduce) { .account-site * { scroll-behavior: auto; } }

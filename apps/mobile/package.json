@@ -3,7 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "main": "index.js",
-  "scripts": { "start": "expo start", "typecheck": "tsc --noEmit", "bundle:android": "expo export --platform android --output-dir dist/android" },
-  "dependencies": { "expo": "57.0.31", "react": "19.2.3", "react-native": "0.86.3", "expo-status-bar": "57.0.1" },
-  "devDependencies": { "@types/react": "~19.2.0" }
+  "scripts": {
+    "start": "expo start",
+    "typecheck": "tsc --noEmit",
+    "bundle:android": "expo export --platform android --output-dir dist/android"
+  },
+  "dependencies": {
+    "@garimpo/contracts": "0.1.0",
+    "expo": "57.0.31",
+    "expo-secure-store": "57.0.4",
+    "expo-status-bar": "57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0"
+  }
 }
