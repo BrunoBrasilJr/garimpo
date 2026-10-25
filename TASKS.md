@@ -9,7 +9,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | Ordem | TASK | Fase | Prioridade | Dependências | Estado |
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
-| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | IN_PROGRESS |
+| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | IN_REVIEW |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | BLOCKED |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | BLOCKED |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
@@ -159,7 +159,7 @@ Gates locais: prontidão, planejamento, decisões documentais, revisão, testes 
 
 #### Status
 
-IN_PROGRESS
+IN_REVIEW
 
 #### Phase
 
@@ -288,6 +288,61 @@ Quality Gates: Build PASS; Lint PASS; Unit Tests N/A (nenhuma regra de negócio/
 Scope Validation: Allowed Changes PASS no que foi aplicado; Incidental Changes PASS nos três arquivos listados, sem efeito funcional independente; Forbidden Changes PASS; Scope Creep NONE. Patch de segurança é só proposta, não aplicado.
 
 Definition of Done: FAIL. Gates locais: prontidão/planejamento aprovados; implementação/revisão sem aprovação final por segurança; testes manuais/conclusão pendentes. Next Eligible TASK: NONE enquanto TASK-002 não DONE. Nenhuma implementação posterior iniciada.
+
+##### TASK Execution Report — revisão após correção autorizada
+
+TASK: TASK-002
+Status: IN_REVIEW — AGUARDANDO TESTES MANUAIS DO RESPONSÁVEL.
+Branch: chore/TASK-002-estrutura-desenvolvimento.
+Commits: 218052f (base documental/Git), 3c16119 (bootstrap com bloqueio registrado), 12ccab6 (correção autorizada, testes e compatibilidade). Não há merge ou execução de TASK-003.
+
+Autorização de escopo adicional: responsável respondeu “Autorizar correção e validação propostas” em 2026-10-25. SCOPE ESCALATION anterior resolvido por essa decisão; proibições e testes manuais preservados. Histórico FAILED/BLOCKED acima não foi apagado; implementação retomada e revisão refeita após as correções.
+
+### Primary Changes
+
+- package.json/lock e tsconfig: quatro workspaces, Node Linux ratificado, versões/overrides e comandos reais de build/tipos/lint/testes; configuração de testes agora também checada pelo TypeScript.
+- apps/api/**: bootstrap sem negócio, endpoint operacional /health e entrada compilada, sem x-powered-by, sem banco/contas/catálogo; HTTP apenas probe interna em loopback e configuração TLS para acesso futuro dos clientes.
+- apps/web/** e apps/mobile/**: telas iniciais sem funcionalidade comercial; título acessível, ampliação/rolagem mobile; SDK 57 preservado, React 19.2.3, RN 0.86.3 e StatusBar 57.0.1 alinhados à matriz instalada; Android/iOS preservados, execução iOS não alegada.
+- packages/contracts/** e tests/**: contrato operacional, configuração de qualidade, teste HTTP real, regressão de assinatura, schemas reais Expo/Zod e política que rejeita novos avisos ou relatórios incompletos; roteiro manual reproduzível com log/versões/revisão.
+- patches/** e aplicação derivada em node_modules/node-forge/lib/rsa.js: patch exato e manifesto SHA-256, postinstall falha em versão/hash divergente; npm ci reaplicou correção, sem fork remoto, metadados falsos ou downgrade forçado.
+- docs/architecture/execution.md e esta TASK/índice: instruções, evidência real, limitações e decisão de mitigação. Ambiente preparado sob autorização específica: Node isolado no WSL e bibliotecas libnspr4/libnss3/libasound2t64 (com libasound2-data), sem upgrade geral, banco ou tarefa futura.
+
+### Incidental Changes
+
+Três arquivos conforme tabela anterior: .gitignore, .gitattributes e .nvmrc. Critérios de necessidade/causalidade/minimalidade e ausência de funcionalidade/regra/arquitetura/contrato/autorização alterados satisfeitos; nenhum Forbidden. .gitattributes inclui LF para o patch, necessário à reprodução Windows/WSL. O patch de segurança é PRIMARY explicitamente autorizado, nunca classificado como incidental.
+
+### Tests Executed
+
+Ambiente: Ubuntu 24.04.4 WSL2, Node Linux 24.22.1, npm 11.19.1; código na pasta do projeto montada em /mnt/c. Comandos e resultados reais:
+
+- npm run verify: PASS — build contratos/API/web, tipos dos quatro workspaces e testes, ESLint 10, 15 testes aprovados (HTTP 1, Forge 6, Expo/Zod 3, política da auditoria 5).
+- Regressão antes do patch: dois casos inválidos foram aceitos e os testes falharam como esperado; depois da correção foram negados. Assinaturas legítimas preservadas e hash conferido.
+- npm ci --no-fund --no-audit: PASS — instalação limpa, postinstall reaplicou o patch por versão/hashes exatos. Auditoria é executada separadamente e sua saída integral é preservada, não omitida do gate.
+- npm update zod: corrigiu lockfile que havia retido Zod 3; repetição aprovou versão 4.6.7 e schemas reais.
+- expo install --check: PASS, “Dependencies are up to date”, após alinhar patches exigidos pelo SDK; typecheck repetido PASS.
+- npm run bundle:android: PASS após instalação limpa e novamente após patches nativos; 580 módulos e artefato Hermes exportado. Não é teste de aparelho.
+- npm run audit:toolchain: PASS na classificação restrita autorizada; **npm audit bruto continua FAIL/exit 1**, quatro avisos altos de versão derivados exclusivamente de node-forge. Hash corrigido e testes comprovam mitigação local do aviso autorizado; Zod saiu do relatório. Aviso novo ou evidência incompleta bloqueia o comando.
+- API compilada iniciada: /health retornou status ok/service garimpo-api por requisição real. Web renderizada em 127.0.0.1:5173, árvore acessível e screenshot conferidos.
+- Metro inicializado em localhost:8081, sem erro após preparar bibliotecas Linux; encerrado intencionalmente para liberar a porta ao responsável. A invocação inicial com flags incompatíveis foi corrigida, sem alterar validações.
+- bash -n da versão final do roteiro: PASS após reorganização da captura de log. Diff/JSON, 37 IDs, dependências sem ciclos, estados índice/seção, hash corrigido, Zod 4.6.7 e preservação do PDF conferidos; nenhum arquivo comercial/migration criado.
+
+Evidências locais: test-results/bootstrap/security-before-patch.log, security-after-patch.log, security-clean-install.log, sdk-compatibility.log, audit-patched.json, metro-startup.log e web.png. Verificação é do agente; BOOT-001/002/003 pelo responsável: NÃO EXECUTADOS.
+
+### Quality Gates
+
+Build/tipos: PASS; Lint: PASS; Unit Tests: PASS (14); Integration Tests: PASS (HTTP real, sem banco no incremento); API Tests: PASS operacional, sem alegar contratos comerciais implementados; Security: PASS **no critério de mitigação expressamente autorizado**, auditoria bruta permanece FAIL conhecida/documentada; Acceptance Criteria: PENDENTE/FAIL para concluir enquanto gate manual faltar; Regression Tests: PASS nas fronteiras diretamente afetadas e reprodução antes/depois, sem alegar fluxos de negócio futuros.
+
+### Scope Validation
+
+Allowed Changes: PASS, incluindo ampliação explícita. Incidental Changes: PASS nos três arquivos listados. Forbidden Changes: PASS. Scope Creep: NONE. Implementação posterior: NONE.
+
+### Definition of Done
+
+FAIL/PENDENTE exclusivamente da aceitação manual e fechamento. Não marcar DONE por resultados automáticos. Gates locais: 001 prontidão APROVADO; 002 planejamento APROVADO; 003 implementação APROVADO no incremento; 004 revisão APROVADO no recorte técnico; 005 testes manuais PENDENTE; 006 conclusão PENDENTE. Totais: 6, concluídos 4, pendentes 2, bloqueados 0. Próxima etapa habilitada: testes manuais desta TASK; conclusão e TASK posterior NÃO habilitadas.
+
+### Next Eligible TASK
+
+NONE enquanto TASK-002 não DONE. TASK-003 somente poderá ser promovida após evidência manual, DoD/fechamento de TASK-002 e nova conferência integral de DoR. Autorização contínua permanece vigente, sem nova autorização genérica de execução necessária.
 
 ### TASK-003 Criar persistência e fundação transacional
 

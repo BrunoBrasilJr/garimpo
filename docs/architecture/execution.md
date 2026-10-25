@@ -8,6 +8,27 @@ Ambiente alvo: Windows → Ubuntu WSL2, com Node Linux 24.22.1. Runtime isolado 
 
 ## Preparação no Ubuntu WSL
 
+Em um Ubuntu novo, instalar primeiro o runtime isolado (não repetir se a pasta já estiver preparada):
+
+```bash
+runtime_parent="$HOME/.local/share/garimpo"
+mkdir -p "$runtime_parent"
+cd "$runtime_parent"
+curl --fail --location --output node-v24.22.1-linux-x64.tar.xz https://nodejs.org/dist/v24.22.1/node-v24.22.1-linux-x64.tar.xz
+curl --fail --location --output SHASUMS256.txt https://nodejs.org/dist/v24.22.1/SHASUMS256.txt
+grep -F ' node-v24.22.1-linux-x64.tar.xz' SHASUMS256.txt | sha256sum --check &&
+  tar -xJf node-v24.22.1-linux-x64.tar.xz
+```
+
+Pré-requisitos de biblioteca do DevTools no Ubuntu 24.04 (já instalados no ambiente desta execução):
+
+```bash
+sudo apt-get update
+sudo apt-get install --no-install-recommends libnspr4 libnss3 libasound2t64
+```
+
+Esses comandos reproduzem a preparação realizada; não criam banco nem implementam módulos. Não executar upgrade geral como parte deste roteiro.
+
 Abra o Ubuntu pelo Windows ou execute `wsl -d Ubuntu`. No terminal Linux:
 
 ```bash
