@@ -3,23 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24.22.1 <25", "npm": ">=11 <12" },
-  "workspaces": ["apps/api", "apps/web", "apps/mobile", "packages/contracts"],
+  "engines": {
+    "node": ">=24.22.1 <25",
+    "npm": ">=11 <12"
+  },
+  "workspaces": [
+    "apps/api",
+    "apps/web",
+    "apps/mobile",
+    "packages/contracts"
+  ],
   "scripts": {
     "preinstall": "node tests/bootstrap/check-runtime.mjs",
     "postinstall": "node tests/bootstrap/apply-toolchain-patch.mjs",
     "dev:api": "npm run dev --workspace @garimpo/api",
     "dev:web": "npm run dev --workspace @garimpo/web",
     "dev:mobile": "npm run start --workspace @garimpo/mobile",
-    "build": "npm run build --workspace @garimpo/contracts && npm run build --workspace @garimpo/api && npm run build --workspace @garimpo/web",
+    "db:generate": "prisma generate --config apps/api/prisma/prisma.config.ts",
+    "db:migrate": "prisma migrate deploy --config apps/api/prisma/prisma.config.ts",
+    "test:integration": "node tests/core/run-integration.mjs",
+    "build": "npm run db:generate && npm run build --workspace @garimpo/contracts && npm run build --workspace @garimpo/api && npm run build --workspace @garimpo/web",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tests/tsconfig.json",
     "lint": "eslint --config tests/eslint.config.mjs apps packages tests",
     "test": "vitest run --config tests/vitest.config.ts",
     "bundle:android": "npm run bundle:android --workspace @garimpo/mobile",
     "audit:toolchain": "node tests/bootstrap/security/check-audit.mjs",
-    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run audit:toolchain"
+    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run audit:toolchain"
   },
-  "overrides": { "@expo/cli": { "zod": "4.6.7" } },
+  "overrides": {
+    "@expo/cli": {
+      "zod": "4.6.7"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/node": "^24.0.0",
@@ -28,5 +43,9 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.72.0",
     "vitest": "^4.0.0"
+  },
+  "allowScripts": {
+    "prisma@7.10.1": true,
+    "@prisma/engines@7.10.1": true
   }
 }

@@ -12,3 +12,4 @@ playwright-report/
 *.tsbuildinfo
 apps/api/.certs/
 apps/api/.data/
+apps/api/src/persistence/generated/
