@@ -11,8 +11,13 @@ import { MessageProtection } from './protection.ts';
 export const available = (user: User) => !user.blockedAt && !user.closedAt && !user.inactiveAt;
 export type AccessPurpose = 'RESET' | 'VERIFY' | 'CHANGE';
 export class AccessMessages {
-  constructor(readonly accounts: Accounts, readonly protection: MessageProtection, readonly webOrigin: string,
-    readonly limits = { account: 5, ip: 20 }) {
+  readonly accounts: Accounts;
+  readonly protection: MessageProtection;
+  readonly webOrigin: string;
+  readonly limits: { account: number; ip: number };
+  constructor(accounts: Accounts, protection: MessageProtection, webOrigin: string,
+    limits = { account: 5, ip: 20 }) {
+    this.accounts = accounts; this.protection = protection; this.webOrigin = webOrigin; this.limits = limits;
     if (new URL(webOrigin).protocol !== 'https:' || new URL(webOrigin).origin !== webOrigin) throw new Error('Exact HTTPS origin required.');
     if (Object.values(limits).some(value => !Number.isInteger(value) || value < 1 || value > 10000)) throw new Error('Invalid message rate configuration.');
   }

@@ -1,4 +1,5 @@
 import { randomBytes, randomUUID } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { beforeAll, beforeEach, afterAll, expect, test } from 'vitest';
 import { createDatabase } from '../../apps/api/src/persistence/client';
 import type { Database } from '../../apps/api/src/persistence/client';
@@ -255,6 +256,20 @@ test('two independent confirmations competing for one new email preserve uniquen
   expect(results.filter(result => result.status === 'rejected')).toHaveLength(1);
   expect(await db.user.count({ where: { emailNormalized: destination } })).toBe(1);
   expect(await db.user.count({ where: { emailNormalized: { in: [first.input.email, next.input.email] } } })).toBe(1);
+});
+
+test('the real npm messages worker starts in Node strip-only mode and delivers an isolated registration event', async () => {
+  const realClockAccounts = new Accounts(db);
+  const created = await realClockAccounts.register({ name: 'CLI teste isolado', email: email(), password: PASSWORD });
+  const result = spawnSync('npm', ['run', 'messages:work'], { encoding: 'utf8', timeout: 25000, env: {
+    ...process.env, DATABASE_URL: process.env.TEST_DATABASE_URL!, GARIMPO_MESSAGE_MODE: 'local-test',
+    GARIMPO_MESSAGE_ENCRYPTION_KEY: encryptionKey, GARIMPO_MESSAGE_TECHNICAL_SECRET: technicalSecret, WEB_ORIGIN: origin
+  } });
+  expect(result.error).toBeUndefined(); expect(result.status).toBe(0);
+  expect(result.stdout).toContain('Local mailbox worker:'); expect(result.stdout).not.toContain(technicalSecret);
+  expect(result.stderr).not.toContain('ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX');
+  expect(await db.demoMessage.count({ where: { userId: created.id, type: 'ACCESS.VERIFY', status: 'DELIVERED' } })).toBe(1);
+  expect((await db.domainEvent.findFirstOrThrow({ where: { aggregateId: created.id } })).processedAt).not.toBeNull();
 });
 
 async function overlap(a: () => Promise<unknown>, b: () => Promise<unknown>) {

@@ -4,6 +4,8 @@ Estado manual: EXECUTADO pelo responsável em 2026-10-25, revisão 286d34d, saí
 
 ## Grupos de conferência
 
+Correção posterior de compatibilidade do comando Node: propriedades do construtor de AccessMessages passaram a declarações/atribuições explícitas, pois strip-only não suporta propriedades de parâmetro. JavaScript compilado comprovadamente idêntico ao aceito (test-results/messaging/cli-equivalence.log). Build/tipos/lint e 16 testes de mensagens aprovados em cli-correction.log, incluindo subprocesso npm run messages:work com entrega/evento reais em schema isolado. Não atribuir esse subprocesso a uma execução manual nova do responsável; a conferência anterior dos fluxos permanece registrada acima.
+
 1. Registro produz evento durável; worker prepara uma confirmação de 24h. Reenvio cria link novo e invalida anterior; uso único, expiração no limite e propósito conferidos. E-mail ainda não confirmado não é inventado como confirmado.
 2. Reset de 30min tem resposta pública genérica, limites persistentes e uso único. Troca de senha revoga todas as sessões, credenciais de renovação e tokens de acesso/alteração/confirmação ativos, na mesma transação. Não autentica nem confirma e-mail automaticamente. Bloqueado/encerrado/inativo não ganha acesso.
 3. Mudança confirma o endereço novo antes de substituir o antigo, com unicidade revalidada no commit e prazo de 24h ratificado. Correção de conta interna por ADMIN web usa o recorte somente `email` do PATCH existente; outros campos continuam no módulo accounts. Correção comercial de clientes por ADMIN será ligada na TASK-022. Consumo concorrente de reset e duas confirmações para o mesmo novo e-mail usam duas conexões e barreira de banco comprovando as duas operações esperando UPDATE ao mesmo tempo.
