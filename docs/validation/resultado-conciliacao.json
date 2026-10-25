@@ -1,0 +1,14 @@
+{
+  "checks": 2706,
+  "passed": 2706,
+  "failed": [],
+  "documents": 30,
+  "responses": 98,
+  "requirements": 29,
+  "rules": 45,
+  "tasks": 37,
+  "tests": 35,
+  "api_entries": 130,
+  "tables": 57,
+  "mermaid_blocks": 23
+}

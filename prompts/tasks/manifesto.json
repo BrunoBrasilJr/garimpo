@@ -1,0 +1,491 @@
+{
+  "date": "2026-10-25",
+  "scope": "somente geração documental; nenhuma TASK executada",
+  "tasks": [
+    {
+      "task": "TASK-001",
+      "title": "Validar decisões técnicas e parâmetros pendentes",
+      "steps": 6,
+      "dependencies": [],
+      "initial_status": "READY",
+      "folder": "task-001",
+      "first": "prompt-task-001-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 2
+    },
+    {
+      "task": "TASK-002",
+      "title": "Preparar estrutura de desenvolvimento",
+      "steps": 6,
+      "dependencies": [
+        "TASK-001"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-002",
+      "first": "prompt-task-002-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 3
+    },
+    {
+      "task": "TASK-003",
+      "title": "Criar persistência e fundação transacional",
+      "steps": 6,
+      "dependencies": [
+        "TASK-002"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-003",
+      "first": "prompt-task-003-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 4
+    },
+    {
+      "task": "TASK-004",
+      "title": "Implementar contas, autenticação e gestão interna na API",
+      "steps": 6,
+      "dependencies": [
+        "TASK-003"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-004",
+      "first": "prompt-task-004-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 11
+    },
+    {
+      "task": "TASK-005",
+      "title": "Implementar recuperação, confirmação e mensagens de acesso",
+      "steps": 6,
+      "dependencies": [
+        "TASK-004"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-005",
+      "first": "prompt-task-005-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 11
+    },
+    {
+      "task": "TASK-006",
+      "title": "Criar interfaces de contas e administração interna",
+      "steps": 6,
+      "dependencies": [
+        "TASK-004",
+        "TASK-005"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-006",
+      "first": "prompt-task-006-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 13
+    },
+    {
+      "task": "TASK-007",
+      "title": "Checkpoint PHASE-01",
+      "steps": 5,
+      "dependencies": [
+        "TASK-003",
+        "TASK-004",
+        "TASK-005",
+        "TASK-006"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-007",
+      "first": "prompt-task-007-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 19
+    },
+    {
+      "task": "TASK-008",
+      "title": "Implementar catálogo, metadados e imagens na API",
+      "steps": 6,
+      "dependencies": [
+        "TASK-007"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-008",
+      "first": "prompt-task-008-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 7
+    },
+    {
+      "task": "TASK-009",
+      "title": "Administrar catálogo e estoque inicial",
+      "steps": 6,
+      "dependencies": [
+        "TASK-008"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-009",
+      "first": "prompt-task-009-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 5
+    },
+    {
+      "task": "TASK-010",
+      "title": "Criar catálogo público no site",
+      "steps": 6,
+      "dependencies": [
+        "TASK-008"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-010",
+      "first": "prompt-task-010-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 5
+    },
+    {
+      "task": "TASK-011",
+      "title": "Criar catálogo público no aplicativo",
+      "steps": 6,
+      "dependencies": [
+        "TASK-008"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-011",
+      "first": "prompt-task-011-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 5
+    },
+    {
+      "task": "TASK-012",
+      "title": "Implementar desejos e alertas de disponibilidade",
+      "steps": 6,
+      "dependencies": [
+        "TASK-008",
+        "TASK-009",
+        "TASK-010",
+        "TASK-011"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-012",
+      "first": "prompt-task-012-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 7
+    },
+    {
+      "task": "TASK-013",
+      "title": "Implementar avaliações e moderação",
+      "steps": 6,
+      "dependencies": [
+        "TASK-008",
+        "TASK-010",
+        "TASK-011"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-013",
+      "first": "prompt-task-013-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 5
+    },
+    {
+      "task": "TASK-014",
+      "title": "Implementar administração de cupons e promoções",
+      "steps": 6,
+      "dependencies": [
+        "TASK-009"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-014",
+      "first": "prompt-task-014-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 3
+    },
+    {
+      "task": "TASK-015",
+      "title": "Checkpoint PHASE-02",
+      "steps": 5,
+      "dependencies": [
+        "TASK-009",
+        "TASK-010",
+        "TASK-011",
+        "TASK-012",
+        "TASK-013",
+        "TASK-014"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-015",
+      "first": "prompt-task-015-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 24
+    },
+    {
+      "task": "TASK-016",
+      "title": "Implementar carrinho e reserva única de checkout",
+      "steps": 6,
+      "dependencies": [
+        "TASK-015",
+        "TASK-014"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-016",
+      "first": "prompt-task-016-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 7
+    },
+    {
+      "task": "TASK-017",
+      "title": "Criar carrinho e reserva nas interfaces",
+      "steps": 6,
+      "dependencies": [
+        "TASK-016"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-017",
+      "first": "prompt-task-017-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 3
+    },
+    {
+      "task": "TASK-018",
+      "title": "Implementar frete, cotação e pedidos",
+      "steps": 6,
+      "dependencies": [
+        "TASK-016",
+        "TASK-014"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-018",
+      "first": "prompt-task-018-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 9
+    },
+    {
+      "task": "TASK-019",
+      "title": "Implementar simulador, cobranças e estornos automáticos",
+      "steps": 6,
+      "dependencies": [
+        "TASK-018"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-019",
+      "first": "prompt-task-019-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 11
+    },
+    {
+      "task": "TASK-020",
+      "title": "Criar checkout e simulação nos clientes",
+      "steps": 6,
+      "dependencies": [
+        "TASK-017",
+        "TASK-018",
+        "TASK-019"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-020",
+      "first": "prompt-task-020-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 5
+    },
+    {
+      "task": "TASK-021",
+      "title": "Implementar histórico e logística manual",
+      "steps": 6,
+      "dependencies": [
+        "TASK-019"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-021",
+      "first": "prompt-task-021-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 7
+    },
+    {
+      "task": "TASK-022",
+      "title": "Implementar bloqueio, encerramento e reativação de contas",
+      "steps": 6,
+      "dependencies": [
+        "TASK-019",
+        "TASK-021"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-022",
+      "first": "prompt-task-022-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 13
+    },
+    {
+      "task": "TASK-023",
+      "title": "Integrar regras comerciais e validar fronteiras",
+      "steps": 6,
+      "dependencies": [
+        "TASK-012",
+        "TASK-013",
+        "TASK-016",
+        "TASK-018",
+        "TASK-019",
+        "TASK-020",
+        "TASK-021",
+        "TASK-022"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-023",
+      "first": "prompt-task-023-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 19
+    },
+    {
+      "task": "TASK-024",
+      "title": "Checkpoint PHASE-03",
+      "steps": 5,
+      "dependencies": [
+        "TASK-020",
+        "TASK-021",
+        "TASK-022",
+        "TASK-023"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-024",
+      "first": "prompt-task-024-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 42
+    },
+    {
+      "task": "TASK-025",
+      "title": "Implementar cancelamentos e indisponibilidade parcial",
+      "steps": 6,
+      "dependencies": [
+        "TASK-024"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-025",
+      "first": "prompt-task-025-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 11
+    },
+    {
+      "task": "TASK-026",
+      "title": "Implementar devoluções, inspeção e evidências",
+      "steps": 6,
+      "dependencies": [
+        "TASK-025"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-026",
+      "first": "prompt-task-026-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 13
+    },
+    {
+      "task": "TASK-027",
+      "title": "Implementar trocas, ofertas e prazos",
+      "steps": 6,
+      "dependencies": [
+        "TASK-026"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-027",
+      "first": "prompt-task-027-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 9
+    },
+    {
+      "task": "TASK-028",
+      "title": "Criar interfaces de pós-venda",
+      "steps": 6,
+      "dependencies": [
+        "TASK-025",
+        "TASK-026",
+        "TASK-027"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-028",
+      "first": "prompt-task-028-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 7
+    },
+    {
+      "task": "TASK-029",
+      "title": "Implementar relatórios financeiros e comerciais",
+      "steps": 6,
+      "dependencies": [
+        "TASK-026",
+        "TASK-027"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-029",
+      "first": "prompt-task-029-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 3
+    },
+    {
+      "task": "TASK-030",
+      "title": "Implementar backup diário completo",
+      "steps": 6,
+      "dependencies": [
+        "TASK-024"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-030",
+      "first": "prompt-task-030-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 3
+    },
+    {
+      "task": "TASK-031",
+      "title": "Revisar auditoria e segurança integrada",
+      "steps": 6,
+      "dependencies": [
+        "TASK-028",
+        "TASK-029",
+        "TASK-030"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-031",
+      "first": "prompt-task-031-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 2
+    },
+    {
+      "task": "TASK-032",
+      "title": "Checkpoint PHASE-04",
+      "steps": 5,
+      "dependencies": [
+        "TASK-028",
+        "TASK-029",
+        "TASK-030",
+        "TASK-031"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-032",
+      "first": "prompt-task-032-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 27
+    },
+    {
+      "task": "TASK-033",
+      "title": "Executar aceitação funcional e acessibilidade",
+      "steps": 6,
+      "dependencies": [
+        "TASK-032"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-033",
+      "first": "prompt-task-033-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 59
+    },
+    {
+      "task": "TASK-034",
+      "title": "Validar desempenho e concorrência",
+      "steps": 6,
+      "dependencies": [
+        "TASK-032"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-034",
+      "first": "prompt-task-034-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 18
+    },
+    {
+      "task": "TASK-035",
+      "title": "Executar restauração isolada",
+      "steps": 6,
+      "dependencies": [
+        "TASK-030",
+        "TASK-032"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-035",
+      "first": "prompt-task-035-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 4
+    },
+    {
+      "task": "TASK-036",
+      "title": "Consolidar documentação operacional",
+      "steps": 6,
+      "dependencies": [
+        "TASK-033",
+        "TASK-034",
+        "TASK-035"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-036",
+      "first": "prompt-task-036-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 3
+    },
+    {
+      "task": "TASK-037",
+      "title": "Checkpoint PHASE-05 e entrega da implementação",
+      "steps": 5,
+      "dependencies": [
+        "TASK-033",
+        "TASK-034",
+        "TASK-035",
+        "TASK-036"
+      ],
+      "initial_status": "BLOCKED",
+      "folder": "task-037",
+      "first": "prompt-task-037-etapa-001-recontextualizacao-prontidao.md",
+      "manual_cases": 65
+    }
+  ]
+}

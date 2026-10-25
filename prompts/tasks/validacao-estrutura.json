@@ -1,0 +1,6240 @@
+{
+  "scope": "Validação documental da geração, não execução de TASKs ou aplicação",
+  "date": "2026-10-25",
+  "checks": 1245,
+  "passed": 1245,
+  "failed": [],
+  "tasks": 37,
+  "prompts": 217,
+  "task_readmes": 37,
+  "manual_guides": 37,
+  "grouped_manual_cases": 464,
+  "original_files_checked": 81,
+  "results": [
+    {
+      "check": "cobertura_37_tasks",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "contagem_prompts",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "readmes_e_roteiros",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "dependencias_existentes_ordem_topologica_sem_ciclo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-001_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-001_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-001_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-003-decisoes-documentais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-003-decisoes-documentais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-003-decisoes-documentais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-003-decisoes-documentais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-003-decisoes-documentais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-001-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-001_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-002_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-002_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-002_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-002-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-002_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-003_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-003_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-003_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-003-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-003_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-004_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-004_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-004_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-004-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-004_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-005_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-005_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-005_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-005-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-005_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-006_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-006_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-006_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-006-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-006_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-007_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-007_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-007_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-002-planejamento-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-002-planejamento-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-002-planejamento-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-002-planejamento-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-002-planejamento-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-003-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-003-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-003-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-003-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-003-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-004-revisao-final.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-004-revisao-final.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-004-revisao-final.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-004-revisao-final.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-004-revisao-final.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-005-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-005-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-005-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-005-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-007-etapa-005-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-007_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-008_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-008_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-008_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-008-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-008_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-009_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-009_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-009_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-009-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-009_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-010_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-010_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-010_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-010-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-010_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-011_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-011_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-011_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-011-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-011_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-012_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-012_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-012_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-012-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-012_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-013_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-013_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-013_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-013-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-013_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-014_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-014_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-014_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-014-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-014_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-015_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-015_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-015_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-002-planejamento-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-002-planejamento-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-002-planejamento-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-002-planejamento-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-002-planejamento-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-003-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-003-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-003-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-003-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-003-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-004-revisao-final.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-004-revisao-final.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-004-revisao-final.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-004-revisao-final.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-004-revisao-final.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-005-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-005-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-005-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-005-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-015-etapa-005-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-015_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-016_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-016_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-016_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-016-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-016_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-017_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-017_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-017_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-017-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-017_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-018_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-018_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-018_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-018-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-018_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-019_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-019_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-019_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-019-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-019_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-020_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-020_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-020_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-020-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-020_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-021_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-021_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-021_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-021-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-021_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-022_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-022_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-022_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-022-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-022_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-023_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-023_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-023_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-023-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-023_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-024_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-024_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-024_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-002-planejamento-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-002-planejamento-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-002-planejamento-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-002-planejamento-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-002-planejamento-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-003-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-003-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-003-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-003-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-003-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-004-revisao-final.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-004-revisao-final.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-004-revisao-final.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-004-revisao-final.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-004-revisao-final.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-005-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-005-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-005-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-005-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-024-etapa-005-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-024_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-025_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-025_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-025_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-025-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-025_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-026_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-026_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-026_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-026-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-026_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-027_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-027_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-027_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-027-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-027_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-028_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-028_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-028_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-028-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-028_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-029_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-029_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-029_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-029-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-029_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-030_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-030_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-030_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-003-implementacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-003-implementacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-003-implementacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-003-implementacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-003-implementacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-030-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-030_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-031_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-031_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-031_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-003-preparacao-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-003-preparacao-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-003-preparacao-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-003-preparacao-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-003-preparacao-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-031-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-031_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-032_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-032_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-032_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-002-planejamento-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-002-planejamento-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-002-planejamento-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-002-planejamento-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-002-planejamento-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-003-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-003-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-003-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-003-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-003-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-004-revisao-final.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-004-revisao-final.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-004-revisao-final.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-004-revisao-final.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-004-revisao-final.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-005-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-005-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-005-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-005-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-032-etapa-005-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-032_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-033_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-033_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-033_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-003-preparacao-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-003-preparacao-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-003-preparacao-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-003-preparacao-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-003-preparacao-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-033-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-033_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-034_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-034_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-034_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-003-preparacao-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-003-preparacao-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-003-preparacao-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-003-preparacao-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-003-preparacao-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-034-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-034_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-035_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-035_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-035_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-003-preparacao-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-003-preparacao-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-003-preparacao-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-003-preparacao-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-003-preparacao-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-035-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-035_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-036_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-036_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-036_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-002-planejamento.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-002-planejamento.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-002-planejamento.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-002-planejamento.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-002-planejamento.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-003-documentacao-operacional.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-003-documentacao-operacional.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-003-documentacao-operacional.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-003-documentacao-operacional.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-003-documentacao-operacional.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-004-revisao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-004-revisao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-004-revisao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-004-revisao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-004-revisao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-005-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-005-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-005-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-005-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-005-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-006-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-006-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-006-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-006-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-036-etapa-006-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-036_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-037_sequencia",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-037_etapa_manual_unica",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-037_roteiro_inicial",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-001-recontextualizacao-prontidao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-001-recontextualizacao-prontidao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-001-recontextualizacao-prontidao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-001-recontextualizacao-prontidao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-001-recontextualizacao-prontidao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-002-planejamento-validacao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-002-planejamento-validacao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-002-planejamento-validacao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-002-planejamento-validacao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-002-planejamento-validacao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-003-testes-manuais.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-003-testes-manuais.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-003-testes-manuais.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-003-testes-manuais.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-003-testes-manuais.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-004-revisao-final.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-004-revisao-final.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-004-revisao-final.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-004-revisao-final.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-004-revisao-final.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-005-conclusao.md_14_secoes",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-005-conclusao.md_gates",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-005-conclusao.md_campos_obrigatorios",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-005-conclusao.md_proximo_arquivo",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "prompt-task-037-etapa-005-conclusao.md_scope_guard_fiel",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "TASK-037_dependencias_fieis",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "links_locais",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "fontes_originais_preservadas_sha256",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "check": "sem_git_inicializado",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "somente_documentos_no_pacote",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "cobertura_dos_35_TEST",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "task033_test025_incluido",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "task034_test027_incluido",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "check": "task035_test029_incluido",
+      "status": "PASS",
+      "detail": ""
+    }
+  ]
+}
