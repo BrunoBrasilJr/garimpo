@@ -9,7 +9,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | Ordem | TASK | Fase | Prioridade | Dependências | Estado |
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
-| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | IN_REVIEW |
+| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | BLOCKED |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | BLOCKED |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
@@ -159,7 +159,7 @@ Gates locais: prontidão, planejamento, decisões documentais, revisão, testes 
 
 #### Status
 
-IN_REVIEW
+DONE
 
 #### Phase
 
@@ -326,7 +326,7 @@ Ambiente: Ubuntu 24.04.4 WSL2, Node Linux 24.22.1, npm 11.19.1; código na pasta
 - Metro inicializado em localhost:8081, sem erro após preparar bibliotecas Linux; encerrado intencionalmente para liberar a porta ao responsável. A invocação inicial com flags incompatíveis foi corrigida, sem alterar validações.
 - bash -n da versão final do roteiro: PASS após reorganização da captura de log. Diff/JSON, 37 IDs, dependências sem ciclos, estados índice/seção, hash corrigido, Zod 4.6.7 e preservação do PDF conferidos; nenhum arquivo comercial/migration criado.
 
-Evidências locais: test-results/bootstrap/security-before-patch.log, security-after-patch.log, security-clean-install.log, sdk-compatibility.log, audit-patched.json, metro-startup.log e web.png. Verificação é do agente; BOOT-001/002/003 pelo responsável: NÃO EXECUTADOS.
+Evidências locais: test-results/bootstrap/security-before-patch.log, security-after-patch.log, security-clean-install.log, sdk-compatibility.log, audit-patched.json, metro-startup.log e web.png. Verificações acima são do agente. Atualização manual em 2026-10-25: responsável executou BOOT-001 na revisão 18a7ca8 e enviou saída completa; log test-results/bootstrap/manual-20261025T172543Z.log conferido, com build/tipos/lint, 15 testes e exportação Android concluídos. BOOT-001 PASS no critério autorizado, preservando npm audit bruto FAIL/exit 1 e quatro avisos conhecidos com patch/hash validado. Atualização BOOT-002: após roteiro web (tela em português, ampliação e console com recarga), responsável confirmou “tudo certo, mano!”; PASS manual em 2026-10-25, navegador/versão exatos não informados. BOOT-003 NÃO EXECUTADO; resposta anterior “.” não confirma teste. Contagem manual: previstos 3, executados/aprovados 2, pendentes 1. TASK-002 permanece IN_REVIEW e TASK-003 BLOCKED.
 
 ### Quality Gates
 
@@ -343,6 +343,27 @@ FAIL/PENDENTE exclusivamente da aceitação manual e fechamento. Não marcar DON
 ### Next Eligible TASK
 
 NONE enquanto TASK-002 não DONE. TASK-003 somente poderá ser promovida após evidência manual, DoD/fechamento de TASK-002 e nova conferência integral de DoR. Autorização contínua permanece vigente, sem nova autorização genérica de execução necessária.
+
+##### TASK Execution Report — fechamento com aceite manual (2026-10-25)
+
+TASK: TASK-002
+Status: DONE
+Branch: chore/TASK-002-estrutura-desenvolvimento
+Commits de implementação: 218052f, 3c16119, 12ccab6; preparação manual: 18a7ca8. Registro deste fechamento no commit documental subsequente, sem inventar hash antecipado.
+
+Primary Changes: bootstrap e correção explicitamente autorizada conforme relatório anterior; neste fechamento somente TASKS.md e docs/architecture/execution.md, classificados PRIMARY. Sem mudança de código desde a verificação da revisão 18a7ca8.
+
+Incidental Changes: permanecem somente .gitignore, .gitattributes e .nvmrc com justificativas da tabela anterior; nenhuma nova alteração incidental. Configuração temporária de rede foi executada pelo responsável após comandos explícitos: encaminhamento TCP 8081 vinculado ao IP Wi-Fi e regra Garimpo-Metro-8081 restrita a Wi-Fi/LocalSubnet. Remoção documentada em execution.md; ainda não confirmada, não alegar limpeza executada.
+
+Tests Executed: BOOT-001 PASS pelo responsável, log manual-20261025T172543Z.log conferido (build, tipos, lint, 15 testes e exportação Android); BOOT-002 PASS confirmado após roteiro de tela/ampliação/console; BOOT-003 PASS após conexão local e cliente Expo Go compatível com SDK 57, bundle nativo 68.463 ms/708 módulos e confirmação “tudo funcionando, mano!” em resposta à tela sem erro/fonte ampliada. TalkBack NÃO EXECUTADO/DISPENSADO por instrução explícita “nunca, o talback é horrível pra desativar depois kk”; aceite manual revisado somente para este bootstrap, sem aprovar leitor de tela ou dispensar acessibilidade futura. Modelo/versão Android e versões exatas do navegador/cliente não fornecidos; não inferidos. iOS não executado.
+
+Quality Gates: Build/tipos PASS; Lint PASS; Unit Tests PASS (14); Integration Tests PASS (HTTP real sem banco); API Tests PASS operacional; Security PASS no critério de mitigação explicitamente autorizado, npm audit bruto permanece FAIL/exit 1 com quatro avisos conhecidos; Acceptance Criteria PASS no recorte manual revisto pelo responsável; Regression Tests PASS conforme evidências anteriores. Documentação de fechamento: diff --check PASS. Sem repetição de builds por mudança exclusivamente documental.
+
+Scope Validation: Allowed Changes PASS; Incidental Changes PASS conforme tabela anterior, NONE novas; Forbidden Changes PASS; Scope Creep NONE. Histórico de falhas e revisão anterior preservado, superado por este fechamento.
+
+Definition of Done: PASS. Gates locais 001–006 APROVADOS; total 6, concluídos 6, pendentes obrigatórios 0. Três casos manuais executados/aprovados no recorte revisado; TalkBack dispensado não contado como teste aprovado. TASK-002 DONE no índice e seção.
+
+Next Eligible TASK: NONE promovida neste fechamento. TASK-003 é a próxima candidata por ordem, com dependência TASK-002 satisfeita; permanece BLOCKED até revalidação integral de sua DoR, contratos e escopo. Continuidade previamente autorizada permanece vigente.
 
 ### TASK-003 Criar persistência e fundação transacional
 

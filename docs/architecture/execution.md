@@ -84,13 +84,13 @@ O script confere Linux/Node e dependências, registra revisão e saída em `test
 
 Exceção de interpretação explicitamente autorizada pelo responsável: a saída original do subprocesso npm audit pode continuar mostrando FAIL e quatro avisos derivados de node-forge 1.4.0. O verificador não altera essa saída; só aceita a origem GHSA-86w9-cpqp-85rv com bytes corrigidos de hash conhecido, após testes de regressão. Aviso novo, relatório incompleto ou hash divergente faz o comando falhar. Isso não autoriza ignorar erro do roteiro nem declarar a auditoria bruta aprovada.
 
-Resultado obtido: [PREENCHER PELO RESPONSÁVEL]. Evidência/log: [PREENCHER]. Status: NÃO EXECUTADO.
+Resultado obtido: responsável executou o roteiro e enviou a saída completa em 2026-10-25; log local conferido. Build, tipos, lint, 15 testes e exportação Android concluídos. Auditoria bruta permanece FAIL/exit 1, quatro avisos altos da origem autorizada; classificação restrita com patch/hash validada. Evidência: `test-results/bootstrap/manual-20261025T172543Z.log`, revisão `18a7ca8`, Linux WSL2, Node 24.22.1/npm 11.19.1. Status: PASS no critério autorizado. Não comprova inspeção web ou execução no aparelho.
 
 ### BOOT-002 — página web e recorte TEST-028
 
 Em outro terminal Ubuntu preparado, executar `npm run dev:web`. Abrir o endereço local indicado pelo Vite no Chrome/Edge do Windows. Conferir título Garimpo, texto legível, idioma português, redimensionamento/ampliação e ausência de erro no console. Nesta estrutura não há controle interativo comercial nem login a testar; não declarar paridade funcional futura aprovada. Encerrar com Ctrl+C.
 
-Resultado obtido: [PREENCHER PELO RESPONSÁVEL]. Navegador/versão/evidência: [PREENCHER]. Status: NÃO EXECUTADO.
+Resultado obtido: em 2026-10-25, após roteiro de abertura em Chrome/Edge, conferência da tela em português, ampliação e console com recarga, responsável confirmou “tudo certo, mano!”. Status: PASS por confirmação manual do responsável. Navegador/versão exatos não informados; não inferidos. Evidência: resposta no chat ao roteiro BOOT-002.
 
 ### BOOT-003 — execução Android
 
@@ -98,11 +98,20 @@ Executar `npm run dev:mobile` no Ubuntu preparado. Abrir no Android com cliente 
 
 Conferir tela Garimpo, ausência de tela de erro, texto ampliado e leitura do título pelo TalkBack. Nenhuma conta/administração/catalogação disponível neste incremento. Registrar modelo/versão Android, cliente Expo e revisão. Encerrar Metro com Ctrl+C. Compatibilidade iOS preservada em app.json, mas nenhuma execução iOS é alegada.
 
-Resultado obtido: [PREENCHER PELO RESPONSÁVEL]. Aparelho/versões/evidência: [PREENCHER]. Status: NÃO EXECUTADO.
+Resultado obtido em 2026-10-25: após bundle nativo de 68.463 ms/708 módulos, responsável confirmou “tudo funcionando, mano!” em resposta à conferência da tela sem erro e fonte ampliada. Status: PASS no recorte revisado pelo responsável. Expo Go SDK 58 rejeitou o projeto; responsável instalou o cliente compatível com SDK 57 e repetiu. Modelo/versão Android e versão exata do cliente não informados; não inferidos. TalkBack: NÃO EXECUTADO/DISPENSADO por instrução explícita do responsável (“nunca, o talback é horrível pra desativar depois kk”); essa decisão reduz o recorte manual deste bootstrap e não aprova leitura por leitor de tela nem dispensa acessibilidade futura.
+
+Conectividade local diagnosticada: Metro ativo no WSL 172.30.246.124:8081, Windows inicialmente escutando somente ::1:8081. Responsável executou o encaminhamento específico 192.168.0.93:8081 → WSL e regra Garimpo-Metro-8081 (TCP 8081, interface Wi-Fi, origem LocalSubnet); confirmou /status acessível no Android. Metro reiniciado com REACT_NATIVE_PACKAGER_HOSTNAME=192.168.0.93. Sem túnel externo. Limpeza temporária ainda depende de execução pelo responsável no PowerShell administrador após encerrar Metro:
+
+```powershell
+netsh interface portproxy delete v4tov4 listenaddress=192.168.0.93 listenport=8081
+Remove-NetFirewallRule -Name "Garimpo-Metro-8081"
+```
+
+Não afirmar que essa limpeza já ocorreu; não remover regras de terceiros.
 
 ### Contagem e tratamento de falhas
 
-Previstos 3; executados 0; aprovados 0; reprovados 0; bloqueados 0; pendentes 3. Gate manual PENDENTE; não marcar TASK-002 DONE sem evidência dos casos obrigatórios.
+Previstos 3; executados 3; aprovados 3 no recorte revisado; reprovados finais 0; bloqueados 0; pendentes obrigatórios 0. TalkBack é uma verificação dispensada/não executada, nunca PASS. Problemas iniciais de conectividade/SDK foram resolvidos e o responsável confirmou a repetição. Gate manual PASS conforme decisão explícita de escopo e confirmações do responsável.
 
 Falha: registrar comando, saída/código, ambiente e revisão; diagnóstico → menor correção no escopo → revisão → reexecução manual do caso afetado. Corrigir código não aprova teste. Comando ausente/dependência externa: BLOCKED; falha de implementação: FAILED conforme AGENTS. Fora de escopo ou produção futura exige SCOPE ESCALATION, sem avançar. Para desfazer, preservar alterações alheias e retirar somente o próprio incremento mediante diff conhecido; não resetar repositório nem apagar diretórios de dados. Não há migration para reverter nesta tarefa.
 
@@ -161,7 +170,7 @@ Alternativas consideradas: aguardar release upstream e manter TASK-002 bloqueada
 - Auditoria integral após correção: saída original 1; quatro avisos altos derivados exclusivamente de node-forge. Zod não aparece mais. `audit-patched.json` mantém o relatório bruto; classificação restrita autorizada conferiu origem e hash, sem registrar npm audit como PASS.
 - Bundle Android após instalação limpa: 580 módulos, exportação concluída. A conferência final da matriz instalada do SDK identificou patches nativos recomendados: React Native **0.86.3** e expo-status-bar **57.0.1**. Foram alinhados no mesmo SDK 57/React 19.2.3, sem mudança arquitetural. `expo install --check` confirmou **Dependencies are up to date**; resultados posteriores do incremento estão em `sdk-compatibility.log`.
 
-Aceitação funcional manual continua NÃO EXECUTADA; somente resposta/evidência do responsável pode aprovar BOOT-001/002/003 e concluir TASK-002. Compatibilidade compilada e auditoria mitigada não são evidência de aplicativo aberto em aparelho.
+Aceitação manual concluída: BOOT-001/002/003 PASS no recorte revisado, com evidência do responsável acima. TalkBack dispensado/não executado por decisão explícita; nenhuma execução iOS alegada. Auditoria bruta permanece FAIL conhecida com mitigação autorizada, sem novos resultados inventados. Limpeza da liberação temporária documentada para execução pelo responsável.
 
 ### Verificação de inicialização e pré-requisitos Linux
 
