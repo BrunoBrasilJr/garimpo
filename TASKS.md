@@ -12,7 +12,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
-| 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | IN_REVIEW |
+| 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | BLOCKED |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | BLOCKED |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | BLOCKED |
@@ -695,7 +695,7 @@ Next Eligible TASK: NONE promovida neste fechamento. TASK-005 é a próxima cand
 
 #### Status
 
-IN_REVIEW
+DONE
 
 #### Phase
 
@@ -837,6 +837,18 @@ FAIL enquanto o responsável não executar/conferir o roteiro e enviar evidênci
 ###### Next Eligible TASK
 
 NONE até o fechamento da TASK-005. TASK-006 continua BLOCKED; após aceite, conferir DoR própria sob a autorização contínua vigente.
+
+##### TASK Execution Report — fechamento após execução do responsável
+
+TASK: TASK-005. Status: DONE. Branch: feature/TASK-005-mensagens-acesso. Commits: 3905cb2 e 286d34d; base fb10724.
+
+Responsável executou bash tests/messaging/manual-messaging.sh em 286d34d e enviou a saída integral: test-results/messaging/manual-20261025T210433Z.log. npm run verify: build/tipos/lint PASS, 25 testes unidade/health + nove fundação + 14 contas + 15 mensagens PASS (63 distintos). Schemas retidos: task003_4d428947d9094f5b91d8ce5dca5fd15e, task004_a26aa288164045d38ad9f9782ce06e86 e task005_a16edb5bd20e47fc951cf5d7001073f0. Conferência operacional HTTPS/API no terminal; não certifica interface futura, Android desta funcionalidade ou envio externo.
+
+Primary Changes e quatro Incidental Changes: os mesmos do relatório de revisão, sem nova alteração funcional. Atualização documental de fechamento em TASKS e tests/messaging/README.md é PRIMARY. Allowed Changes PASS; Incidental Changes PASS; Forbidden Changes PASS; Scope Creep NONE.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS qualificado pela mitigação ratificada, mantendo npm audit bruto FAIL/exit 1 com quatro ocorrências high conhecidas e sem novos avisos; Acceptance Criteria PASS no recorte desta TASK, com execução do responsável; Regression Tests PASS. Gates locais 001–006 APROVADOS. Definition of Done: PASS. Limitações de canal local, configuração protegida e busca técnica descritas na revisão permanecem explícitas.
+
+Next Eligible TASK: NONE promovida neste fechamento. TASK-006 é a próxima candidata por ordem e tem dependências TASK-004/005 satisfeitas; exige DoR própria. Continuidade autorizada permanece vigente.
 
 ### TASK-006 Criar interfaces de contas e administração interna
 

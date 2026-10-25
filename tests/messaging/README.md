@@ -1,6 +1,6 @@
 # TASK-005 — mensagens e links de acesso
 
-Estado manual: NÃO EXECUTADO pelo responsável. No Ubuntu, na raiz: `bash tests/messaging/manual-messaging.sh`. O roteiro carrega o runtime/ambiente protegido já preparado e executa os gates, com log em test-results/messaging/manual-*.log. Conferir resultados e enviar o log real. Nenhuma caixa real/e-mail externo, alteração de relógio do sistema, reset/drop de dados ou desativação de TLS.
+Estado manual: EXECUTADO pelo responsável em 2026-10-25, revisão 286d34d, saída integral enviada na conversa: test-results/messaging/manual-20261025T210433Z.log. Build/tipos/lint e 63 testes PASS; auditoria bruta mantém quatro ocorrências conhecidas sob mitigação ratificada, sem novos avisos. Conferência operacional de API/HTTPS no terminal, sem afirmar inspeção de UI/Android desta funcionalidade ou envio externo. Para repetir no Ubuntu, na raiz: `bash tests/messaging/manual-messaging.sh`. O roteiro carrega o runtime/ambiente protegido e registra resultados. Nenhuma caixa real/e-mail externo, alteração de relógio do sistema, reset/drop de dados ou desativação de TLS.
 
 ## Grupos de conferência
 
