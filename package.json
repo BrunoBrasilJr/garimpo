@@ -23,6 +23,8 @@
     "db:migrate": "prisma migrate deploy --config apps/api/prisma/prisma.config.ts",
     "test:integration": "node tests/core/run-integration.mjs",
     "test:accounts": "node tests/core/run-integration.mjs accounts",
+    "test:messaging": "node tests/core/run-integration.mjs messaging",
+    "messages:work": "node --experimental-strip-types apps/api/src/modules/messaging/run-worker.ts",
     "bootstrap:admin": "node --experimental-strip-types scripts/bootstrap-admin.mjs",
     "build": "npm run db:generate && npm run build --workspace @garimpo/contracts && npm run build --workspace @garimpo/api && npm run build --workspace @garimpo/web",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tests/tsconfig.json",
@@ -30,7 +32,7 @@
     "test": "vitest run --config tests/vitest.config.ts",
     "bundle:android": "npm run bundle:android --workspace @garimpo/mobile",
     "audit:toolchain": "node tests/bootstrap/security/check-audit.mjs",
-    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run audit:toolchain"
+    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run audit:toolchain"
   },
   "overrides": {
     "@expo/cli": {
