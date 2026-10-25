@@ -10,7 +10,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
 | 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
-| 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | BLOCKED |
+| 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | IN_REVIEW |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | BLOCKED |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | BLOCKED |
@@ -369,7 +369,7 @@ Next Eligible TASK: NONE promovida neste fechamento. TASK-003 é a próxima cand
 
 #### Status
 
-BLOCKED
+IN_REVIEW
 
 #### Phase
 
@@ -435,7 +435,82 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR validada em 2026-10-25: TASK-002 DONE, artefatos reais presentes, npm run verify novamente PASS em test-results/bootstrap/task003-preflight.log (auditoria bruta FAIL conhecida, critério restrito ratificado PASS). ADR-001/003/004/005 ACCEPTED e PD-005 resolvida pela TASK-001. Sem PD impeditiva de fundação. Transição BLOCKED → READY → IN_PROGRESS sob autorização contínua já registrada. Branch real: feature/TASK-003-fundacao-transacional, base c4f8d51; alterações alheias NONE.
+
+Plano/gates locais: 001 prontidão APROVADO; 002 planejamento APROVADO; 003 implementação EM EXECUÇÃO; 004 revisão PENDENTE; 005 manual PENDENTE; 006 fechamento PENDENTE. Escopo PRIMARY: core/persistence, oito modelos autorizados (incluindo EmailToken), migrations correspondentes, tests/core e contrato de erros. Sem endpoints de contas, catálogo ou schemas comerciais. PostgreSQL 17 isolado no WSL, sem usar banco Windows existente. Relógio injetável via dependência interna, SERIALIZABLE até três tentativas totais, idempotência por ator/operação/chave e hash canônico com efeito atômico, auditoria append-only sanitizada e outbox persistente retomável.
+
+Incidental Changes previstas, antes de edição: manifests API/root e lock (Prisma 7/adapter-pg/pg e tipos; geração/build/migration/testes diretamente necessários); configuração Prisma em apps/api/prisma (PRIMARY); .gitignore/config ESLint para saída gerada somente (sem código de usuário excluído); export do contrato de erro, se necessário. São configuração/import/tipos diretamente causados, mínimos, sem função de negócio independente, arquitetura nova, quebra pública ou alteração de autenticação/proteção de dados. Infra de banco local explicitamente aprovada pela ferramenta de instalação, não classificada como patch incidental de segurança. Cada arquivo será reclassificado no relatório final. Gerador e adaptador Prisma conforme documentação oficial v7; SQL e isolamento conforme PostgreSQL 17. Testes reais: rollback conjunto, disputa idempotente, payload divergente, isolamento/repetição limitada, constraints, auditoria sem segredos e retomada de outbox. Manual só após gates técnicos, em base separada e sem aprovação automática.
+##### TASK Execution Report — fundação implementada, aceite manual pendente
+
+TASK: TASK-003
+Status: IN_REVIEW
+Branch: feature/TASK-003-fundacao-transacional
+Commits: 99875b1 (implementação, testes e roteiro). Base: c4f8d51. Não há execução de TASK-004.
+
+### Primary Changes
+
+- apps/api/src/core/{clock,errors,idempotency,audit,outbox}.ts: relógio injetável interno; envelope público sem stack/segredo; payload canônico SHA-256 com rejeição de valores não JSON/arrays esparsos; chave escopada por ator/operação, referência e efeito atômicos; auditoria sanitizada; outbox persistente com consumidor somente transacional no próprio banco, savepoint/tentativas e locks SKIP LOCKED.
+- apps/api/src/persistence/{client,transaction}.ts: cliente Prisma 7/adapter-pg, schema validado e pool; SERIALIZABLE com até três tentativas totais para serialização/deadlock, sem repetir erros desconhecidos/negócio. Callback não admite efeitos externos conforme contrato interno documentado.
+- apps/api/prisma/**: config/gerador/migration inicial apenas User, Session, PasswordReset, EmailToken, AuditLog, DomainEvent, DemoMessage, IdempotencyRecord. Índices/FKs, constraints de contexto/papel e hashes, auditoria append-only por trigger. Sem Address ou modelos comerciais de tarefas futuras.
+- packages/contracts/src/errors.ts: materialização do módulo errors* autorizado dentro do diretório src estabelecido no bootstrap; somente contrato de erro, sem ampliar responsabilidade funcional. TASKS.md: estado/evidências desta tarefa.
+- tests/core/**: seis testes unitários, nove de banco real, subprocesso de queda controlada, runner com schema isolado retido, configuração, setup local preservando ambiente reconhecido, roteiro manual e instruções. Saída Prisma gerada em persistence/generated é artefato PRIMARY derivado/ignorado e regenerado por build, não código manual ocultado.
+- Ambiente especificamente autorizado: PostgreSQL 17.11 PGDG no Ubuntu, sem cluster padrão; cluster privado em HOME/.local/share/garimpo/postgres17 e loopback:55432. Bases/credenciais dev/test separadas, papéis sem superusuário/CREATEDB/CREATEROLE e CONNECT cruzado negado. Arquivo de credenciais 0600, diretório 0700 fora do Git. Não alterado PostgreSQL Windows existente. Migration aplicada à base garimpo_dev própria; zero usuários semeados.
+
+### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/api/package.json | Prisma/client/adapter-pg 7.10.1, pg/@types-pg 8.23.1 | Dependências e tipos indispensáveis ao módulo de persistência ratificado; nenhuma funcionalidade independente. |
+| package-lock.json | Resolução/integridade das dependências acrescentadas | Reprodução causal da instalação; comparação confirmou nenhuma versão anterior alterada no mesmo caminho. |
+| package.json | Geração/build, comandos de migration/teste real e verify; allowScripts exato Prisma/engines 7.10.1 | Configuração mínima para gerar e validar a fundação, com scripts das versões exatas explicitamente autorizados; sem atualização global ou validação desativada. Formatação automática do npm sem outra mudança semântica. |
+| .gitignore | Somente saída persistence/generated | Artefato derivado refeito por build; fontes próprias permanecem versionadas. |
+| packages/contracts/src/index.ts | Export type ErrorEnvelope | Registro mínimo do contrato diretamente utilizado; sem alteração de contrato anterior. |
+| tests/eslint.config.mjs | Exclusão somente da saída Prisma gerada | Evita aplicar regras de autoria ao gerador; todo código próprio continua sob lint. |
+| .gitattributes | LF somente para migrations SQL | O Git avisou sobre conversão SQL para CRLF; fixar LF mantém os bytes das migrations reproduzíveis entre Windows/WSL. Mudança causal registrada antes da edição. |
+
+Todos os sete arquivos passam necessidade, causalidade, minimalidade, ausência de função/regra/arquitetura independente, contrato preservado, ausência de mudança incidental de autenticação/autorização/proteção de dados e ausência de Forbidden. Mudanças próprias de integridade/auditoria são PRIMARY, não incidentais. Orçamento restrito a dependências, geração, export e configuração diretamente causados, sem limpeza geral.
+
+### Tests Executed
+
+Ambiente: Ubuntu 24.04.4 WSL2, Node Linux 24.22.1, npm 11.19.1, PostgreSQL 17.11. Evidências em test-results/core (ignoradas, sem credenciais):
+
+- verification-01.log: FAILED na verificação de tipos do teste de correlationId, cujo parâmetro default inferia tipo UUID mais estreito que o contrato string. Corrigida anotação explícita string; retomada da execução/revisão. Falha registrada retrospectivamente, sem apagar resultado anterior.
+- migration-diagnostic.log: tentativa inicial de migrate diff sem config/ambiente falhou no motor; binário --version validado e repetição com configuração/ambiente explícitos gerou SQL. Nenhum banco foi alterado pela tentativa falha.
+- verification-02.log: npm run verify PASS com 21 testes bootstrap/unidade e nove integrações reais. Revisão posterior rejeitou também array esparso e ancorou resolução do driver no workspace API; gates relevantes repetidos abaixo.
+- clean-install.log: npm ci --no-fund --no-audit PASS, 799 pacotes, postinstall reaplicou patch Forge e conferiu hashes exatos. Auditoria executada integralmente no verify, nunca omitida do gate.
+- verification-final.log: npm run verify PASS após instalação limpa e revisão: geração Prisma, build contratos/API/web, tipos dos quatro workspaces e testes, lint; 21 testes bootstrap/unidade + nove integrações, 30 distintos. Schema real isolado task003_c708222c80364a72aef04f3238b29567, preservado para evidência, sem reset/drop. Duas conexões/backend PIDs distintos forçam conflito por barreira; repetição limitada conserva dois incrementos. Mesma chave concorrente cria exatamente um efeito, payload divergente conflita e escopo de ator diferente é independente.
+- Integrações demonstram rollback conjunto de usuário/auditoria/evento/chave, constraints/FK/hash, auditoria negando UPDATE/DELETE/TRUNCATE, falha do consumidor sem efeito parcial, retomada por nova conexão, dois consumidores sem duplicação. Processo separado interrompido por SIGKILL antes de commit: efeito incompleto revertido, outro consumidor retoma uma vez. Relógio fixo apenas por injeção de teste.
+- development-migration.log: npm run db:migrate PASS na base dev própria isolada. compiled-smoke.log: cliente ESM compilado conecta/consulta garimpo_dev, zero usuários, dois papéis não privilegiados; papel de teste recebe 42501 ao tentar conectar em garimpo_dev. Nenhuma consulta comercial/API futura implementada.
+- setup-reuse.log: setup reconheceu cluster e preservou bases/senhas/dados. bash -n PASS dos dois roteiros shell. Diff/JSON/37 IDs/oito modelos/escopo conferidos. PDF/fontes/README/ADRs/prompts/clientes/rotas não alterados nesta TASK.
+- Auditoria completa: npm audit bruto permanece FAIL/exit 1, quatro avisos altos derivados do Forge conhecido; classificação restrita ratificada PASS, hash corrigido e regressões de assinatura/schema preservados. Nenhum aviso novo tolerado ou escondido.
+
+### Quality Gates
+
+Build/tipos: PASS, incluindo cliente compilado real.
+Lint: PASS, código próprio integral.
+Unit Tests: PASS (20 unitários, além de um teste HTTP de bootstrap).
+Integration Tests: PASS (nove de PostgreSQL real e teste HTTP do bootstrap).
+API Tests: PASS operacional /health; contratos de contas/comércio ainda não aplicáveis ao incremento.
+Security: PASS no recorte de fundação e no critério restrito ratificado de mitigação; auditoria bruta NÃO aprovada, segue FAIL conhecida/documentada.
+Acceptance Criteria: PENDENTE/FAIL para fechar enquanto teste manual do responsável não for confirmado; critérios técnicos demonstrados.
+Regression Tests: PASS, 15 testes anteriores preservados e sem mudança de versões anteriores/rotas/clientes.
+
+### Scope Validation
+
+Allowed Changes: PASS, somente fundação enumerada e materialização do módulo de erro.
+Incidental Changes: PASS nos sete arquivos justificados.
+Forbidden Changes: PASS.
+Scope Creep: NONE. Nenhuma implementação de TASK-004 ou modelos comerciais antecipados.
+
+### Definition of Done
+
+FAIL/PENDENTE exclusivamente do gate manual e fechamento. IN_REVIEW, nunca DONE por teste do agente. Gates locais 001 prontidão APROVADO; 002 planejamento APROVADO; 003 implementação APROVADO; 004 revisão APROVADO; 005 manual PENDENTE; 006 conclusão PENDENTE. Total 6, concluídos 4, pendentes 2, bloqueados 0.
+
+Manual: quatro grupos previstos (TEST-026, TEST-030, TEST-031 no recorte de fundação e ACEITE-003), executados pelo responsável 0, aprovados 0, reprovados 0, pendentes 4. Roteiro real: tests/core/README.md e bash tests/core/manual-foundation.sh. Aguardar saída/log e confirmação; o agente não executou esse roteiro como substituto do responsável. Sem interface nesta tarefa; acessibilidade mobile não se aplica a este incremento, sem dispensar requisitos futuros.
+
+### Next Eligible TASK
+
+NONE enquanto TASK-003 não DONE. TASK-004 permanece BLOCKED; somente após aceite manual, fechamento e DoR própria. Autorização contínua vigente, sem nova autorização genérica necessária.
 
 ### TASK-004 Implementar contas, autenticação e gestão interna na API
 
