@@ -11,7 +11,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
 | 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
-| 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | IN_REVIEW |
+| 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | BLOCKED |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | BLOCKED |
@@ -534,7 +534,7 @@ Next Eligible TASK: NONE promovida neste fechamento. TASK-004 é a próxima cand
 
 #### Status
 
-IN_REVIEW
+DONE
 
 #### Phase
 
@@ -678,6 +678,18 @@ FAIL enquanto o responsável não executar/conferir o roteiro e enviar evidênci
 ###### Next Eligible TASK
 
 NONE até o fechamento da TASK-004. TASK-005 permanece BLOCKED; após aceite, validar DoR própria sob autorização contínua vigente.
+
+##### TASK Execution Report — fechamento após conferência do responsável
+
+TASK: TASK-004. Status: DONE. Branch: feature/TASK-004-contas-autenticacao. Commits de implementação/revisão: 6718527 e 91c30ce.
+
+Responsável executou bash tests/accounts/manual-accounts.sh em 91c30ce e enviou a saída integral nesta conversa: test-results/accounts/manual-20261025T203156Z.log. Build, tipos, lint, 24 testes de unidade/health, nove de fundação e 14 de contas PASS (47 distintos), incluindo HTTPS, proteção de estado/papel, reset de janela de tentativas, reutilização concorrente de refresh e último ADMIN sob concorrência real. Schemas retidos: task003_0962cc43d38e4368a357e7a9297de8ac e task004_f8b27ad7b7554320abe530685d7782a2. Conferência operacional de API no terminal; não equivale a inspeção de interface futura ou envio de e-mail.
+
+Primary Changes e sete Incidental Changes: os mesmos do relatório de revisão, sem nova alteração de implementação. Atualização documental de fechamento em TASKS e tests/accounts/README.md é PRIMARY. Allowed Changes PASS; Incidental Changes PASS; Forbidden Changes PASS; Scope Creep NONE.
+
+Quality Gates finais: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS qualificado pela mitigação ratificada, mantendo npm audit bruto FAIL/exit 1 com quatro ocorrências high conhecidas e sem novos avisos; Acceptance Criteria PASS no recorte desta tarefa com execução do responsável; Regression Tests PASS. Gates locais 001–006 APROVADOS. Definition of Done: PASS. Não foram executados fluxos futuros de confirmação/reset, clientes ou encerramento comercial.
+
+Next Eligible TASK: NONE promovida neste fechamento. TASK-005 é a próxima candidata; exige DoR própria, com dependência TASK-004 agora satisfeita. Autorização contínua vigente.
 
 ### TASK-005 Implementar recuperação, confirmação e mensagens de acesso
 
