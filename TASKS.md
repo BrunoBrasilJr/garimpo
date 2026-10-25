@@ -10,7 +10,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
 | 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
-| 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | IN_REVIEW |
+| 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | BLOCKED |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | BLOCKED |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | BLOCKED |
@@ -369,7 +369,7 @@ Next Eligible TASK: NONE promovida neste fechamento. TASK-003 é a próxima cand
 
 #### Status
 
-IN_REVIEW
+DONE
 
 #### Phase
 
@@ -511,6 +511,24 @@ Manual: quatro grupos previstos (TEST-026, TEST-030, TEST-031 no recorte de fund
 ### Next Eligible TASK
 
 NONE enquanto TASK-003 não DONE. TASK-004 permanece BLOCKED; somente após aceite manual, fechamento e DoR própria. Autorização contínua vigente, sem nova autorização genérica necessária.
+##### TASK Execution Report — fechamento após execução do responsável
+
+TASK: TASK-003
+Status: DONE
+Branch: feature/TASK-003-fundacao-transacional
+Commits: 99875b1 (implementação) e a50936b (revisão/roteiro). Fechamento no commit documental subsequente.
+
+Primary Changes: fundação, migrations autorizadas, contratos e tests/core conforme relatório anterior; neste fechamento somente TASKS.md e tests/core/README.md, ambos PRIMARY. Incidental Changes: os sete arquivos da tabela anterior; NONE novas.
+
+Tests Executed: responsável executou bash tests/core/manual-foundation.sh em 2026-10-25 na revisão a50936b, Ubuntu WSL2, Node 24.22.1/npm 11.19.1, e enviou saída completa. Log local test-results/core/manual-20261025T193844Z.log conferido: geração/build/tipos/lint PASS, 21 testes bootstrap/unidade e nove de banco PASS (30 distintos). Migration aplicada no schema isolado task003_64e850d6ba214bcc96056bf6ecbd9c81, preservado; rollback/idempotência/concorrência/auditoria/retomada e queda real de processo comprovados no recorte da fundação. Roteiro chegou a “Comandos concluídos”; sem erro adicional relatado. Auditoria bruta continua FAIL/exit 1, quatro avisos conhecidos com patch/hash/regressões e critério de mitigação expressamente autorizado, não auditoria limpa. Validações automáticas anteriores preservadas no relatório técnico.
+
+Quality Gates: Build/tipos PASS; Lint PASS; Unit Tests PASS (20); Integration Tests PASS (nove de banco + HTTP real do bootstrap); API Tests PASS operacional /health; Security PASS no critério restrito ratificado e isolamento/sanitização verificados, npm audit bruto FAIL conhecida; Acceptance Criteria PASS pela execução acompanhada e saída enviada pelo responsável dos quatro grupos do roteiro; Regression Tests PASS. Nenhum fluxo comercial futuro ou interface alegado. Documentação de fechamento: diff --check PASS, sem repetir builds por alteração documental.
+
+Scope Validation: Allowed Changes PASS; Incidental Changes PASS conforme tabela anterior, NONE novas; Forbidden Changes PASS; Scope Creep NONE.
+
+Definition of Done: PASS. Gates locais 001–006 APROVADOS; total 6, concluídos 6, pendentes obrigatórios 0, bloqueados 0. Quatro grupos manuais executados/aprovados no recorte de fundação; cenários comerciais futuros permanecem fora do aceite desta TASK. Estado DONE no índice e seção.
+
+Next Eligible TASK: NONE promovida neste fechamento. TASK-004 é a próxima candidata por ordem; dependência TASK-003 satisfeita, exige DoR própria antes de READY. Continuidade expressamente autorizada permanece vigente.
 
 ### TASK-004 Implementar contas, autenticação e gestão interna na API
 
