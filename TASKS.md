@@ -987,6 +987,12 @@ Túnel de teste iniciado com autorização e probe real PASS em test-results/acc
 
 Handoff de aparelho preparado: Metro iniciado em CI/offline, 8081, com origem HTTPS temporária injetada e hostname Wi-Fi conferido. Probe real do manifesto e bundle de desenvolvimento PASS em metro-probe.json: assetHost 192.168.0.93:8081, apiOriginIncluded true; 716 módulos empacotados pelo Metro em 44.6s. nativeAcceptance continua PENDING. Isso não executou o app no Android nem aplicou regra administrativa de Windows. Túnel e Metro ficaram ligados para a inspeção do responsável; encerramento/limpeza continuam pendentes.
 
+Retorno humano posterior: responsável executou metro-wifi.ps1 com ExecutionPolicy Bypass somente no processo filho (política permanente preservada) e enviou saída de configuração Wi-Fi/LocalSubnet; confirmou que o app abriu no Android. Ao tentar os fluxos, recebeu “Não foi possível conectar”. Diagnóstico real em 25/10 às 21:35 locais: o túnel anterior já havia encerrado automaticamente às 20:50, conforme saída do processo e tunnel.log. Abertura do app não equivale a aceite de cadastro/login/SecureStore; critérios permanecem pendentes.
+
+Recuperação operacional no mesmo escopo autorizado: túnel reaberto em fixture nova task006_0c7cbc03cc7a455ab154c61c75addbd3, probe HTTPS/negação da caixa PASS às 21:37 locais em wifi.json. Schema anterior preservado, sem reset/drop. Metro antigo encerrado e reiniciado na mesma porta 8081 com nova origem HTTPS e cache de compilação limpo. Nenhuma alteração de código da aplicação, dependência, regra de negócio ou política permanente de Windows; não há motivo para repetir gates de software já aprovados. Novo probe do bundle e repetição humana ainda devem confirmar a recuperação. Não declarar TASK-006 DONE.
+
+Probe de recuperação concluído: metro-probe.json da fixture nova PASS para manifesto, host Wi-Fi, bundle e presença da origem HTTPS atual; origem expirada ausente. Metro recompilou 716 módulos em 56.5s. Repetição humana ainda PENDING; tarefa continua IN_REVIEW, sem novo aceite presumido.
+
 #### Quality Gates
 Build: PASS — build/tipos e bundle Android, evidências acima; build web final da correção de rótulos em browser-05.log.
 Lint: PASS — verify-final.log.
