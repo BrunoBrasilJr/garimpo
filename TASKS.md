@@ -999,6 +999,8 @@ Auxílio operacional pedido pelo responsável ao relatar dificuldade de digitar 
 
 Aceite humano adicional em 25/10 às 22:01 locais: após ler o QR local e colar o código no aplicativo Android, responsável confirmou “foi! email confirmado”. Fluxo de confirmação inicial no app PASS por resultado explícito; não é apenas geração de QR. Auxiliar QR: lint dirigido também PASS, exit 0. Recuperação, alteração de e-mail, texto ampliado e inspeção web de contas/admin permanecem pendentes; nenhuma conclusão global da TASK-006 ou dispensa de outro critério inferida.
 
+Preparação da recuperação: responsável informou “pedi” após instrução de usar o formulário Android. Mensagem ACCESS.RESET existente identificada e entregue somente no canal local; solicitação corresponde à outra conta criada pelo responsável na mesma fixture, não à conta usada na confirmação anterior. Essa distinção foi comunicada, sem reproduzir endereço pessoal ou código no repositório. QR RESET gerado localmente com o auxiliar já validado; nenhuma solicitação forjada pelo agente, envio externo ou alteração de senha executada por ele. Pedido no app observado, mas definição de senha, rejeição da anterior e login com a nova continuam PENDING até relato humano. TASK-006 permanece IN_REVIEW.
+
 #### Quality Gates
 Build: PASS — build/tipos e bundle Android, evidências acima; build web final da correção de rótulos em browser-05.log.
 Lint: PASS — verify-final.log.
