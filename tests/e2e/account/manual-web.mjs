@@ -6,7 +6,7 @@ import { createInterface } from 'node:readline/promises';
 import { startHarness } from './harness.mjs';
 import { startWifiTunnel } from './wifi-tunnel.mjs';
 
-const app = await startHarness();
+const app = await startHarness({ realtime: true });
 const profile = resolve(app.directory, 'manual-firefox'); mkdirSync(profile, { recursive: true, mode: 0o700 });
 execFileSync('certutil', ['-N', '--empty-password', '-d', 'sql:' + profile], { stdio: 'ignore' });
 execFileSync('certutil', ['-A', '-n', 'Garimpo isolated test CA', '-t', 'C,,', '-i', app.caPath, '-d', 'sql:' + profile], { stdio: 'ignore' });

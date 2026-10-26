@@ -12,8 +12,9 @@ import { firstAdmin, createStaff } from '../../../apps/api/src/modules/accounts/
 import { MessageProtection } from '../../../apps/api/src/modules/messaging/protection.ts';
 import { AccessMessages } from '../../../apps/api/src/modules/messaging/service.ts';
 import { consumeRegistration, deliverNext } from '../../../apps/api/src/modules/messaging/worker.ts';
+import { fixtureClock } from './clock.mjs';
 
-export async function startHarness() {
+export async function startHarness({ realtime = false } = {}) {
   const started = Date.now();
   const stage = name => console.log(`UI fixture ${name}: ${Date.now() - started}ms`);
   const value = process.env.TEST_DATABASE_URL;
@@ -43,7 +44,7 @@ export async function startHarness() {
   openssl(['x509', '-req', '-in', resolve(directory, 'server.csr'), '-CA', caPath, '-CAkey', caKey, '-CAcreateserial', '-out', certPath, '-days', '2', '-extfile', extension]);
   for (const path of [caKey, keyPath]) chmodSync(path, 0o600);
   stage('certificates');
-  const db = createDatabase(url.href); let current = Date.now(); const clock = { now: () => new Date(current) };
+  const db = createDatabase(url.href), { clock, advance } = fixtureClock(realtime);
   const accounts = new Accounts(db, clock), encryptionKey = randomBytes(32).toString('hex'), technicalSecret = randomBytes(32).toString('base64url');
   const adminEmail = `admin-${randomUUID()}@example.invalid`, adminPassword = randomBytes(24).toString('base64url');
   const operatorEmail = `operator-${randomUUID()}@example.invalid`, operatorPassword = randomBytes(24).toString('base64url');
@@ -73,7 +74,7 @@ export async function startHarness() {
   writeFileSync(resolve(directory, 'credentials.json'), JSON.stringify(credentials, null, 2), { mode: 0o600 });
   return {
     origin, directory, caPath, schema, credentials,
-    advance(milliseconds) { current += milliseconds; },
+    advance,
     async customer() {
       const input = { name: 'Titular de teste', email: `${randomUUID()}@example.invalid`, password: randomBytes(24).toString('base64url') };
       return { input, user: await accounts.register(input) };

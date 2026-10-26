@@ -27,6 +27,8 @@ node --experimental-strip-types tests/e2e/account/manual-web.mjs
 
 Abre Firefox pelo WSLg com perfil separado e confiança TLS restrita a esse perfil. Cadastre somente um e-mail `@example.invalid` e senha de teste. Confira cadastro/login, erro de senha, confirmação de e-mail, recuperação, alteração de e-mail preservando o antigo até confirmar, nome e criar/editar/excluir endereço. Use `m` no terminal para preparar a mensagem local; abra o arquivo indicado em outro terminal/editor e copie o link/código no formulário. Não cole tokens no chat. `t` avança 16 minutos apenas na fixture: uma ação de perfil deve renovar o acesso. Recarregue a página, confirme sessão e depois saia; o perfil deve exigir novo login.
 
+O launcher manual usa `startHarness({ realtime: true })`: a hora acompanha o tempo real com deslocamento explícito de teste, evitando cookies novos já vencidos após uma inspeção longa. A suíte automática mantém relógio determinístico por padrão. `t` continua restrito à fixture e não muda a hora do sistema nem cria controle de relógio na API comercial.
+
 Contas ADMIN/OPERATOR sintéticas ficam no `credentials.json` do diretório informado. Confira gestão da equipe como ADMIN, proteção do último administrador, ausência de gestão como OPERATOR e restrição da rota direta `#/staff`. Não use credenciais pessoais. Confira teclado/foco, erros legíveis, ampliação de texto e largura estreita sem perda de campos/botões. Registre os resultados humanos e limitações reais; nenhum leitor de tela é declarado aprovado automaticamente.
 
 `q` encerra o navegador/servidor. O schema e evidências são preservados; nenhum certificado é instalado no Windows ou Android.
