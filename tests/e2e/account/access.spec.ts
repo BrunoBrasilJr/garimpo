@@ -70,7 +70,13 @@ test('browser recovery and email change complete through the real API and protec
   await change.getByLabel('Novo e-mail').fill(destination);
   await Promise.all([page.waitForResponse(response => response.url() === app.origin + '/api/v1/me/email-change' && response.status() === 202), change.getByRole('button').click()]);
   await expect(page.getByText(created.input.email, { exact: true })).toBeVisible();
+  const superseded = await app.message(destination, 'ACCESS.CHANGE');
+  // Force ordering against chronology: a newer request must win even when its timestamp is older.
+  app.advance(-1);
+  await change.getByLabel('Novo e-mail').fill(destination);
+  await Promise.all([page.waitForResponse(response => response.url() === app.origin + '/api/v1/me/email-change' && response.status() === 202), change.getByRole('button').click()]);
   const changed = await app.message(destination, 'ACCESS.CHANGE');
+  expect(changed.token).not.toBe(superseded.token);
   await page.goto(app.origin + '/#/email-change');
   const confirm = page.getByRole('form', { name: 'Confirmar novo e-mail', exact: true });
   await confirm.getByLabel('Código do link').fill(changed.token); await confirm.getByRole('button').click();

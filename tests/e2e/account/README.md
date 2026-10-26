@@ -29,6 +29,8 @@ Abre Firefox pelo WSLg com perfil separado e confiança TLS restrita a esse perf
 
 O launcher manual usa `startHarness({ realtime: true })`: a hora acompanha o tempo real com deslocamento explícito de teste, evitando cookies novos já vencidos após uma inspeção longa. A suíte automática mantém relógio determinístico por padrão. `t` continua restrito à fixture e não muda a hora do sistema nem cria controle de relógio na API comercial.
 
+O comando `m` seleciona apenas mensagens cujo registro de token ainda esteja ativo, não usado e dentro da validade da fixture. Reenvios invalidam os anteriores; ordenar só por data/UUID não identifica o link válido quando datas empatam. Antes de copiar, confira o propósito do arquivo atual; um editor já aberto pode ainda mostrar uma versão anterior. O arquivo do código nunca deve ser incluído em relatório/chat/Git.
+
 Contas ADMIN/OPERATOR sintéticas ficam no `credentials.json` do diretório informado. Confira gestão da equipe como ADMIN, proteção do último administrador, ausência de gestão como OPERATOR e restrição da rota direta `#/staff`. Não use credenciais pessoais. Confira teclado/foco, erros legíveis, ampliação de texto e largura estreita sem perda de campos/botões. Registre os resultados humanos e limitações reais; nenhum leitor de tela é declarado aprovado automaticamente.
 
 `q` encerra o navegador/servidor. O schema e evidências são preservados; nenhum certificado é instalado no Windows ou Android.

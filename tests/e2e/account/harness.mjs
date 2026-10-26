@@ -84,6 +84,11 @@ export async function startHarness({ realtime = false } = {}) {
       for (let index = 0; index < 100; index++) { const result = await deliverNext(messages); if (result === 'EMPTY') break; if (result === 'FAILED') throw new Error('Local delivery failed.'); }
       const rows = await db.demoMessage.findMany({ where: { type }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] });
       for (const row of rows) {
+        if (!row.tokenRef) continue;
+        const record = type === 'ACCESS.RESET'
+          ? await db.passwordReset.findUnique({ where: { id: row.tokenRef } })
+          : await db.emailToken.findUnique({ where: { id: row.tokenRef } });
+        if (!record || record.usedAt || record.expiresAt <= clock.now()) continue;
         const body = JSON.parse(protection.open(row.id, row.restrictedBody));
         if (body.recipient === recipient) return { ...body, token: new URLSearchParams(new URL(body.link).hash.split('?')[1]).get('token') };
       }
