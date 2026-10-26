@@ -59,7 +59,7 @@ O script confere os IPs antes de mudar algo; fica limitado a Wi-Fi/LocalSubnet e
 ```bash
 export PATH="$HOME/.local/share/garimpo/node-v24.22.1-linux-x64/bin:$PATH"
 cd /mnt/c/Users/brasi/garimpo-planejamento
-EXPO_PUBLIC_API_ORIGIN=https://URL-IMPRESSA.trycloudflare.com REACT_NATIVE_PACKAGER_HOSTNAME=192.168.0.93 npm run dev:mobile -- --lan
+EXPO_PUBLIC_API_ORIGIN=https://URL-IMPRESSA.trycloudflare.com REACT_NATIVE_PACKAGER_HOSTNAME=192.168.0.93 npm run start --workspace @garimpo/mobile -- --lan --port 8081
 ```
 
 No Expo Go SDK 57, use o QR ou `exp://192.168.0.93:8081`. O canal Metro serve o código de desenvolvimento na rede local como na TASK-002; as credenciais e operações da API usam o HTTPS separado. Ao concluir: Ctrl+C no Metro, `q` no launcher e, no PowerShell Administrador:

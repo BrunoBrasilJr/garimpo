@@ -948,7 +948,7 @@ Decisão posterior rastreada: responsável respondeu “Autorizar túnel tempor�
 TASK: TASK-006
 Status: IN_REVIEW — implementação e verificações automáticas concluídas; inspeções humanas web/Android pendentes.
 Branch: feature/TASK-006-interfaces-contas
-Commits: 85d7f46 (WIP preservado); ef31a09 (incorpora dependência cb2b2fa). Commit final de revisão registrado depois de sua criação, sem hash antecipado. Base efetiva de escopo: cb2b2fa, para não atribuir a correção CLI da TASK-005 à TASK-006.
+Commits: 85d7f46 (WIP preservado); ef31a09 (incorpora dependência cb2b2fa); 71b726a (implementação/validação e entrega IN_REVIEW). Base efetiva de escopo: cb2b2fa, para não atribuir a correção CLI da TASK-005 à TASK-006.
 
 #### Primary Changes
 
@@ -984,6 +984,8 @@ Falhas próprias e correções preservadas: TS2322/Web Locks; referência DOM au
 Revisão React aplicada: componentes com hooks estáveis e definidos no nível superior, cancelamento dos effects de leitura, estados de envio/erro, bloqueio de duplicação, nomes acessíveis e foco pós-render, sem memoização/dependência desnecessária. Nenhuma credencial em localStorage/sessionStorage, URL persistida ou logs gerais; fragmento sensível removido da barra de endereço após leitura.
 
 Túnel de teste iniciado com autorização e probe real PASS em test-results/account-ui/task006_7d4cce3831f0479db0afd8af5e451bd3/wifi.json: HTTPS público → relay HTTPS → API HTTPS local, GET/me sem credencial 401 esperado, caixa técnica 404. Contas/mensagens/segredos só no diretório local ignorado. Sessão de teste tem limite automático de 45 minutos e encerramento explícito q/Ctrl+C. Não declarar encerramento antes dele. Regra/portproxy Metro anterior ausente na conferência; restauração restrita a Wi-Fi/LocalSubnet preparada em metro-wifi.ps1 para execução elevada pelo responsável, não executada pelo agente.
+
+Handoff de aparelho preparado: Metro iniciado em CI/offline, 8081, com origem HTTPS temporária injetada e hostname Wi-Fi conferido. Probe real do manifesto e bundle de desenvolvimento PASS em metro-probe.json: assetHost 192.168.0.93:8081, apiOriginIncluded true; 716 módulos empacotados pelo Metro em 44.6s. nativeAcceptance continua PENDING. Isso não executou o app no Android nem aplicou regra administrativa de Windows. Túnel e Metro ficaram ligados para a inspeção do responsável; encerramento/limpeza continuam pendentes.
 
 #### Quality Gates
 Build: PASS — build/tipos e bundle Android, evidências acima; build web final da correção de rótulos em browser-05.log.
