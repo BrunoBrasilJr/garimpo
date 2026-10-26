@@ -1001,6 +1001,8 @@ Aceite humano adicional em 25/10 às 22:01 locais: após ler o QR local e colar 
 
 Preparação da recuperação: responsável informou “pedi” após instrução de usar o formulário Android. Mensagem ACCESS.RESET existente identificada e entregue somente no canal local; solicitação corresponde à outra conta criada pelo responsável na mesma fixture, não à conta usada na confirmação anterior. Essa distinção foi comunicada, sem reproduzir endereço pessoal ou código no repositório. QR RESET gerado localmente com o auxiliar já validado; nenhuma solicitação forjada pelo agente, envio externo ou alteração de senha executada por ele. Pedido no app observado, mas definição de senha, rejeição da anterior e login com a nova continuam PENDING até relato humano. TASK-006 permanece IN_REVIEW.
 
+Aceite humano da recuperação em 25/10 às 22:06 locais: responsável respondeu “deu 100% certo em tudo” ao roteiro explícito de colar o QR RESET, definir senha diferente, conferir rejeição da anterior e sucesso da nova no Android. Esses passos ficam PASS por relato humano. Confirmação inicial havia sido aprovada separadamente na outra conta; preservar essa distinção. TASK-006 ainda IN_REVIEW: alteração de e-mail e texto ampliado no Android, inspeção humana web/equipe e encerramento/limpeza do ambiente temporário continuam pendentes conforme roteiro já registrado. Não transformar o aceite dos passos solicitados em aprovação de itens não solicitados ao responsável.
+
 #### Quality Gates
 Build: PASS — build/tipos e bundle Android, evidências acima; build web final da correção de rótulos em browser-05.log.
 Lint: PASS — verify-final.log.
