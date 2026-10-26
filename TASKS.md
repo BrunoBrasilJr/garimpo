@@ -993,6 +993,8 @@ Recuperação operacional no mesmo escopo autorizado: túnel reaberto em fixture
 
 Probe de recuperação concluído: metro-probe.json da fixture nova PASS para manifesto, host Wi-Fi, bundle e presença da origem HTTPS atual; origem expirada ausente. Metro recompilou 716 módulos em 56.5s. Repetição humana ainda PENDING; tarefa continua IN_REVIEW, sem novo aceite presumido.
 
+Aceite humano parcial posterior no Android: responsável confirmou chegada a “Seu perfil” após cadastro/login e respondeu “funcionou tudo! só n testei confirmação de email e recuperação de senha” ao roteiro de alterar/salvar nome, adicionar/editar/excluir endereço fictício, fechar/reabrir mantendo sessão e Sair/fechar/reabrir exigindo login. Esses passos ficam PASS por relato explícito do responsável na fixture nova. Confirmação, recuperação, alteração de e-mail, texto ampliado e inspeção web de contas/admin continuam sem aceite humano; não inferir aprovação desses itens nem DONE a partir do relato parcial.
+
 #### Quality Gates
 Build: PASS — build/tipos e bundle Android, evidências acima; build web final da correção de rótulos em browser-05.log.
 Lint: PASS — verify-final.log.
