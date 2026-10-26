@@ -13,7 +13,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
-| 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | IN_REVIEW |
+| 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | BLOCKED |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | BLOCKED |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | BLOCKED |
@@ -860,7 +860,7 @@ TASK Execution Report da correção: Status DONE; branch feature/TASK-005-mensag
 
 #### Status
 
-IN_REVIEW
+DONE
 
 #### Phase
 
@@ -946,7 +946,7 @@ Decisão posterior rastreada: responsável respondeu “Autorizar túnel tempor�
 
 ### TASK Execution Report
 TASK: TASK-006
-Status: IN_REVIEW — implementação e verificações automáticas concluídas; inspeções humanas web/Android pendentes.
+Status: DONE — aceite final do responsável em 25/10/2026 às 22:46; fechamento consolidado abaixo substitui as pendências históricas, preservadas para rastreabilidade.
 Branch: feature/TASK-006-interfaces-contas
 Commits: 85d7f46 (WIP preservado); ef31a09 (incorpora dependência cb2b2fa); 71b726a (implementação/validação e entrega IN_REVIEW). Base efetiva de escopo: cb2b2fa, para não atribuir a correção CLI da TASK-005 à TASK-006.
 
@@ -1017,15 +1017,17 @@ A segunda sessão temporária atingiu seu limite de 45min e encerrou, saída rea
 
 Aceite humano web posterior: responsável solicitou nova alteração na sessão fictícia, link foi selecionado pelo auxiliar corrigido e sua condição ativa/não usada/não expirada conferida por metadados antes de copiar diretamente para a área de transferência local do Windows, sem registrar seu conteúdo. Responsável respondeu “deu tudo certo” ao roteiro explícito de confirmar o endereço, verificar perfil com o novo e-mail, sair e entrar usando o novo endereço e a mesma senha. Esses passos web ficam PASS por relato humano, sem inferir que foram repetidos no Android. Gestão ADMIN/OPERATOR, conferência visual de acessibilidade/texto ampliado, alteração de e-mail no Android e limpeza final permanecem pendentes; TASK-006 continua IN_REVIEW.
 
+Aceite humano da gestão interna posterior: responsável respondeu “tudo certo” ao roteiro de entrar com ADMIN sintético, criar conta OPERATOR e conferir sua presença na equipe, tentar inativar o último ADMIN e verificar a proteção, entrar como OPERATOR e conferir ausência de Equipe e “Acesso restrito” pela rota direta. Esses cenários web ficam PASS por relato humano. Alteração de e-mail no Android, inspeção visual com texto ampliado e limpeza final continuam pendentes; TASK-006 permanece IN_REVIEW. Registro documental PRIMARY em TASKS.md; Incidental Changes: NONE.
+
 #### Quality Gates
 Build: PASS — build/tipos e bundle Android, evidências acima; build web final da correção de rótulos em browser-05.log.
 Lint: PASS — verify-final.log.
-Unit Tests: PASS — 31 casos, incluindo seis de protocolo mobile/armazenamento injetado, sem fingir SecureStore real.
+Unit Tests: PASS — 33 casos distintos, incluindo dois de relógio e seis de protocolo mobile/armazenamento injetado; armazenamento nativo foi conferido separadamente pelo responsável.
 Integration Tests: PASS — 39 casos backend e relay HTTPS real no E2E.
 API Tests: PASS — contratos/permissões/regressão e fluxos de UI com API real.
-Security: FAIL/PENDENTE no aceite completo — automação TLS/CSRF/cookies/rotas/patch PASS; auditoria bruta FAIL conhecida e mitigada conforme decisão; SecureStore/saída/restauração no Android real ainda sem evidência humana.
-Acceptance Criteria: FAIL/PENDENTE — inspeções web/Android reais do responsável não recebidas.
-Regression Tests: PASS — 70 casos backend/protocolo e sete E2E dirigidos acima.
+Security: PASS com mitigação explicitamente aprovada — TLS/CSRF/cookies/rotas/patch e regressões PASS; restauração/saída no Android aceitas pelo responsável. Auditoria npm bruta continua FAIL (quatro high propagados do aviso node-forge), não é auditoria limpa.
+Acceptance Criteria: PASS — evidências automáticas e aceites humanos registrados, com aceite global final do responsável. Limitações específicas de observação preservadas no fechamento.
+Regression Tests: PASS — 72 casos backend/protocolo/relógio e sete E2E distintos dirigidos, 79 no total; logs incluem falhas históricas seguidas por correção e revalidação, não uma única rodada integral de 79 casos.
 
 #### Scope Validation
 Allowed Changes: PASS.
@@ -1034,10 +1036,14 @@ Forbidden Changes: PASS — nenhuma migration, mudança de requisito ou implemen
 Scope Creep: NONE — exposição de teste é a ampliação explícita rastreada, sem infraestrutura de produção.
 
 #### Definition of Done
-FAIL/PENDENTE — aguardar inspeções humanas e registrar resultado real; TASK-006 não DONE. Encerramento do túnel/Metro e remoção da regra temporária deverão ser confirmados após o teste.
+PASS — implementação, gates aplicáveis, commits anteriores e aceite final do responsável. Túnel e Metro encerrados. Remoção da regra/encaminhamento Metro no Windows exige sessão Administrador e segue como limpeza operacional informada; não declarar removida.
+
+Fechamento em 25/10/2026, após horário informado pelo responsável (22:46): “tudo certo, mano. pode marcar a 006 como concluída”. Esse é aceite global ao roteiro anterior de zoom/teclado web, texto ampliado Android e alteração de e-mail no Android. Não existe relato separado de solicitação/consumo de CHANGE no Android nesta última rodada, nem QR CHANGE preparado nela; portanto registrar aceite global sem inventar observação individual desse passo. Alteração de e-mail foi comprovada pelo responsável na web e automaticamente na API, além dos testes do cliente mobile. Leitor de tela e iOS não foram validados; não se declara aprovação de acessibilidade completa. Fluxos de contas desta rodada web foram inspecionados no Firefox isolado; não atribuir esses resultados a Chrome/Edge. O checkpoint seguinte deve conferir cobertura acumulada e limitações antes de liberar catálogo.
+
+Encerramento real: q no launcher produziu “Túnel temporário encerrado”, processo terminou com exit 0; Metro PID 24231 recebeu SIGINT e sua sessão terminou com exit 0. A tentativa de executar metro-wifi.ps1 -Remove falhou por ausência de token Administrador no Windows; instrução exata consta em LEIA-ME-ENTREGA.md. Nenhum banco/schema original foi apagado. Solicitação explícita de ZIP autoriza o documento de entrega e empacotamento como atividade de entrega separada, sem ampliar implementação da TASK-006 e sem iniciar TASK-007.
 
 #### Next Eligible TASK
-NONE. TASK-007 permanece BLOCKED até TASK-006 DONE e DoR/checkpoint próprios. Nenhuma tarefa de catálogo iniciada. Contagem atual permanece 5/37 DONE; faltam 14 conclusões para a meta de 19, sem prometer prazo ou inflar aceites.
+TASK-007 é o próximo trabalho, não iniciado. Dependências TASK-003/004/005/006 DONE; estado BLOCKED mantido até conferência própria de DoR e gates acumulados, sem executar checkpoint por meio deste empacotamento. Contagem: 6/37 DONE; faltam 13 conclusões para 19. Trabalho interrompido por solicitação do responsável para entrega do estado atual ao professor.
 
 ### TASK-007 Checkpoint PHASE-01
 
