@@ -24,6 +24,7 @@
     "test:integration": "node tests/core/run-integration.mjs",
     "test:accounts": "node tests/core/run-integration.mjs accounts",
     "test:messaging": "node tests/core/run-integration.mjs messaging",
+    "test:account-ui": "playwright test --config tests/e2e/account/playwright.config.ts",
     "messages:work": "node --experimental-strip-types apps/api/src/modules/messaging/run-worker.ts",
     "bootstrap:admin": "node --experimental-strip-types scripts/bootstrap-admin.mjs",
     "build": "npm run db:generate && npm run build --workspace @garimpo/contracts && npm run build --workspace @garimpo/api && npm run build --workspace @garimpo/web",

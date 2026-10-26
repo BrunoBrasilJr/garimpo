@@ -14,6 +14,8 @@ import { AccessMessages } from '../../../apps/api/src/modules/messaging/service.
 import { consumeRegistration, deliverNext } from '../../../apps/api/src/modules/messaging/worker.ts';
 
 export async function startHarness() {
+  const started = Date.now();
+  const stage = name => console.log(`UI fixture ${name}: ${Date.now() - started}ms`);
   const value = process.env.TEST_DATABASE_URL;
   if (!value) throw new Error('Separate TEST_DATABASE_URL required.');
   const url = new URL(value);
@@ -28,6 +30,7 @@ export async function startHarness() {
     { env: { ...process.env, DATABASE_URL: url.href }, encoding: 'utf8' });
   writeFileSync(resolve(directory, 'migration.log'), String(migration.stdout) + String(migration.stderr), { mode: 0o600 });
   if (migration.status !== 0) throw new Error('Fixture migration failed; inspect retained migration log.');
+  stage('migrated');
   const caKey = resolve(directory, 'ca.key'), caPath = resolve(directory, 'ca.pem'), keyPath = resolve(directory, 'server.key'), certPath = resolve(directory, 'server.pem');
   const openssl = args => execFileSync('openssl', args, { stdio: 'ignore' });
   openssl(['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '2', '-keyout', caKey, '-out', caPath, '-subj', '/CN=Garimpo isolated UI test CA',
@@ -39,6 +42,7 @@ export async function startHarness() {
   writeFileSync(extension, 'basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1' + (publicHost !== 'localhost' ? ',IP:' + publicHost : '') + '\n', { mode: 0o600 });
   openssl(['x509', '-req', '-in', resolve(directory, 'server.csr'), '-CA', caPath, '-CAkey', caKey, '-CAcreateserial', '-out', certPath, '-days', '2', '-extfile', extension]);
   for (const path of [caKey, keyPath]) chmodSync(path, 0o600);
+  stage('certificates');
   const db = createDatabase(url.href); let current = Date.now(); const clock = { now: () => new Date(current) };
   const accounts = new Accounts(db, clock), encryptionKey = randomBytes(32).toString('hex'), technicalSecret = randomBytes(32).toString('base64url');
   const adminEmail = `admin-${randomUUID()}@example.invalid`, adminPassword = randomBytes(24).toString('base64url');
@@ -46,6 +50,7 @@ export async function startHarness() {
   await firstAdmin(accounts, { name: 'Admin de teste', email: adminEmail, password: adminPassword });
   const signed = await accounts.login(adminEmail, adminPassword);
   await createStaff(accounts, signed.accessToken, { name: 'Operador de teste', email: operatorEmail, password: operatorPassword, role: 'OPERATOR' });
+  stage('synthetic accounts');
   const web = express();
   const server = createServer({ key: readFileSync(keyPath), cert: readFileSync(certPath) }, web);
   const host = process.env.ACCOUNT_TEST_HOST ?? '127.0.0.1';

@@ -1,10 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import type { AccountView } from '@garimpo/contracts';
 import { Form } from '../../account/Form';
 import { ClientError, readableError, request } from '../../account/client';
 
 function Role({ value = 'OPERATOR' }: { value?: string }) {
-  return <label>Papel<select name="role" defaultValue={value}><option value="OPERATOR">Operador</option><option value="ADMIN">Administrador</option></select></label>;
+  const id = useId();
+  return <div className="account-field"><label htmlFor={id}>Papel</label><select id={id} name="role" defaultValue={value}><option value="OPERATOR">Operador</option><option value="ADMIN">Administrador</option></select></div>;
+}
+function AccessAction({ blocked }: { blocked: boolean }) {
+  const id = useId();
+  return <div className="account-field"><label htmlFor={id}>Ação</label><select id={id} name="action" defaultValue={blocked ? 'unblock' : 'block'}><option value="block">Bloquear</option><option value="unblock">Desbloquear</option><option value="deactivate">Inativar</option></select></div>;
 }
 export function Staff({ user, onUser, notify }: { user: AccountView; onUser: (value: AccountView | null) => void; notify: (value: string) => void }) {
   const [page, setPage] = useState(1), [version, setVersion] = useState(0), [rows, setRows] = useState<AccountView[]>([]), [total, setTotal] = useState(0), [error, setError] = useState(''), [loading, setLoading] = useState(true);
@@ -41,7 +46,7 @@ export function Staff({ user, onUser, notify }: { user: AccountView; onUser: (va
       }} />
       {!person.inactiveAt ? <Form title={`Alterar acesso de ${person.name}`} fields={[{ name: 'reason', label: 'Motivo da alteração' }]} submit="Aplicar alteração de acesso" onSubmit={async values => {
         const { action, reason } = values; await request(`/admin/staff/${person.id}/${action}`, 'POST', { reason }); await updated(person.id);
-      }}><label>Ação<select name="action" defaultValue={person.blockedAt ? 'unblock' : 'block'}><option value="block">Bloquear</option><option value="unblock">Desbloquear</option><option value="deactivate">Inativar</option></select></label></Form> : null}
+      }}><AccessAction blocked={Boolean(person.blockedAt)} /></Form> : null}
     </article>)}
   </>;
 }

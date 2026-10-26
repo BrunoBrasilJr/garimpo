@@ -7,10 +7,12 @@ export class MobileAccountClient {
   private access = '';
   private renewing: Promise<AccountView> | undefined;
   private ending = false;
+  private pendingLogout = '';
   private readonly base: string;
   constructor(origin: string, private readonly store: TokenStore, private readonly transport: typeof fetch = fetch) {
     const url = new URL(origin);
-    if (url.protocol !== 'https:' || url.origin !== origin) throw new Error('An exact HTTPS API origin is required.');
+    const canonical = /^https:\/\/(?:[a-z0-9.-]+|\[[a-f0-9:]+\])(?::([1-9]\d{0,4}))?$/i.exec(origin);
+    if (!canonical || Number(canonical[1] ?? 443) > 65535 || url.protocol !== 'https:' || url.origin !== origin) throw new Error('An exact HTTPS API origin is required.');
     this.base = origin + '/api/v1';
   }
   private async send<T>(path: string, method: string, body: unknown, access = ''): Promise<T> {
@@ -65,10 +67,18 @@ export class MobileAccountClient {
   }
   async logout() {
     this.ending = true;
+    let failure: unknown;
     try {
       await this.renewing?.catch(() => {});
-      const refreshToken = await this.store.get(); this.access = '';
+      const refreshToken = this.pendingLogout || await this.store.get(); this.access = '';
+      this.pendingLogout = refreshToken ?? '';
       if (refreshToken) await this.send('/auth/logout', 'POST', { refreshToken });
-    } finally { this.access = ''; try { await this.store.clear(); } finally { this.ending = false; } }
+      this.pendingLogout = '';
+    } catch (cause) { failure = cause; }
+    this.access = '';
+    try { await this.store.clear(); }
+    catch { failure = new MobileError(0, {}, 'Não foi possível remover o acesso seguro. Tente sair novamente antes de fechar o aplicativo.'); }
+    finally { this.ending = false; }
+    if (failure) throw failure;
   }
 }

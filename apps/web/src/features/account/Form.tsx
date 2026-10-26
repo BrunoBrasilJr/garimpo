@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { FormEvent, InputHTMLAttributes, ReactNode } from 'react';
 import { ClientError, readableError } from './client';
 
@@ -7,11 +7,12 @@ export function Form({ title, fields, submit, onSubmit, children }: {
   title: string; fields: Field[]; submit: string; onSubmit: (values: Record<string, string>) => Promise<void>; children?: ReactNode
 }) {
   const id = useId(), alert = useRef<HTMLDivElement>(null), submitting = useRef(false);
-  const [busy, setBusy] = useState(false), [error, setError] = useState(''), [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [busy, setBusy] = useState(false), [error, setError] = useState<{ message: string } | null>(null), [errors, setErrors] = useState<Record<string, string[]>>({});
+  useEffect(() => { if (error) alert.current?.focus(); }, [error]);
   async function handle(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); if (submitting.current) return;
     const form = event.currentTarget, values = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
-    submitting.current = true; setBusy(true); setError(''); setErrors({});
+    submitting.current = true; setBusy(true); setError(null); setErrors({});
     try {
       for (const field of ['password', 'newPassword']) if (values[field] !== undefined && fields.find(item => item.name === field)?.autoComplete === 'new-password') {
         const length = Array.from(values[field]!).length;
@@ -20,8 +21,7 @@ export function Form({ title, fields, submit, onSubmit, children }: {
       await onSubmit(values);
       form.reset();
     } catch (cause) {
-      setError(readableError(cause)); setErrors(cause instanceof ClientError ? cause.fields : {});
-      requestAnimationFrame(() => alert.current?.focus());
+      setError({ message: readableError(cause) }); setErrors(cause instanceof ClientError ? cause.fields : {});
     } finally {
       for (const field of ['password', 'newPassword']) { const input = form.elements.namedItem(field); if (input instanceof HTMLInputElement) input.value = ''; }
       submitting.current = false; setBusy(false);
@@ -29,7 +29,7 @@ export function Form({ title, fields, submit, onSubmit, children }: {
   }
   return <form aria-label={title} onSubmit={handle} className="account-form" aria-busy={busy}>
     <h2>{title}</h2>
-    {error ? <div ref={alert} role="alert" tabIndex={-1} className="account-error">{error}</div> : null}
+    {error ? <div ref={alert} role="alert" tabIndex={-1} className="account-error">{error.message}</div> : null}
     {fields.map(field => <div className="account-field" key={field.name}>
       <label htmlFor={id + field.name}>{field.label}</label>
       <input id={id + field.name} name={field.name} type={field.type ?? 'text'} autoComplete={field.autoComplete ?? 'off'} defaultValue={field.value ?? ''}
@@ -37,7 +37,7 @@ export function Form({ title, fields, submit, onSubmit, children }: {
         aria-invalid={Boolean(errors[field.name])} aria-describedby={field.hint || errors[field.name] ? id + field.name + '-hint' : undefined} />
       {field.hint || errors[field.name] ? <small id={id + field.name + '-hint'}>{errors[field.name]?.join(' ') ?? field.hint}</small> : null}
     </div>)}
-    {children}
+    {children ? <fieldset className="account-extra" disabled={busy}>{children}</fieldset> : null}
     <button type="submit" disabled={busy}>{busy ? 'Aguarde…' : submit}</button>
   </form>;
 }

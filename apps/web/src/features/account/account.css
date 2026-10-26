@@ -18,6 +18,7 @@
 .account-site h2 { font: 1.8rem Georgia, serif; margin: 0 0 8px; }
 .account-site h3 { font-size: 1.3rem; }
 .account-field, .account-form > label { display: grid; gap: 8px; }
+.account-extra { border: 0; padding: 0; margin: 0; min-width: 0; }
 .account-site label { font-weight: 600; font-size: .95rem; }
 .account-site input, .account-site select { min-height: 48px; width: 100%; border: 1px solid #829183; border-radius: 8px; background: #fffef9; padding: 11px 12px; color: #173c32; font: inherit; }
 .account-site input[aria-invalid=true] { border-color: #a0372a; }

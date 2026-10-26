@@ -18,6 +18,7 @@ test('mobile credentials use HTTPS, access in memory and only rotated refresh in
     return path.endsWith('/auth/login') ? response(session(1)) : path.endsWith('/auth/refresh') ? response(session(2)) : path.endsWith('/auth/logout') ? new Response(null, { status: 204 }) : response(user);
   };
   expect(() => new MobileAccountClient('http://localhost:3001', saved.store, transport)).toThrow();
+  for (const invalid of ['https://user:secret@localhost', 'https://localhost/path', 'https://localhost?token=secret', 'https://localhost:99999']) expect(() => new MobileAccountClient(invalid, saved.store, transport)).toThrow();
   const first = new MobileAccountClient('https://localhost:8443', saved.store, transport);
   await first.login(user.email, 'synthetic password'); expect(saved.writes).toEqual(['refresh-1']);
   await first.request('/me'); expect(requests.at(-1)?.options?.headers).toMatchObject({ Authorization: 'Bearer access-1', 'X-Garimpo-Client': 'mobile' });
@@ -65,4 +66,20 @@ test('navigation recognizes link purposes without persisting tokens or accepting
   expect(readRoute('#/email-verification?token=synthetic')).toEqual({ name: 'email-verification', token: 'synthetic' });
   expect(readRoute('#/email-change?token=synthetic')).toEqual({ name: 'email-change', token: 'synthetic' });
   expect(readRoute('#/unknown')).toEqual({ name: 'login', token: '' });
+});
+
+test('failed logout clears local credentials, retains only an in-memory revocation retry, and surfaces a secure-store clear failure', async () => {
+  const saved = storage(); let offline = true, revoked = '';
+  const transport: typeof fetch = async (input, options) => {
+    if (String(input).endsWith('/auth/login')) return response(session(1));
+    if (offline) throw new Error('Synthetic offline connection');
+    revoked = (JSON.parse(String(options?.body)) as { refreshToken: string }).refreshToken;
+    return new Response(null, { status: 204 });
+  };
+  const client = new MobileAccountClient('https://localhost:8443', saved.store, transport);
+  await client.login(user.email, 'synthetic');
+  await expect(client.logout()).rejects.toThrow('conectar'); expect(saved.read()).toBeNull();
+  offline = false; await client.logout(); expect(revoked).toBe('refresh-1'); expect(saved.read()).toBeNull();
+  const broken: TokenStore = { get: async () => null, set: async () => {}, clear: async () => { throw new Error('Synthetic hardware failure'); } };
+  await expect(new MobileAccountClient('https://localhost:8443', broken, transport).logout()).rejects.toThrow('remover o acesso seguro');
 });

@@ -25,7 +25,8 @@ export default function App() {
   const [client] = useState(() => { try { return deviceClient(); } catch { return null; } });
   const [user, setUser] = useState<AccountView | null>(null), [screen, setScreen] = useState<Screen>('login'), [notice, setNotice] = useState(''), [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState<Address[]>([]), [editing, setEditing] = useState<Address | null>(null), [deleteId, setDeleteId] = useState('');
-  const epoch = useRef(0);
+  const [exitFailed, setExitFailed] = useState(false);
+  const epoch = useRef(0), leaving = useRef(false);
   useEffect(() => {
     let active = true;
     if (!client) { setLoading(false); setNotice('A conexão segura está indisponível. Tente novamente em instantes.'); return; }
@@ -53,14 +54,17 @@ export default function App() {
   }, [screen, user, client]);
   async function refreshAddresses() { setAddresses(await call<Address[]>('/me/addresses')); }
   async function logout() {
+    if (leaving.current) return;
+    leaving.current = true;
     epoch.current++;
-    try { await client?.logout(); setNotice('Você saiu da sua conta.'); }
-    catch { setNotice('Você saiu deste aparelho. Não foi possível confirmar a revogação no servidor; confira sua conexão.'); }
-    finally { setUser(null); setAddresses([]); setEditing(null); setScreen('login'); }
+    try { await client?.logout(); setExitFailed(false); setNotice('Você saiu da sua conta.'); }
+    catch (cause) { setExitFailed(true); setNotice(errorMessage(cause) + ' Não foi possível confirmar a saída completa.'); }
+    finally { leaving.current = false; setUser(null); setAddresses([]); setEditing(null); setScreen('login'); }
   }
   const formProps = { notify: setNotice };
   function content() {
     if (loading) return <Text accessibilityRole="alert" style={styles.body}>Preparando seu acesso…</Text>;
+    if (exitFailed) return <Button title="Tentar sair novamente" onPress={() => { void logout(); }} />;
     if (screen === 'register') return <AccountForm {...formProps} title="Crie sua conta" fields={[{ name: 'name', label: 'Nome completo' }, email, { ...password, newPassword: true }]} submit="Criar conta" onSubmit={async values => {
       await call('/auth/register', 'POST', values, false); setNotice('Conta criada! Confirme seu e-mail pelo link recebido e entre para continuar.'); setScreen('login');
     }} />;

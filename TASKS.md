@@ -13,7 +13,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
-| 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | BLOCKED |
+| 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | IN_REVIEW |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | BLOCKED |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | BLOCKED |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | BLOCKED |
@@ -860,7 +860,7 @@ TASK Execution Report da correção: Status DONE; branch feature/TASK-005-mensag
 
 #### Status
 
-BLOCKED
+IN_REVIEW
 
 #### Phase
 
@@ -935,6 +935,77 @@ Plano primário: features/account e navigation em web/mobile, admin/staff soment
 Incidental Changes previstas: registro mínimo de navigation em apps/web/src/main.tsx e apps/mobile/App.tsx; manifests/lock somente expo-secure-store 57.0.4 compatível com bundledNativeModules do Expo instalado, contratos existentes e @playwright/test 1.64.1; comandos de teste/roteiro. São ligações e ferramentas necessárias, com decisões de sessão/proteção nos módulos primários; sem implementar segurança independente nos pontos de entrada ou mudar módulos de API. Gates locais 001/002 APROVADOS; demais PENDENTES. Sem criar/alterar migrations.
 
 BLOCKER de dependência encontrado durante a execução: npm run messages:work da TASK-005 falha com ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX porque AccessMessages usa propriedades de parâmetro, não suportadas pelo modo strip-only do Node 24.22.1. Evidência test-results/account-ui/worker-smoke.log. Trabalho parcial de telas preservado em commit WIP da TASK-006, sem alegar teste aprovado; retorno à branch própria da TASK-005 para correção autorizada no seu escopo. TASK-006 não avança até validar a dependência corrigida. Falha própria inicial de tipos TS2322 em Promise de Web Locks corrigida com normalização explícita de Promise<void>, pendente rechecagem. Nenhum gate futuro aprovado.
+
+Retomada TASK-006: correção de dependência cb2b2fa incorporada pela branch TASK-005 com gates relevantes e entrada CLI real aprovados; JavaScript de negócio idêntico ao aceite anterior. DoR revalidada, BLOCKED → READY → IN_PROGRESS na mesma branch feature/TASK-006-interfaces-contas; WIP 85d7f46 preservado. A falha inicial própria de tipos é histórica e ainda exige resultado novo de types/lint antes de aprovação. Nenhuma alteração de API atribuída como incidental da TASK-006.
+
+Validação parcial: build web/API/contracts PASS em compile-02.log; TS2322 corrigido e referência DOM local dos testes ajustada. Typecheck e lint PASS em compile-04.log após corrigir no-unsafe-finally do logout mobile; npm test PASS com 30 casos em unit-01.log, incluindo cinco casos de protocolo/armazenamento injetado (não equivalem a SecureStore no aparelho). Primeiro caso de navegador excedeu 60s na preparação; browser-01.log preservado e timeout específico da fixture ampliado para 180s, sem flexibilizar regra de negócio ou SLA. Suíte visual ainda em validação; nenhum aceite presumido.
+
+Conectividade: responsável confirmou que não possui cabo USB e precisa testar pelo Wi-Fi. Proposta concreta de ampliação limitada em tests/e2e/account/wifi-proposal.md, pendente de decisão: túnel HTTPS temporário somente da fixture com dados sintéticos, validação TLS na origem e sem publicar caixa técnica/banco. Nenhum túnel iniciado ou confiança global alterada. Trabalho web independente continua autorizado; teste Android/DoD permanecem pendentes.
+
+Decisão posterior rastreada: responsável respondeu “Autorizar túnel temporário de teste” à proposta. Autorização limitada ao Cloudflare Quick Tunnel da fixture sintética durante inspeção Android, mantendo validação TLS em ambos os trechos e caixa técnica/banco locais. Preparação/execução/encerramento devem ter evidência real. Isso não aprova testes futuros nem autoriza serviço de produção.
+
+### TASK Execution Report
+TASK: TASK-006
+Status: IN_REVIEW — implementação e verificações automáticas concluídas; inspeções humanas web/Android pendentes.
+Branch: feature/TASK-006-interfaces-contas
+Commits: 85d7f46 (WIP preservado); ef31a09 (incorpora dependência cb2b2fa). Commit final de revisão registrado depois de sua criação, sem hash antecipado. Base efetiva de escopo: cb2b2fa, para não atribuir a correção CLI da TASK-005 à TASK-006.
+
+#### Primary Changes
+
+Todos os arquivos em apps/web/src/features/account/** e navigation/**: cadastro, login, recuperação, confirmação, perfil e endereços, feedback de erros, teclado, texto ampliado, cookies HTTPS/CSRF e renovação coordenada. apps/web/src/features/admin/staff/**: equipe exclusivamente ADMIN, rótulos explícitos e proteção do último administrador derivada da API. OPERATOR não recebe gestão nem por rota direta.
+
+Todos os arquivos em apps/mobile/src/features/account/** e navigation/**: cliente USER/CUSTOMER, mesmos fluxos de conta, link/código colável, acesso em memória e somente refresh no SecureStore. Renovação concorrente única; saída espera renovação, limpa armazenamento, apresenta falha e oferece repetição. Falha de revogação conserva somente a tentativa pendente em memória para repetir, sem alegar saída completa. Administração ausente no app.
+
+Todos os arquivos em tests/e2e/account/** e tests/e2e/staff/**, incluindo READMEs, scripts e proposta: E2E com API/DB reais, fixture isolada, CA restrita ao perfil Firefox, screenshots sintéticas, controles negativos TLS, testes de protocolo mobile e roteiros humanos. Relay temporário autorizado somente para rotas de cliente, sem cookies web, administração, caixa ou arquivos. Ferramenta cloudflared 2026.10.3 verificada por hash oficial, TLS validado até a origem, sem instalação de CA global. TASKS.md: estado, decisões e evidência desta tarefa. Cada arquivo desses grupos é PRIMARY.
+
+#### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/web/src/main.tsx | Registrar navigation/App | Ligação mínima da interface primária ao bootstrap existente. |
+| apps/mobile/App.tsx | Reexportar navigation/App | Ligação mínima do app, sem lógica independente de autenticação. |
+| apps/web/package.json | Dependência direta do contrato existente | Tipos usados pela interface, sem nova versão de negócio. |
+| apps/mobile/package.json | Contrato existente e expo-secure-store 57.0.4 | Ligação nativa necessária ao armazenamento ratificado, compatível com o mapa SDK 57 instalado. |
+| package.json | Playwright 1.64.1 e comando test:account-ui | Ferramenta e entrada mínima dos testes reais de interface. |
+| package-lock.json | Resolução dessas dependências | Reprodutibilidade; nenhuma atualização oportunista de pacote existente. |
+
+Teste dos nove critérios: PASS para as seis ligações/configurações acima, necessárias e diretamente causadas, sem função/negócio/arquitetura/contrato ou segurança independente nesses pontos. Autenticação, armazenamento e relay estão nos módulos PRIMARY; exposição temporária foi ampliada explicitamente pelo responsável, não classificada como incidental. Nenhum arquivo fora desses grupos alterado por esta entrega.
+
+#### Tests Executed
+
+Ubuntu WSL2, Node 24.22.1/npm 11.19.1, PostgreSQL 17 separado/garimpo_test, Firefox Playwright 157.0/revisão 1555. `verify-final.log`: npm run verify exit 0, build/API/contracts/web, tipos, lint, 31 testes unitários/protocolo, 9 de fundação, 14 de contas e 16 de mensagens: **70 casos PASS**. Auditoria bruta exit 1, quatro high conhecidos derivados exclusivamente do node-forge; política restrita de mitigação ratificada PASS, sem ocultar FAIL nem aceitar achados novos. Schemas retidos: task003_2ba2dba752c545dabfd027959beb2b68, task004_a6f0fb80d9304c799c1d5c83122d5836, task005_c9ccfd8516964cf18f81873032b905a3.
+
+E2E: **7 casos distintos PASS**, em rodadas dirigidas após correções: browser-02.log (certificado sem CA rejeitado; cadastro/confirmação/perfil/endereços/cookies/renovação/logout); browser-03.log (reset e alteração de e-mail); browser-04.log (erro/foco/teclado/texto 200% a 390px, relay HTTPS com autenticação real/negação de rotas, OPERATOR); browser-05.log (ADMIN/criação/papéis/bloquear/desbloquear/último ADMIN). Não declarar que as rodadas históricas inteiras passaram: logs preservam falhas anteriores. Total automático atual: **77 casos distintos PASS**, sem contar repetições.
+
+Falhas próprias e correções preservadas: TS2322/Web Locks; referência DOM ausente no teste; no-unsafe-finally na saída mobile; 60s insuficientes na preparação da fixture (agora 180s próprios, sem mudar SLA); duas verificações que liam resultado antes da resposta (agora aguardam HTTP real); foco antes de commit React (agora efeito após renderização); rótulos implícitos dos seletores (agora label/for/id). Rodadas com falha correspondem a FAILED, com retorno IN_PROGRESS para correção; registro de estados retificado aqui, sem classificar logs antigos como PASS. Última transição IN_PROGRESS → IN_REVIEW após os resultados dirigidos.
+
+`android-final.log`: npm run bundle:android exit 0, 586 módulos/1.5MB, index-41f3cf59c440c05d17a4d6463ebb94d8.hbc. Isso comprova empacotamento, não execução nativa. `bash -n` do roteiro manual PASS; parser PowerShell do roteiro Wi-Fi sem erro. Screenshots web de cliente e ADMIN inspecionadas visualmente pelo agente; inspeção do responsável e leitor de tela ainda não executados.
+
+Revisão React aplicada: componentes com hooks estáveis e definidos no nível superior, cancelamento dos effects de leitura, estados de envio/erro, bloqueio de duplicação, nomes acessíveis e foco pós-render, sem memoização/dependência desnecessária. Nenhuma credencial em localStorage/sessionStorage, URL persistida ou logs gerais; fragmento sensível removido da barra de endereço após leitura.
+
+Túnel de teste iniciado com autorização e probe real PASS em test-results/account-ui/task006_7d4cce3831f0479db0afd8af5e451bd3/wifi.json: HTTPS público → relay HTTPS → API HTTPS local, GET/me sem credencial 401 esperado, caixa técnica 404. Contas/mensagens/segredos só no diretório local ignorado. Sessão de teste tem limite automático de 45 minutos e encerramento explícito q/Ctrl+C. Não declarar encerramento antes dele. Regra/portproxy Metro anterior ausente na conferência; restauração restrita a Wi-Fi/LocalSubnet preparada em metro-wifi.ps1 para execução elevada pelo responsável, não executada pelo agente.
+
+#### Quality Gates
+Build: PASS — build/tipos e bundle Android, evidências acima; build web final da correção de rótulos em browser-05.log.
+Lint: PASS — verify-final.log.
+Unit Tests: PASS — 31 casos, incluindo seis de protocolo mobile/armazenamento injetado, sem fingir SecureStore real.
+Integration Tests: PASS — 39 casos backend e relay HTTPS real no E2E.
+API Tests: PASS — contratos/permissões/regressão e fluxos de UI com API real.
+Security: FAIL/PENDENTE no aceite completo — automação TLS/CSRF/cookies/rotas/patch PASS; auditoria bruta FAIL conhecida e mitigada conforme decisão; SecureStore/saída/restauração no Android real ainda sem evidência humana.
+Acceptance Criteria: FAIL/PENDENTE — inspeções web/Android reais do responsável não recebidas.
+Regression Tests: PASS — 70 casos backend/protocolo e sete E2E dirigidos acima.
+
+#### Scope Validation
+Allowed Changes: PASS.
+Incidental Changes: PASS — tabela de seis arquivos, sem efeito independente.
+Forbidden Changes: PASS — nenhuma migration, mudança de requisito ou implementação futura; ampliação temporária de transporte documentada e autorizada.
+Scope Creep: NONE — exposição de teste é a ampliação explícita rastreada, sem infraestrutura de produção.
+
+#### Definition of Done
+FAIL/PENDENTE — aguardar inspeções humanas e registrar resultado real; TASK-006 não DONE. Encerramento do túnel/Metro e remoção da regra temporária deverão ser confirmados após o teste.
+
+#### Next Eligible TASK
+NONE. TASK-007 permanece BLOCKED até TASK-006 DONE e DoR/checkpoint próprios. Nenhuma tarefa de catálogo iniciada. Contagem atual permanece 5/37 DONE; faltam 14 conclusões para a meta de 19, sem prometer prazo ou inflar aceites.
 
 ### TASK-007 Checkpoint PHASE-01
 

@@ -8,7 +8,7 @@ import { startHarness } from './harness.mjs';
 
 type Harness = Awaited<ReturnType<typeof startHarness>>;
 export const test = base.extend<{ page: Page }, { app: Harness }>({
-  app: [async ({ browserName }, use) => { void browserName; const app = await startHarness(); try { await use(app); } finally { await app.close(); } }, { scope: 'worker' }],
+  app: [async ({ browserName }, use) => { void browserName; const app = await startHarness(); try { await use(app); } finally { await app.close(); } }, { scope: 'worker', timeout: 180000 }],
   page: async ({ app }, use, info) => {
     app.advance(2 * 86400000);
     const profile = resolve(app.directory, 'browser-' + randomUUID()); mkdirSync(profile, { recursive: true, mode: 0o700 });
@@ -21,8 +21,10 @@ export const test = base.extend<{ page: Page }, { app: Harness }>({
     try {
       await page.goto(app.origin); await use(page);
       expect(errors).toEqual([]);
-      await page.screenshot({ path: resolve(app.directory, info.title.replace(/[^a-z0-9]/gi, '-') + '.png'), fullPage: true });
-    } finally { await context.close(); }
+    } finally {
+      try { if (!page.isClosed()) await page.screenshot({ path: resolve(app.directory, info.title.replace(/[^a-z0-9]/gi, '-') + '.png'), fullPage: true }); }
+      finally { await context.close(); }
+    }
   }
 });
 export { expect };
