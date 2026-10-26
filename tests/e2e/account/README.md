@@ -31,6 +31,14 @@ Contas ADMIN/OPERATOR sintéticas ficam no `credentials.json` do diretório info
 
 `q` encerra o navegador/servidor. O schema e evidências são preservados; nenhum certificado é instalado no Windows ou Android.
 
+Para evitar digitar o código no Android, depois de preparar `manual-message.json`, gere um QR de texto local:
+
+```bash
+node tests/e2e/account/qr-message.mjs test-results/account-ui/SCHEMA-INFORMADO/manual-message.json
+```
+
+Abra o PNG indicado no computador e leia com a câmera/leitor QR do celular. Copie o texto detectado e cole em “Código ou link recebido” no app. Não use o scanner de projetos do Expo Go para esse QR de texto. O auxiliar usa o gerador `toqr` já incluído pelo Expo, zlib nativo e arquivo local ignorado; não instala dependências, não abre URL nem publica a caixa/token em serviço externo. O código mantém propósito, prazo e uso único originais. Não envie o PNG/código no chat ou ao Git. Gere outro PNG ao mudar a mensagem para RESET/CHANGE.
+
 ## Inspeção Android pelo Wi-Fi — ampliação temporária autorizada
 
 O responsável informou que não tem cabo USB. O app exige `EXPO_PUBLIC_API_ORIGIN` com origem HTTPS exata; acesso fica em memória, somente renovação vai para Expo SecureStore. Administração não existe no app.

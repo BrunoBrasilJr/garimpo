@@ -995,6 +995,8 @@ Probe de recuperação concluído: metro-probe.json da fixture nova PASS para ma
 
 Aceite humano parcial posterior no Android: responsável confirmou chegada a “Seu perfil” após cadastro/login e respondeu “funcionou tudo! só n testei confirmação de email e recuperação de senha” ao roteiro de alterar/salvar nome, adicionar/editar/excluir endereço fictício, fechar/reabrir mantendo sessão e Sair/fechar/reabrir exigindo login. Esses passos ficam PASS por relato explícito do responsável na fixture nova. Confirmação, recuperação, alteração de e-mail, texto ampliado e inspeção web de contas/admin continuam sem aceite humano; não inferir aprovação desses itens nem DONE a partir do relato parcial.
 
+Auxílio operacional pedido pelo responsável ao relatar dificuldade de digitar o token: PRIMARY tests/e2e/account/qr-message.mjs e README de testes geram QR de texto somente em arquivo local ignorado, usando toqr existente no Expo e PNG/zlib nativo. Sem dependência nova, publicação de caixa, endpoint, mudança de contrato, prazo ou segurança do token. node --check PASS; geração real de PNG 444x444 PASS sem imprimir conteúdo sensível; lint dirigido registrado ao concluir. Nenhuma aceitação do fluxo de confirmação presumida pela mera geração da imagem. Incidental Changes adicionais: NONE; tarefa permanece IN_REVIEW.
+
 #### Quality Gates
 Build: PASS — build/tipos e bundle Android, evidências acima; build web final da correção de rótulos em browser-05.log.
 Lint: PASS — verify-final.log.
