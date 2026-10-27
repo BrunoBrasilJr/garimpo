@@ -1,5 +1,11 @@
 # Garimpo — entrega parcial de 25/10/2026
 
+## Cópia para avaliação no GitHub — 26/10/2026
+
+Repositório: https://github.com/BrunoBrasilJr/garimpo. Esta publicação reúne todo o código versionado e o histórico local das tarefas, documentação e evidências selecionadas em EVIDENCIAS/INDICE.md. A branch principal remota recebe a entrega completa; branches das tarefas preservam seus pontos históricos. O ZIP de 25/10 continua sendo um retrato anterior à preparação desta publicação. Publicar não executa TASK-007 nem acrescenta funcionalidades.
+
+Os logs publicados têm extensão .log.txt para não flexibilizar a política geral de ignorar logs locais; seu conteúdo é idêntico aos originais selecionados no ZIP. Não são publicados arquivos privados de fixture, credenciais, tokens, certificados privados, banco ou dependências instaladas. Nenhuma nova execução de testes de aplicação é alegada nesta publicação documental.
+
 Responsável: Bruno dos Santos Brasil Silva. Encerramento solicitado às 22:46 de domingo, para apresentação do estado real ao professor em 26/10/2026.
 
 ## Onde paramos

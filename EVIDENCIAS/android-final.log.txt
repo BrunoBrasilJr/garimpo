@@ -1,0 +1,20 @@
+
+> garimpo@0.1.0 bundle:android
+> npm run bundle:android --workspace @garimpo/mobile
+
+
+> @garimpo/mobile@0.1.0 bundle:android
+> expo export --platform android --output-dir dist/android
+
+Expo Autolinking module resolution enabled
+Starting Metro Bundler
+
+Android Bundled 33574ms apps/mobile/index.js (586 modules)
+
+› android bundles (1):
+_expo/static/js/android/index-41f3cf59c440c05d17a4d6463ebb94d8.hbc (1.5MB)
+
+› Files (1):
+metadata.json (150B)
+
+Exported: dist/android

@@ -1047,6 +1047,8 @@ TASK-007 é o próximo trabalho, não iniciado. Dependências TASK-003/004/005/0
 
 ### TASK-007 Checkpoint PHASE-01
 
+Nota de entrega anterior ao início: em 26/10/2026, o responsável solicitou publicar o projeto completo em https://github.com/BrunoBrasilJr/garimpo para avaliação do professor. Preparação em chore/TASK-006-entrega-github: código e histórico existentes preservados, cópia selecionada dos logs em EVIDENCIAS/, navegação estrutural no README e atualização do guia de entrega. Atividade de publicação explicitamente autorizada, não execução deste checkpoint. Nenhum código de aplicação, requisito ou teste foi alterado; verificações desta atividade limitam-se à integridade dos arquivos, busca de credenciais conhecidas no histórico e conferência do envio remoto. Status da TASK-007 continua BLOCKED até DoR própria.
+
 #### Status
 
 BLOCKED

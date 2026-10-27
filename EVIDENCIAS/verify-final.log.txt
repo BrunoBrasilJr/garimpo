@@ -1,0 +1,238 @@
+
+> garimpo@0.1.0 verify
+> npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run audit:toolchain
+
+
+> garimpo@0.1.0 build
+> npm run db:generate && npm run build --workspace @garimpo/contracts && npm run build --workspace @garimpo/api && npm run build --workspace @garimpo/web
+
+
+> garimpo@0.1.0 db:generate
+> prisma generate --config apps/api/prisma/prisma.config.ts
+
+Loaded Prisma config from apps/api/prisma/prisma.config.ts.
+
+Prisma schema loaded from apps/api/prisma/schema.prisma.
+
+✔ Generated Prisma Client (7.10.1) to ./apps/api/src/persistence/generated in 412ms
+
+
+> @garimpo/contracts@0.1.0 build
+> tsc -p tsconfig.json
+
+
+> @garimpo/api@0.1.0 build
+> tsc -p tsconfig.json
+
+
+> @garimpo/web@0.1.0 build
+> vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 23 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.44 kB │ gzip:  0.28 kB
+dist/assets/index-B0uGlM-Q.css    4.37 kB │ gzip:  1.56 kB
+dist/assets/index-D9IfOAz_.js   206.77 kB │ gzip: 65.17 kB
+
+✓ built in 1.07s
+
+> garimpo@0.1.0 typecheck
+> npm run typecheck --workspaces --if-present && tsc -p tests/tsconfig.json
+
+
+> @garimpo/api@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @garimpo/web@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @garimpo/mobile@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @garimpo/contracts@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> garimpo@0.1.0 lint
+> eslint --config tests/eslint.config.mjs apps packages tests scripts
+
+
+> garimpo@0.1.0 test
+> vitest run --config tests/vitest.config.ts
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.12 [39m[90m/mnt/c/Users/brasi/garimpo-planejamento[39m
+
+ [32m✓[39m tests/bootstrap/security/audit-policy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m tests/e2e/account/mobile-client.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 254[2mms[22m[39m
+ [32m✓[39m tests/core/foundation.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m tests/messaging/protection.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m tests/bootstrap/security/forge.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 228[2mms[22m[39m
+ [32m✓[39m tests/bootstrap/security/expo-zod.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+[90mstdout[2m | tests/accounts/credentials.test.ts[2m > [22m[2mapproved scrypt parameters, random salts, valid/wrong/unknown/malformed credentials
+[22m[39mScrypt validation elapsed: 6088 ms; approved cost preserved, no performance SLA inferred.
+
+ [32m✓[39m tests/accounts/credentials.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 6131[2mms[22m[39m
+   [33m[2m✓[22m[39m approved scrypt parameters, random salts, valid/wrong/unknown/malformed credentials [33m 6098[2mms[22m[39m
+ [32m✓[39m tests/bootstrap/api.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 136[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m      Tests [22m [1m[32m31 passed[39m[22m[90m (31)[39m
+[2m   Start at [22m 20:04:10
+[2m   Duration [22m 23.27s[2m (transform 9.39s, setup 0ms, import 38.85s, tests 6.90s, environment 4ms)[22m
+
+
+> garimpo@0.1.0 test:integration
+> node tests/core/run-integration.mjs
+
+Isolated integration schema: task003_2ba2dba752c545dabfd027959beb2b68; retained for evidence, no reset/drop/truncate.
+Loaded Prisma config from apps/api/prisma/prisma.config.ts.
+
+Prisma schema loaded from apps/api/prisma/schema.prisma.
+Datasource "db": PostgreSQL database "garimpo_test", schema "task003_2ba2dba752c545dabfd027959beb2b68" at "127.0.0.1:55432"
+
+2 migrations found in prisma/migrations
+
+Applying migration `202610250001_foundation`
+Applying migration `202610250002_accounts`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 202610250001_foundation/
+    └─ migration.sql
+  └─ 202610250002_accounts/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.12 [39m[90m/mnt/c/Users/brasi/garimpo-planejamento[39m
+
+ [32m✓[39m tests/core/database.integration.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 3208[2mms[22m[39m
+   [33m[2m✓[22m[39m killing a separate consumer process rolls back its incomplete effect and allows recovery [33m 2060[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 20:05:12
+[2m   Duration [22m 14.89s[2m (transform 1.11s, setup 0ms, import 3.22s, tests 3.21s, environment 0ms)[22m
+
+
+> garimpo@0.1.0 test:accounts
+> node tests/core/run-integration.mjs accounts
+
+Isolated integration schema: task004_a6f0fb80d9304c799c1d5c83122d5836; retained for evidence, no reset/drop/truncate.
+Loaded Prisma config from apps/api/prisma/prisma.config.ts.
+
+Prisma schema loaded from apps/api/prisma/schema.prisma.
+Datasource "db": PostgreSQL database "garimpo_test", schema "task004_a6f0fb80d9304c799c1d5c83122d5836" at "127.0.0.1:55432"
+
+2 migrations found in prisma/migrations
+
+Applying migration `202610250001_foundation`
+Applying migration `202610250002_accounts`
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 7.10.1 -> 8.0.0-rc.27                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+The following migration(s) have been applied:
+
+migrations/
+  └─ 202610250001_foundation/
+    └─ migration.sql
+  └─ 202610250002_accounts/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.12 [39m[90m/mnt/c/Users/brasi/garimpo-planejamento[39m
+
+ [32m✓[39m tests/accounts/accounts.integration.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 19377[2mms[22m[39m
+   [33m[2m✓[22m[39m registration creates CUSTOMER/USER, stores a hash and durable verification event, rejects duplicates and elevated input [33m 804[2mms[22m[39m
+   [33m[2m✓[22m[39m login is generic for unknown/wrong credentials, logout revokes access and refresh [33m 1186[2mms[22m[39m
+   [33m[2m✓[22m[39m rotation invalidates old access; forged refresh does not revoke, genuine replay revokes the entire session [33m 623[2mms[22m[39m
+   [33m[2m✓[22m[39m 15-minute access and absolute seven-day renewal boundaries use controlled server time [33m 624[2mms[22m[39m
+   [33m[2m✓[22m[39m blocked, closed and inactive accounts cannot authenticate or use an existing session [33m 1520[2mms[22m[39m
+   [33m[2m✓[22m[39m HTTPS, exact Origin, host-only secure cookies and session-bound CSRF are enforced [33m 665[2mms[22m[39m
+   [33m[2m✓[22m[39m profile accepts only owned name changes; email, context, role and state cannot be patched directly [33m 618[2mms[22m[39m
+   [33m[2m✓[22m[39m address CRUD enforces ownership and validation while deletion preserves the historical record [33m 1271[2mms[22m[39m
+   [33m[2m✓[22m[39m staff management requires a web ADMIN; operator/customer cannot manage and staff cannot use purchasing-account addresses [33m 2760[2mms[22m[39m
+   [33m[2m✓[22m[39m sole active ADMIN cannot be blocked, deactivated or demoted, and bootstrap is explicit and one-time [33m 3762[2mms[22m[39m
+   [33m[2m✓[22m[39m rate limits persist across service instances and open only after the configured window [33m 2391[2mms[22m[39m
+   [33m[2m✓[22m[39m concurrent refresh reuse never leaves the winning credential usable after replay detection [33m 747[2mms[22m[39m
+   [33m[2m✓[22m[39m session persistence and audit do not contain plaintext passwords or opaque credentials [33m 667[2mms[22m[39m
+   [33m[2m✓[22m[39m two independent transactions attempting to deactivate both ADMINs preserve one active administrator [33m 1023[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m14 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m 20:05:52
+[2m   Duration [22m 29.45s[2m (transform 1.64s, setup 0ms, import 7.56s, tests 19.38s, environment 0ms)[22m
+
+
+> garimpo@0.1.0 test:messaging
+> node tests/core/run-integration.mjs messaging
+
+Isolated integration schema: task005_c9ccfd8516964cf18f81873032b905a3; retained for evidence, no reset/drop/truncate.
+Loaded Prisma config from apps/api/prisma/prisma.config.ts.
+
+Prisma schema loaded from apps/api/prisma/schema.prisma.
+Datasource "db": PostgreSQL database "garimpo_test", schema "task005_c9ccfd8516964cf18f81873032b905a3" at "127.0.0.1:55432"
+
+2 migrations found in prisma/migrations
+
+Applying migration `202610250001_foundation`
+Applying migration `202610250002_accounts`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 202610250001_foundation/
+    └─ migration.sql
+  └─ 202610250002_accounts/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.12 [39m[90m/mnt/c/Users/brasi/garimpo-planejamento[39m
+
+ [32m✓[39m tests/messaging/access.integration.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 21163[2mms[22m[39m
+   [33m[2m✓[22m[39m registration event produces one protected initial message; confirmation is single-use and resending supersedes old links [33m 785[2mms[22m[39m
+   [33m[2m✓[22m[39m initial verification expires at exactly 24 hours and resend remains available [33m 405[2mms[22m[39m
+   [33m[2m✓[22m[39m password reset changes once, revokes every session and all active link purposes without confirming email [33m 2194[2mms[22m[39m
+   [33m[2m✓[22m[39m reset expires at 30 minutes; newer requests invalidate older links and token purposes cannot be exchanged [33m 1671[2mms[22m[39m
+   [33m[2m✓[22m[39m unknown, blocked, closed and inactive accounts receive the same public acceptance and no recovery links [33m 1097[2mms[22m[39m
+   [33m[2m✓[22m[39m email change preserves old address until confirmation, rejects stale/reused links and duplicate target addresses [33m 2359[2mms[22m[39m
+   [33m[2m✓[22m[39m change token expires after 24 hours; uniqueness is revalidated at confirmation rather than reserved at request [33m 1003[2mms[22m[39m
+   [33m[2m✓[22m[39m ADMIN correction of internal email requires web and confirmation; OPERATOR cannot initiate it [33m 1106[2mms[22m[39m
+   [33m[2m✓[22m[39m technical mailbox rejects commercial sessions, query credentials, HTTP and hostile origins; production disables channel [33m 1369[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery failure is durable, auditable and retryable across instances without duplicate message or business rollback [33m 897[2mms[22m[39m
+   [33m[2m✓[22m[39m preparation failure rolls back partial token/message while retaining the event and audited retry [33m 384[2mms[22m[39m
+   [33m[2m✓[22m[39m tokens never appear in general audit/events/database message plaintext; only authorized detail decrypts them [33m 383[2mms[22m[39m
+   [33m[2m✓[22m[39m two independent reset transactions are forced to overlap and only one consumes the link [33m 888[2mms[22m[39m
+   [33m[2m✓[22m[39m two independent confirmations competing for one new email preserve uniqueness and the loser old address [33m 1810[2mms[22m[39m
+   [33m[2m✓[22m[39m the real npm messages worker starts in Node strip-only mode and delivers an isolated registration event [33m 4136[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m16 passed[39m[22m[90m (16)[39m
+[2m   Start at [22m 20:06:43
+[2m   Duration [22m 30.68s[2m (transform 1.78s, setup 0ms, import 6.94s, tests 21.16s, environment 0ms)[22m
+
+
+> garimpo@0.1.0 audit:toolchain
+> node tests/bootstrap/security/check-audit.mjs
+
+npm audit exit code: 1; metadata findings: {"info":0,"low":0,"moderate":0,"high":4,"critical":0,"total":4}.
+npm audit: FAIL remains in the original report. Only the explicitly approved node-forge version advisory has matching patched bytes.
+Audit classification checked; acceptance still requires signature/schema regression tests, affected build checks and responsible manual tests.

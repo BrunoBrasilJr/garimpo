@@ -1,0 +1,7 @@
+
+> garimpo@0.1.0 test:account-ui
+> playwright test --config tests/e2e/account/playwright.config.ts --grep browser recovery
+
+Browser cases: 1
+passed: browser recovery and email change complete through the real API and protected local messages
+Browser suite: passed

@@ -1,8 +1,10 @@
 # Garimpo — planejamento de software
 
+Para avaliação da entrega e navegação pelo código, consulte [LEIA-ME-ENTREGA.md](LEIA-ME-ENTREGA.md), [TASKS.md](TASKS.md) e o [índice de evidências](EVIDENCIAS/INDICE.md). Este README consolida a especificação; o estado da execução fica em TASKS.md.
+
 ## 1 Identificação e fonte de verdade
 
-Versão planejada: 1.0. Status: PLANEJAMENTO RECONCILIADO COM A ELICITAÇÃO FINAL; decisões técnicas propostas e pendências identificadas. Nenhuma implementação iniciada.
+Registro histórico da etapa de planejamento: versão planejada 1.0, PLANEJAMENTO RECONCILIADO COM A ELICITAÇÃO FINAL; decisões técnicas então propostas e pendências identificadas. Nenhuma implementação havia sido iniciada naquela etapa. Decisões posteriores e estado da execução estão registrados nos ADRs e em TASKS.md.
 
 Dupla: Ana Carolina Corrêa e Bruno dos Santos Brasil Silva.
 

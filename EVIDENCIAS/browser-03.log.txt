@@ -1,0 +1,22 @@
+
+> garimpo@0.1.0 test:account-ui
+> playwright test --config tests/e2e/account/playwright.config.ts --grep browser recovery|invalid link|OPERATOR|ADMIN creates --max-failures=1
+
+Browser cases: 4
+passed: browser recovery and email change complete through the real API and protected local messages
+failed: invalid link has accessible error; fragment is scrubbed, keyboard navigation and enlarged narrow layout remain usable
+Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeFocused[2m([22m[2m)[22m failed
+
+Locator:  getByRole('form', { name: 'Confirmar e-mail', exact: true }).getByRole('alert')
+Expected: focused
+Received: inactive
+Timeout:  10000ms
+
+Call log:
+[2m  - Expect "toBeFocused" getByRole('form', { name: 'Confirmar e-mail', exact: true }).getByRole('alert') with timeout 10000ms[22m
+[2m  - waiting for getByRole('form', { name: 'Confirmar e-mail', exact: true }).getByRole('alert')[22m
+[2m    23 × locator resolved to <div role="alert" tabindex="-1" class="account-error">Este código é inválido, expirou ou já foi usado. …</div>[22m
+[2m       - unexpected value "inactive"[22m
+
+[31mTesting stopped early after 1 maximum allowed failures.[39m
+Browser suite: failed

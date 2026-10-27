@@ -1,0 +1,11 @@
+
+> garimpo@0.1.0 test:account-ui
+> playwright test --config tests/e2e/account/playwright.config.ts --max-failures=1
+
+Browser cases: 6
+passed: HTTPS fails without the isolated CA rather than bypassing certificate validation
+passed: customer registers, confirms email, manages profile/address, restores cookies and logs out
+failed: browser recovery and email change complete through the real API and protected local messages
+Error: Expected protected message not found.
+[31mTesting stopped early after 1 maximum allowed failures.[39m
+Browser suite: failed
