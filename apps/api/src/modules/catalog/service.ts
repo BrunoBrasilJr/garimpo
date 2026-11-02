@@ -23,7 +23,13 @@ const literalLike = (value: string) => value.replace(/[\\%_]/g, '\\$&');
 export class Catalog {
   readonly db: Database;
   readonly clock: Clock;
-  constructor(readonly accounts: Accounts, readonly images = new PublicImageStore(), readonly commercialBindings: CommercialBindings = unavailableCommercialBindings) { this.db = accounts.db; this.clock = accounts.clock; }
+  readonly accounts: Accounts;
+  readonly images: PublicImageStore;
+  readonly commercialBindings: CommercialBindings;
+  constructor(accounts: Accounts, images = new PublicImageStore(), commercialBindings: CommercialBindings = unavailableCommercialBindings) {
+    this.accounts = accounts; this.images = images; this.commercialBindings = commercialBindings;
+    this.db = accounts.db; this.clock = accounts.clock;
+  }
 
   async staff(tx: Tx | Database, access: string) {
     const { user } = await this.accounts.authorize(tx, access);

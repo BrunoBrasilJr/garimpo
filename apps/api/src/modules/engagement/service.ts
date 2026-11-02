@@ -7,7 +7,8 @@ import { appendAudit } from '../../core/audit.ts';
 
 const editionSelect = { id: true, title: true, active: true } as const;
 export class Engagement {
-  constructor(readonly accounts: Accounts) {}
+  readonly accounts: Accounts;
+  constructor(accounts: Accounts) { this.accounts = accounts; }
   private async actor(tx: Prisma.TransactionClient, access: string) { return (await this.accounts.authorize(tx, access, true)).user; }
   private async lockEdition(tx: Prisma.TransactionClient, id: string, active = false) {
     const rows = await tx.$queryRaw<{ id: string; active: boolean }[]>`SELECT id, active FROM "Edition" WHERE id = ${id}::uuid FOR UPDATE`;

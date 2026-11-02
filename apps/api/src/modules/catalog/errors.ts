@@ -1,6 +1,10 @@
 export class CatalogError extends Error {
-  constructor(readonly status: number, readonly code: string, message: string, readonly fieldErrors: Record<string, string[]> = {}) {
+  readonly status: number;
+  readonly code: string;
+  readonly fieldErrors: Record<string, string[]>;
+  constructor(status: number, code: string, message: string, fieldErrors: Record<string, string[]> = {}) {
     super(message);
+    this.status = status; this.code = code; this.fieldErrors = fieldErrors;
   }
 }
 export const missing = () => new CatalogError(404, 'CATALOG_NOT_FOUND', 'Este item não está disponível para consulta.');

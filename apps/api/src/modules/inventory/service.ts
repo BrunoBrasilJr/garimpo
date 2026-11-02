@@ -17,7 +17,8 @@ function movementView(row: Prisma.StockMovementGetPayload<{ include: typeof move
     balanceAfter: row.balanceAfter, reason: row.reason, actorName: row.actor?.name ?? null, createdAt: row.createdAt.toISOString() };
 }
 export class Inventory {
-  constructor(readonly catalog: Catalog) {}
+  readonly catalog: Catalog;
+  constructor(catalog: Catalog) { this.catalog = catalog; }
   async adjust(access: string, offerId: string, delta: number, reason: string, key: string): Promise<StockAdjustmentResult> {
     const { db, clock } = this.catalog, actor = await this.catalog.staff(db, access);
     const result = await idempotent(db, { actorScope: actor.id, operation: 'INVENTORY.ADJUST', key, payload: { offerId, delta, reason } }, async tx => {
