@@ -8,6 +8,7 @@ import { AccountForm } from '../features/account/Form';
 import type { MobileField } from '../features/account/Form';
 import Catalog from '../features/catalog/Catalog';
 import { EngagementActions, Saved } from '../features/engagement/Engagement';
+import { ReviewSection } from '../features/reviews/Reviews';
 
 type Screen = 'login' | 'register' | 'reset' | 'confirm' | 'change-confirm' | 'profile' | 'addresses' | 'catalog' | 'saved';
 interface Address { id: string; recipient: string; zip: string; region: string; city: string; neighborhood: string; street: string; number: string; complement?: string | null }
@@ -66,7 +67,7 @@ export default function App() {
   }
   const formProps = { notify: setNotice };
   function content() {
-    if (screen === 'catalog') return <Catalog origin={process.env.EXPO_PUBLIC_API_ORIGIN ?? ''} initialEdition={catalogEdition} actions={editionId => user && client ? <EngagementActions client={client} editionId={editionId} /> : <Text style={styles.body}>Entre com sua conta para salvar desejos e criar alertas.</Text>} />;
+    if (screen === 'catalog') return <Catalog origin={process.env.EXPO_PUBLIC_API_ORIGIN ?? ''} initialEdition={catalogEdition} actions={editionId => <>{user && client ? <EngagementActions client={client} editionId={editionId} /> : <Text style={styles.body}>Entre com sua conta para salvar desejos e criar alertas.</Text>}<ReviewSection origin={process.env.EXPO_PUBLIC_API_ORIGIN ?? ''} editionId={editionId} client={user ? client ?? undefined : undefined} /></>} />;
     if (screen === 'saved' && user && client) return <Saved client={client} open={editionId => { setCatalogEdition(editionId); setScreen('catalog'); }} />;
     if (loading) return <Text accessibilityRole="alert" style={styles.body}>Preparando seu acesso…</Text>;
     if (exitFailed) return <Button title="Tentar sair novamente" onPress={() => { void logout(); }} />;

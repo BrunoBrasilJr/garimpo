@@ -1,0 +1,6 @@
+.review-section, .review-form { display: grid; gap: 16px; min-width: 0; }
+.review-section article { border-top: 1px solid #b9c1b4; padding-top: 18px; display: grid; gap: 12px; }
+.review-section :is(h2,h3,p,button), .review-form :is(label,p,button) { overflow-wrap: anywhere; min-width: 0; }
+.review-form label { display: grid; gap: 8px; }
+.review-form textarea { width: 100%; min-height: 130px; font: inherit; border: 1px solid #829183; border-radius: 8px; padding: 12px; color: #173c32; background: #fffef9; }
+.review-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
