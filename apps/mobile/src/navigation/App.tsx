@@ -6,8 +6,9 @@ import { deviceClient } from '../features/account/device';
 import { MobileError, errorMessage } from '../features/account/client';
 import { AccountForm } from '../features/account/Form';
 import type { MobileField } from '../features/account/Form';
+import Catalog from '../features/catalog/Catalog';
 
-type Screen = 'login' | 'register' | 'reset' | 'confirm' | 'change-confirm' | 'profile' | 'addresses';
+type Screen = 'login' | 'register' | 'reset' | 'confirm' | 'change-confirm' | 'profile' | 'addresses' | 'catalog';
 interface Address { id: string; recipient: string; zip: string; region: string; city: string; neighborhood: string; street: string; number: string; complement?: string | null }
 const email: MobileField = { name: 'email', label: 'E-mail', email: true };
 const password: MobileField = { name: 'password', label: 'Senha', secret: true };
@@ -63,6 +64,7 @@ export default function App() {
   }
   const formProps = { notify: setNotice };
   function content() {
+    if (screen === 'catalog') return <Catalog origin={process.env.EXPO_PUBLIC_API_ORIGIN ?? ''} />;
     if (loading) return <Text accessibilityRole="alert" style={styles.body}>Preparando seu acesso…</Text>;
     if (exitFailed) return <Button title="Tentar sair novamente" onPress={() => { void logout(); }} />;
     if (screen === 'register') return <AccountForm {...formProps} title="Crie sua conta" fields={[{ name: 'name', label: 'Nome completo' }, email, { ...password, newPassword: true }]} submit="Criar conta" onSubmit={async values => {
@@ -128,7 +130,7 @@ export default function App() {
       <Text style={styles.brand} accessibilityRole="header">◉ Garimpo</Text><Text style={styles.eyebrow}>DISCOS E DESCOBERTAS</Text>
       <Text style={styles.title} accessibilityRole="header">Sua próxima boa história.</Text>
       <Text style={styles.body}>Um lugar para quem gosta de descobrir música e guardar boas histórias em vinil.</Text>
-      <View style={styles.navigation}>{user ? <><Button title="Minha conta" onPress={() => setScreen('profile')} /><Button title="Endereços" onPress={() => setScreen('addresses')} /><Button title="Sair" onPress={() => { void logout(); }} /></> :
+      <View style={styles.navigation}><Button title="Explorar discos" onPress={() => setScreen('catalog')} />{user ? <><Button title="Minha conta" onPress={() => setScreen('profile')} /><Button title="Endereços" onPress={() => setScreen('addresses')} /><Button title="Sair" onPress={() => { void logout(); }} /></> :
         <><Button title="Entrar" onPress={() => setScreen('login')} /><Button title="Criar conta" onPress={() => setScreen('register')} /><Button title="Recuperar acesso" onPress={() => setScreen('reset')} /><Button title="Confirmar e-mail" onPress={() => setScreen('confirm')} /></>}</View>
       {notice ? <Text style={styles.notice} accessibilityRole="alert" accessibilityLiveRegion="polite">{notice}</Text> : null}
       <View key={screen} style={styles.panels}>{content()}</View>

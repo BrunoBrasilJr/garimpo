@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "platforms": ["android", "ios"],
+    "plugins": [["expo-audio", { "microphonePermission": false, "recordAudioAndroid": false, "enableBackgroundRecording": false, "enableBackgroundPlayback": false }]],
     "android": { "package": "br.com.garimpo.app" },
     "ios": { "bundleIdentifier": "br.com.garimpo.app", "supportsTablet": true }
   }
