@@ -7,17 +7,18 @@ import { execFileSync } from 'node:child_process';
 import { createApp } from '../../apps/api/src/app.ts';
 import type { CatalogOptions } from '../../apps/api/src/modules/catalog/router.ts';
 import type { ReviewOptions } from '../../apps/api/src/modules/reviews/router.ts';
+import type { CheckoutOptions } from '../../apps/api/src/modules/cart/router.ts';
 
 export const origin = 'https://localhost:5173';
 export interface Reply<T> { status: number; body: T; raw: Buffer; cookie: string; csrf: string; headers: import('node:http').IncomingHttpHeaders }
 export const web = (reply: Pick<Reply<unknown>, 'cookie' | 'csrf'>) => ({ Origin: origin, Cookie: reply.cookie, 'X-CSRF-Token': reply.csrf });
-export async function openCatalogServer(options: CatalogOptions, reviews?: ReviewOptions) {
+export async function openCatalogServer(options: CatalogOptions, reviews?: ReviewOptions, checkout?: CheckoutOptions) {
   const directory = mkdtempSync(join(tmpdir(), 'garimpo-catalog-http-'));
   const key = join(directory, 'server.key'), cert = join(directory, 'server.pem');
   execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '1', '-keyout', key,
     '-out', cert, '-subj', '/CN=localhost', '-addext', 'subjectAltName=DNS:localhost,IP:127.0.0.1'], { stdio: 'ignore' });
   chmodSync(key, 0o600); const ca = readFileSync(cert);
-  const app = createApp(options, undefined, options, reviews), secure = createServer({ key: readFileSync(key), cert: ca }, app), plain = plainServer(app);
+  const app = createApp(options, undefined, options, reviews, checkout), secure = createServer({ key: readFileSync(key), cert: ca }, app), plain = plainServer(app);
   await Promise.all([secure, plain].map(server => new Promise<void>(resolve => { server.listen(0, '127.0.0.1', resolve); })));
   return {
     async call<T = Record<string, unknown>>(path: string, method = 'GET', payload?: unknown, headers: Record<string, string> = {}, plaintext = false): Promise<Reply<T>> {
