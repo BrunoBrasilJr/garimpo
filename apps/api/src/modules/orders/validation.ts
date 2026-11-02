@@ -1,0 +1,12 @@
+import { z } from 'zod';
+import { id, zip } from '../freight/validation.ts';
+const version = z.number().int().min(1).max(2147483647), revision = z.string().regex(/^[a-f0-9]{64}$/);
+const item = z.object({ offerId: id, quantity: z.number().int().min(1).max(1000) }).strict();
+const items = z.array(item).min(1).max(100).refine(values => new Set(values.map(value => value.offerId)).size === values.length && values.reduce((sum, value) => sum + value.quantity, 0) <= 1000);
+export const quote = z.union([z.object({ items, zip, couponCode: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]{3,40}$/).optional() }).strict(), z.object({ checkoutId: id, addressId: id }).strict()]);
+export const address = z.object({ version, addressId: id, freightRevision: revision }).strict();
+export const create = z.object({ checkoutId: id, version, addressId: id, freightRevision: revision, method: z.enum(['PIX', 'BOLETO']) }).strict();
+export const key = z.string().min(1).max(128).regex(/^[A-Za-z0-9._:-]+$/);
+export type QuoteInput = z.infer<typeof quote>;
+export type AddressInput = z.infer<typeof address>;
+export type CreateOrderInput = z.infer<typeof create>;

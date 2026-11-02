@@ -1,4 +1,4 @@
-import type { CheckoutSnapshot, CheckoutView } from '@garimpo/contracts';
+import type { CheckoutSnapshot, CheckoutView, AcceptedFreight } from '@garimpo/contracts';
 import { Accounts } from '../accounts/service.ts';
 import { serializable } from '../../persistence/transaction.ts';
 import { payloadHash } from '../../core/idempotency.ts';
@@ -24,7 +24,7 @@ export class Checkouts {
   view(row: CheckoutRecord): CheckoutView {
     const snapshot = row.quoteSnapshot as unknown as CheckoutSnapshot;
     return { ...snapshot, id: row.id, status: row.status, version: row.version, cartVersion: row.cartVersion, couponCode: row.couponCode, addressId: row.addressId,
-      createdAt: row.createdAt.toISOString(), expiresAt: row.expiresAt.toISOString(), serverTime: this.accounts.clock.now().toISOString() };
+      createdAt: row.createdAt.toISOString(), expiresAt: row.expiresAt.toISOString(), serverTime: this.accounts.clock.now().toISOString(), freight: row.freightRevision ? row.freightSnapshot as unknown as AcceptedFreight : null };
   }
   async current(access: string): Promise<CheckoutView> {
     const row = await serializable(this.accounts.db, async tx => { const user = await lockCustomer(this.accounts, tx, access); return expireOwn(tx, user.id, this.accounts.clock); });
@@ -93,7 +93,7 @@ export class Checkouts {
       if (!row || row.id !== id) return { error: missing() };
       if (row.version !== version) throw new CartError(409, 'CHECKOUT_VERSION_CONFLICT', 'A finalização mudou. Atualize antes de escolher o endereço.');
       const address = await tx.address.findFirst({ where: { id: addressId, userId: user.id, deletedAt: null } }); if (!address) throw missing();
-      const updated = await tx.checkout.update({ where: { id, version }, data: { addressId, version: { increment: 1 } }, include: checkoutInclude });
+      const updated = await tx.checkout.update({ where: { id, version }, data: { addressId, freightRevision: null, version: { increment: 1 } }, include: checkoutInclude });
       await appendAudit(tx, { actorId: user.id, action: 'CHECKOUT.ADDRESS_SELECTED', targetType: 'CHECKOUT', targetId: id, result: 'SUCCESS', reason: 'OWN_ADDRESS_METADATA', changes: { addressId } }, this.accounts.clock);
       return { row: updated };
     });
