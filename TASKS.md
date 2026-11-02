@@ -16,7 +16,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
-| 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | IN_PROGRESS |
+| 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | BLOCKED |
@@ -1261,7 +1261,7 @@ Scope Validation: Allowed Changes PASS; Incidental Changes PASS, cinco arquivos 
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -1332,6 +1332,45 @@ Início em 2026-11-02, branch real feature/TASK-009-catalogo-estoque, base 4bcf2
 Plano: painel web da equipe para metadados/edições/faixas/ofertas/fotos; movimento físico inicial e ajustes atômicos/idempotentes; limiar de novos por edição e ausência de usados disponíveis só no painel. Porta comercial retornará indisponibilidade conservadora enquanto não integrada: não inventar reservado=0/disponível conhecido, impedir reduções ou exclusões sem informação confiável, permitir adições que não invadem vínculos. Integração comercial completa permanece nas tarefas previstas. Saldo desconhecido não será exibido como zero; alerta só quando demonstrável, sem e-mail. Incidental previsto: navegação/registro web, exports de contratos, comandos/configuração da suíte inventory e relações inversas necessárias ao modelo StockMovement, todos mínimos e sujeitos aos nove critérios na revisão. Nenhum gate novo aprovado antecipadamente.
 
 Validação intermediária: build inicial PASS; typecheck detectou prop opcional com undefined explícito, corrigida sem relaxar configuração. Primeira validação nativa e1f6443: build/typecheck/lint e 66 unitários PASS; integração 10/11 PASS, um erro de fixture ao ativar usado sem conservação obrigatória (constraint existente corretamente rejeitou). IN_PROGRESS → FAILED → IN_PROGRESS para correção no escopo: preparação agora publica edição/usados via rotas reais, fotos próprias e metadados obrigatórios, mantendo a asserção de agregação. Log test-results/inventory/first-native-check.log preservado. Um comando anterior falhou ao selecionar referência nativa e executou testes na revisão antiga; não é evidência de TASK-009. Runner posterior confirma hash e usa set -e. Incidental adicional mínimo: harness HTTPS compartilhado recebe mediaRoot no diretório isolado do teste, para fotos desta interface não usarem a raiz de mídia local; nenhuma mudança de autenticação/validação. Revisão das regras React aplicada, módulo administrativo carregado sob demanda e dados independentes em paralelo. Nenhum DONE antecipado.
+
+#### TASK Execution Report
+
+TASK: TASK-009. Status: DONE (IN_PROGRESS → IN_REVIEW → DONE após revisão final). Branch: feature/TASK-009-catalogo-estoque. Commits reais de código/testes: f26d6bd, e1f6443, b225755, 471b537, c0fd69d, f44b2d1. Base estável 4bcf2e8; fechamento documental em commit posterior próprio.
+
+##### Primary Changes
+
+Classificação PRIMARY: TASKS.md; apps/api/prisma/schema.prisma e migrations/202611020001_inventory/migration.sql (somente StockMovement e suas relações inversas); apps/api/src/modules/inventory/{ledger,router,rules,service}.ts; catalog/lifecycle.ts, catalog/service.ts e catalog/router.ts nos acoplamentos explicitados; packages/contracts/src/inventory/index.ts; os seis arquivos de apps/web/src/features/admin/catalog/**; docs/architecture/{api,data-model}.md; tests/catalog/catalog.integration.ts no ajuste isolado de porta/FK; tests/inventory/{fixtures.ts,rules.test.ts,inventory.integration.ts,catalog.spec.ts,vitest.integration.config.ts,playwright.config.ts}.
+
+Painel da equipe com metadados, edições/faixas, preços/condições, fotos próprias, publicação/inativação e exclusão protegida; estoque e alertas confirmados paginados. Livro físico registra abertura e ajustes com saldo anterior/posterior, versão, motivo e responsável. Ajustes/abertura, auditoria, idempotência e outbox são atômicos; usado permanece individual. Migração consolida saldos positivos existentes sem alterar quantidade original nem inventar vendas; FK preserva o livro mesmo após saldo zero. Porta comercial padrão indisponível, selada e sem chave de liberação via ambiente/requisição. Reservado/desconhecido não vira zero; redução/exclusão dependente da consulta falha fechada. Consulta KNOWN é validada integralmente; vínculos reservados/comprometidos e histórico são preservados. Integração comercial definitiva permanece nos incrementos previstos.
+
+##### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/web/src/navigation/App.tsx | rota lazy e link administrativo por contexto já existente | entrada mínima para alcançar o painel; mesmas regras de autenticação |
+| apps/web/src/navigation/route.ts | reconhecer catalog-admin | registro mínimo do destino |
+| packages/contracts/src/index.ts | exportar tipos inventory | disponibilizar contrato do workspace |
+| package.json | test:inventory e inclusão em verify | executar a suíte nova no gate existente, sem alterar dependências |
+| tests/core/run-integration.mjs | seleção inventory/schema task009 isolado | reutilizar runner e proteção da base de teste |
+| tests/e2e/account/harness.mjs | mediaRoot dentro do diretório isolado | fotos do novo fluxo não usam a raiz de mídia local; TLS e autenticação preservados |
+
+As seis alterações satisfazem necessidade/causalidade/minimalidade, não adicionam função independente, regra de negócio, arquitetura significativa, quebra de contrato, mudança de autenticação/proteção de dados ou proibição. Relações inversas da nova entidade ficam classificadas PRIMARY junto ao schema permitido; nenhuma coluna de conta foi criada/alterada.
+
+##### Tests Executed
+
+Ubuntu WSL2, Node 24.22.1/npm 11.19.1/PostgreSQL 17, clone nativo de validação; fonte confirmada por hash. e1f6443: build/typecheck/lint e 66 unitários PASS (14 arquivos). b225755: typecheck/lint, integração estoque 12 PASS e regressão catálogo 19 PASS. c0fd69d: build/typecheck/lint, integração estoque 12 PASS com guarda de exclusão do próprio livro, E2E administrativo 2 PASS e contas/equipe 7 PASS em Firefox real com CA isolada confiada; core 9, contas 14 e mensagens 16 integrações PASS; audit:toolchain PASS segundo política vigente. f44b2d1 alterou somente CSS/teste: novo build web, tsc de testes, lint dirigido e os 2 E2E administrativos PASS, agora também a 390 px com texto 200%, foco de erro e ausência de rolagem horizontal. Total acumulado: 145 casos distintos PASS = 66 unitários + 70 integrações + 9 E2E, sem contar repetições. Inspeção visual do screenshot estreito realizada; nenhum teste físico Android/TalkBack/iOS/Chrome/Edge alegado nesta interface web.
+
+Foram demonstrados conflitos reais de dois clientes/transações bloqueados simultaneamente por terceiro cliente PostgreSQL; apenas uma perda consome o usado, replay concorrente de entrada tem um efeito. Falha real ao enfileirar reverte saldo/movimento/auditoria. Teste executa o SQL real da migração em outro schema isolado com saldos pré-existentes e comprova consolidação sem alterar quantidades. Sem reset/drop/truncate/restauração sobre base original. Schemas finais: task009_32b8948dd8d44234a990e17f643ecf2e, task008_1ee5a1954d9049acb13e1403d985bbba, task003_6a85dfccd3ad4dc4a1967d4c6e24c211, task004_8ab387450cff4e6880c8005cff3569d4, task005_23e687f38dcb48d1b918890a3107b56f; schemas de backfill/UI adicionais preservados.
+
+Logs locais preservados em test-results/inventory/{first-native-check,second-native-check,final-native,final-native-02,enlarged-ui-check}.log. Falhas intermediárias do E2E eram seletores ambíguos do input file e uso de APIRequestContext sem a CA NSS do Firefox: corrigidos selecionando o botão de envio por nome e verificando a resposta pública pelo fetch real do navegador; certificados nunca ignorados. Não contar essas execuções como PASS. Screenshot local catalog-mobile-width.png; material sintético. Warning de depreciação pg/Prisma já conhecido preservado, sem mascaramento/atualização oportunista. Auditoria bruta mantém exit 1/FAIL, 7 low de deepmerge, zero moderate/high/critical; política específica de versão/bytes/mitigação e regressões PASS, sem alegação de npm audit limpo. Dependências/lockfile não mudaram nesta TASK.
+
+##### Quality Gates
+
+Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS no escopo e política de mitigação vigente (auditoria bruta FAIL explicitada); Acceptance Criteria PASS; Regression Tests PASS. GATE-01 a GATE-08 aplicáveis satisfeitos. Sem teste físico/leitor de tela inferido de teste automatizado web. Portas indisponíveis são condição conservadora prevista da tarefa, não aprovação antecipada da integração comercial.
+
+##### Scope Validation e Definition of Done
+
+Allowed Changes PASS, incluindo precisão PRIMARY registrada antes da edição; Incidental Changes PASS (tabela acima); Forbidden Changes PASS; Scope Creep NONE. IDs preservados, nenhuma tarefa futura executada, nenhum serviço externo/cobrança/túnel novo; ZIP alheio preservado. Definition of Done: PASS. Contagem 9/37 DONE. Next Eligible TASK: TASK-010, candidata com dependência TASK-008 satisfeita; sua própria DoR será revalidada antes da promoção. Continuidade explicitamente autorizada.
 
 ### TASK-010 Criar catálogo público no site
 
