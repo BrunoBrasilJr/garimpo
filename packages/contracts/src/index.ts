@@ -13,6 +13,7 @@ export type { AvailabilityKind, SavedEdition, WishView, AlertView, EngagementPag
 export type { PublicReview, PrivateReview, ReviewPage, PublicReviewPage, ReviewDraft, ReviewRevisionView } from './reviews/index.js';
 export type { DiscountType, PricingTarget, NamedPricingTarget, DiscountView, PromotionView, CouponView, PricingPage, PricedUnit, PriceQuote } from './pricing/index.js';
 export type { CartLine, CartPricing, CartView, CartChange } from './cart/index.js';
-export type { CheckoutProduct, CheckoutSnapshot, CheckoutView } from './checkout/index.js';
+export type { CheckoutProduct, CheckoutSnapshot, CheckoutView, CheckoutQuote, InitialChargeView, OrderCreationView } from './checkout/index.js';
+export type { CepRangeInput, FreightRateInput, FreightRateView, FreightPage, FreightQuote, DeliveryAddressSnapshot, AcceptedFreight } from './freight/index.js';
 export { GuestCartStore, GuestDataError, decodeGuest, guestTag } from './cart/guest.js';
 export type { GuestLine, GuestMergeIntent, GuestCartState, GuestStorage, GuestExclusive } from './cart/guest.js';
