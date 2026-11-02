@@ -19,6 +19,7 @@ import { Carts } from '../../apps/api/src/modules/cart/service.ts';
 import { Checkouts } from '../../apps/api/src/modules/checkout/service.ts';
 import type { ReserveInput } from '../../apps/api/src/modules/checkout/service.ts';
 import type { PendingOrders } from '../../apps/api/src/modules/checkout/pending-orders.ts';
+import { unavailablePendingOrders } from '../../apps/api/src/modules/checkout/pending-orders.ts';
 import { Pricing } from '../../apps/api/src/modules/pricing/service.ts';
 import { expireReservations } from '../../apps/api/src/jobs/reservations.ts';
 import { isolatedNoCommercialBindings } from '../inventory/fixtures.ts';
@@ -58,7 +59,7 @@ beforeAll(async () => {
   mediaRoot = await mkdtemp(join(tmpdir(), 'garimpo-cart-')); catalog = new Catalog(accounts, new PublicImageStore(mediaRoot));
   artistId = (await catalog.changeMetadata(admin.accessToken, 'artist', 'Artista ' + randomUUID())).id; genreId = (await catalog.changeMetadata(admin.accessToken, 'genre', 'Gênero ' + randomUUID())).id;
   png = await sharp({ create: { width: 5, height: 5, channels: 3, background: 'gold' } }).png().toBuffer();
-  server = await openCatalogServer({ db, clock, mediaRoot }, undefined, { db, clock, pendingOrders }); closed = await openCatalogServer({ db, clock, mediaRoot });
+  server = await openCatalogServer({ db, clock, mediaRoot }, undefined, { db, clock, pendingOrders }); closed = await openCatalogServer({ db, clock, mediaRoot }, undefined, { db, clock, pendingOrders: unavailablePendingOrders });
   control = new Client({ connectionString: value }); await control.connect(); await control.query(`SET search_path TO "${schema}"`);
 });
 beforeEach(async () => {

@@ -25,8 +25,10 @@ são falhas de transporte deliberadas sobre requisições reais.
 
 Os seis cenários configurados injetam exclusivamente a porta de contagem conhecida
 de pedidos pendentes como zero. Isso permite validar a interface antes do adaptador
-comercial de pedidos; o cenário separado `unavailable.spec.ts` usa o padrão real
-UNAVAILABLE e exige 503. Não representa aceite de integração com pedidos reais.
+comercial de pedidos; o cenário separado `unavailable.spec.ts` injeta explicitamente
+UNAVAILABLE e exige 503. Na TASK-018 o padrão de runtime passou a consultar pedidos
+reais, com prova positiva própria em tests/checkout. O teste negativo não representa
+aceite dessa integração nem muda o padrão para uma contagem fictícia.
 Preços, saldo, autenticação, autorização, mescla, reservas e prazos usam o servidor.
 
 O preview renderiza os componentes React Native com AsyncStorage web e cliente
