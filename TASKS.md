@@ -1114,7 +1114,15 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+Retomada autorizada em 2026-11-01, a partir de 6733e22, branch real chore/TASK-007-checkpoint-phase01. Responsável solicitou execução contínua para tentar pelo menos 75% das 37 tarefas até quinta-feira, 2026-11-05: meta de 28 DONE, horário final ainda não informado. Essa instrução substitui a pausa para entrega e não modifica o histórico da meta anterior. Nenhuma conclusão prometida antecipadamente. ZIP não versionado do responsável preservado.
+
+DoR: TASK-003/004/005/006 DONE, artefatos e migrations presentes; ADR-001 a ADR-005 ACCEPTED e pacote de parâmetros ratificado. Últimas evidências válidas das dependências e 79 casos acumulados em TASK-006, sem alteração de aplicação posterior, complementadas na retomada por build/tipos/lint PASS e 33 unitários/protocolo/relógio PASS. Não há regressão conhecida neste momento; reexecução acumulada de integração/E2E/auditoria/bundle é o objetivo deste checkpoint e ainda está em andamento. BLOCKED → READY → IN_PROGRESS. PRIMARY previstos: apenas TASKS.md e docs/validation/phase-01.md. Incidental Changes: NONE; código de produção, migrations e novas funcionalidades proibidos.
+
+Autonomia posterior explícita: ao receber proposta concreta de PD-006 (Goldmine M/NM/VG+/VG/G+/G/F/P para mídia e capa separadas; avaliação inteira 1–5; promoção percentual ou fixa em reais), responsável pediu seguir sem novas permissões genéricas e delegou decisões rotineiras. Adotar o pacote proposto ao preparar TASK-008/013/014, registrando sua origem, sem atribuí-lo ao PDF. Essa decisão não implementa catálogo neste checkpoint. Referência primária consultada para vocabulário: https://www.goldminemag.com/columns/vinyl-value/vinyl-finds-grading-vinyl-part-one.
+
+Responsável respondeu “Não quero usar TalkBack” para esta rodada. Leitor de tela permanece NÃO EXECUTADO; inspeção de rótulos/roles e escala de texto não é teste real de TalkBack. A limitação é rastreada em docs/validation/phase-01.md e na aceitação integral TASK-033; não afirmar certificação, paridade iOS ou execução Chrome/Edge a partir de resultados Firefox. Gates e decisão de fechamento do checkpoint continuam pendentes.
+
+BLOCKER real na revalidação: build/tipos/lint e 72 casos automáticos (33 unidade/protocolo/relógio + 9 core + 14 contas + 16 mensagens) PASS. npm run audit:toolchain FAIL/exit 1 por avisos novos, com relatório integral em test-results/bootstrap/audit-patched.json: 23 pacotes afetados (1 high, 20 moderate, 2 low), incluindo novas origens node-forge, minimatch, glob e deepmerge. A exceção antiga para um único aviso não cobre esses casos. O roteiro interrompeu corretamente antes de E2E/bundle. IN_PROGRESS → BLOCKED por dependência de segurança; preservar trabalho do checkpoint e corrigir a ferramenta no escopo próprio da TASK-002 antes de retomar. Nenhuma auditoria falha convertida em PASS, nenhuma TASK nova concluída.
 
 ### TASK-008 Implementar catálogo, metadados e imagens na API
 
