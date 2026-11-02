@@ -9,7 +9,11 @@ test('shared mobile components search track artists and combine edition, conditi
   await page.getByRole('textbox', { name: 'Título, artista ou faixa', exact: true }).fill(data.trackArtist); await page.getByRole('button', { name: 'Buscar discos', exact: true }).click();
   await expect(page.getByRole('heading', { name: '1 edição encontrada', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Combinar filtros', exact: true }).click();
-  const choose = async (label: string, option: string) => { await page.getByRole('button', { name: new RegExp('^' + label + ':') }).click(); await page.getByRole('radio', { name: option, exact: true }).click(); };
+  const choose = async (label: string, option: string) => {
+    await page.getByRole('button', { name: new RegExp('^' + label + ':') }).click();
+    const dialog = page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: label, exact: true }) });
+    await dialog.getByRole('radio', { name: option, exact: true }).click(); await expect(dialog).toBeHidden();
+  };
   await choose('Artista da edição ou da faixa', data.trackArtist); await choose('Gênero', data.genre); await choose('Década desta edição', '2020–2029');
   await page.getByRole('textbox', { name: 'Preço mínimo em reais', exact: true }).fill('70,00'); await page.getByRole('textbox', { name: 'Preço máximo em reais', exact: true }).fill('80,00');
   await choose('Conservação do disco usado', 'VG+'); await choose('Conservação da capa usada', 'NM'); await choose('Disponibilidade', 'Disponíveis');
