@@ -64,7 +64,7 @@ export async function startHarness({ realtime = false } = {}) {
   const config = { db, clock, webOrigin: origin };
   web.use(createApp(config, { ...config, mode: 'local-test', encryptionKey, technicalSecret }, { ...config, mediaRoot: resolve(directory, 'public-products') }));
   web.use((request, response, next) => {
-    response.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'");
+    response.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; media-src 'self' https:; base-uri 'none'; frame-ancestors 'none'");
     response.set('Referrer-Policy', 'no-referrer'); response.set('X-Content-Type-Options', 'nosniff');
     next();
   });

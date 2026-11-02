@@ -1,5 +1,6 @@
 import { test, expect } from '../account/fixtures';
 import { seedCatalog } from './seed';
+import { audioProvider } from './audio';
 
 test('visitor search includes track artists; combined filters use one offer and edition decade', async ({ page, app }) => {
   const data = await seedCatalog(page, app.origin, app.credentials.adminEmail, app.credentials.adminPassword);
@@ -26,7 +27,9 @@ test('visitor search includes track artists; combined filters use one offer and 
 });
 
 test('edition groups new and individual used offers, unknown metadata and optional failed audio remain usable', async ({ page, app }) => {
-  const data = await seedCatalog(page, app.origin, app.credentials.adminEmail, app.credentials.adminPassword);
+  const provider = await audioProvider(app.directory);
+  try {
+  const data = await seedCatalog(page, app.origin, app.credentials.adminEmail, app.credentials.adminPassword, provider.url);
   await page.goto(app.origin + '/#/edition?id=' + data.main);
   await expect(page.getByRole('heading', { name: data.mainTitle, exact: true })).toBeFocused();
   await expect(page.getByRole('region', { name: 'Ofertas novas', exact: true })).toContainText('R$ 129,90');
@@ -37,6 +40,8 @@ test('edition groups new and individual used offers, unknown metadata and option
   await used.getByRole('radio').check(); await expect(page.getByRole('status').filter({ hasText: 'Usado selecionado' })).toContainText('Esta seleção não reserva estoque.');
   await expect(page.locator('audio')).toHaveCount(1);
   await page.getByLabel('Prévia de Canção do convidado', { exact: true }).evaluate(node => (node as unknown as { load: () => void }).load());
+  await expect.poll(() => page.locator('audio').evaluate(node => (node as unknown as { duration: number }).duration)).toBe(1);
+  provider.fail(); await page.locator('audio').evaluate(node => (node as unknown as { load: () => void }).load());
   await expect(page.getByText('Não foi possível reproduzir esta prévia. Os dados da edição continuam disponíveis.', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Exemplares usados', exact: true })).toBeVisible();
   await page.goto(app.origin + '/#/edition?id=' + data.unknown);
@@ -45,6 +50,7 @@ test('edition groups new and individual used offers, unknown metadata and option
   await expect(page.locator('audio')).toHaveCount(0);
   await page.goto(app.origin + '/#/edition?id=' + data.draft); await expect(page.getByRole('heading', { name: 'Edição indisponível', exact: true })).toBeVisible();
   await page.goto(app.origin + '/#/edition'); await expect(page.getByRole('alert')).toContainText('Esta edição não está disponível.');
+  } finally { await provider.close(); }
 });
 
 test('customer can browse publicly without forwarding credentials; pagination, history, keyboard and enlarged layout work', async ({ page, app }) => {

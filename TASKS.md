@@ -1445,6 +1445,8 @@ Não executada. Estado inicial preservado; a conciliação documental não é ex
 
 PRIMARY: busca/filtros combinados, paginação/URL, detalhe agrupando novos/usados, metadados desconhecidos explícitos, fotos e áudio opcional por faixa em apps/web/src/features/catalog/**; E2E com navegador/API/banco reais em tests/e2e/catalog-web/**; registro em TASKS. Incidental previsto: somente registro mínimo das rotas públicas e navegação em App.tsx/route.ts, sem modificar autenticação; comandos/configuração se estritamente necessários para rodar a suíte. Os nove critérios se aplicam; sem migrations/dependências/regras comerciais/backend novo, carrinho/reserva/desejos/avaliações permanecem nas tarefas correspondentes. Nenhum resultado de teste novo inferido antecipadamente.
 
+Precisão PRIMARY sob a delegação técnica explícita do responsável: tests/e2e/account/harness.mjs, exclusivamente a diretiva media-src do servidor isolado, deve permitir self e HTTPS para reproduzir o link externo já exigido por RN-026. O default-src self herdado impediria esse caso; habilitar a capacidade aprovada não altera scripts, autenticação, TLS, cookies ou API. Trata-se de configuração de segurança ligada à funcionalidade, portanto registrada como PRIMARY, não disfarçada de incidental. Não haverá proxy/upload de áudio pela aplicação. Teste com segundo servidor HTTPS de áudio sintético somente loopback, outro host/origem e certificado da CA isolada já confiada, seguido de falha real do recurso. Três E2E públicos e build/typecheck/lint já PASS em 3a9d68c; prova positiva de áudio externo ainda pendente, sem alegação de aceitação antecipada dessa precisão.
+
 ### TASK-011 Criar catálogo público no aplicativo
 
 #### Status
