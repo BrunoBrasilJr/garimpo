@@ -17,7 +17,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
-| 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | BLOCKED |
+| 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | IN_PROGRESS |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | BLOCKED |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | BLOCKED |
@@ -1376,7 +1376,7 @@ Allowed Changes PASS, incluindo precisão PRIMARY registrada antes da edição; 
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -1438,6 +1438,12 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR
+
+2026-11-02, branch real feature/TASK-010-catalogo-web, base estável 764b94b. TASK-008 DONE, API/contratos/metadados/fotos reais disponíveis; sua regressão de 19 integrações e gates acumulados da TASK-009 válidos, sem falha conhecida de dependência. ADR-001 ACCEPTED; PD-006 já resolvida, demais PDs não bloqueiam este recorte. AGENTS/conciliação, README/pendências, TASKS/Scope Guard, ADR/API/testes e código/testes existentes relidos. DoR PASS; BLOCKED → READY → IN_PROGRESS. Continuidade explicitamente autorizada.
+
+PRIMARY: busca/filtros combinados, paginação/URL, detalhe agrupando novos/usados, metadados desconhecidos explícitos, fotos e áudio opcional por faixa em apps/web/src/features/catalog/**; E2E com navegador/API/banco reais em tests/e2e/catalog-web/**; registro em TASKS. Incidental previsto: somente registro mínimo das rotas públicas e navegação em App.tsx/route.ts, sem modificar autenticação; comandos/configuração se estritamente necessários para rodar a suíte. Os nove critérios se aplicam; sem migrations/dependências/regras comerciais/backend novo, carrinho/reserva/desejos/avaliações permanecem nas tarefas correspondentes. Nenhum resultado de teste novo inferido antecipadamente.
 
 ### TASK-011 Criar catálogo público no aplicativo
 

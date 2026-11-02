@@ -7,6 +7,7 @@ import { readableError, request } from '../features/account/client';
 import { readRoute } from './route';
 import '../features/account/account.css';
 const CatalogAdmin = lazy(() => import('../features/admin/catalog/Catalog'));
+const PublicCatalog = lazy(() => import('../features/catalog/Catalog'));
 
 export default function App() {
   const [route, setRoute] = useState(() => readRoute(location.hash)), [user, setUser] = useState<AccountView | null>(null), [loading, setLoading] = useState(true), [notice, setNotice] = useState('');
@@ -32,15 +33,16 @@ export default function App() {
     catch (cause) { setNotice(readableError(cause)); }
   }
   const accountRoute = route.name === 'profile' || route.name === 'staff' || route.name === 'catalog-admin';
+  const publicRoute = route.name === 'catalog' || route.name === 'edition';
   return <div className="account-site">
     <a className="account-skip" href="#account-main" onClick={event => { event.preventDefault(); document.getElementById('account-main')?.focus(); }}>Pular para o conteúdo</a>
-    <header className="account-header"><a href="#/login" className="account-brand"><span aria-hidden="true">◉</span> Garimpo</a>
-      <nav aria-label="Navegação principal">{user ? <><a href="#/profile">Minha conta</a>{user.context === 'STAFF' ? <a href="#/catalog-admin">Catálogo</a> : null}{user.context === 'STAFF' && user.role === 'ADMIN' ? <a href="#/staff">Equipe</a> : null}<button className="secondary" onClick={() => { void logout(); }}>Sair</button></> : <><a href="#/login">Entrar</a><a href="#/register">Criar conta</a></>}</nav>
+    <header className="account-header"><a href="#/catalog" className="account-brand"><span aria-hidden="true">◉</span> Garimpo</a>
+      <nav aria-label="Navegação principal"><a href="#/catalog">Explorar discos</a>{user ? <><a href="#/profile">Minha conta</a>{user.context === 'STAFF' ? <a href="#/catalog-admin">Catálogo</a> : null}{user.context === 'STAFF' && user.role === 'ADMIN' ? <a href="#/staff">Equipe</a> : null}<button className="secondary" onClick={() => { void logout(); }}>Sair</button></> : <><a href="#/login">Entrar</a><a href="#/register">Criar conta</a></>}</nav>
     </header>
-    <main id="account-main" className={'account-shell' + (route.name === 'catalog-admin' ? ' catalog-layout' : '')} tabIndex={-1}>
-      <aside className="account-intro"><p className="eyebrow">DISCOS E DESCOBERTAS</p><h1 ref={heading} tabIndex={-1}>Sua próxima<br />boa história.</h1><p>Um lugar para quem gosta de descobrir música e guardar boas histórias em vinil.</p><div className="account-record" aria-hidden="true"><span>g.</span></div><p className="account-caption">Comece pela sua conta.<br />O catálogo chega em breve.</p></aside>
+    <main id="account-main" className={'account-shell' + (route.name === 'catalog-admin' ? ' catalog-layout' : publicRoute ? ' public-layout' : '')} tabIndex={-1}>
+      <aside className="account-intro"><p className="eyebrow">DISCOS E DESCOBERTAS</p><h1 ref={heading} tabIndex={-1}>Sua próxima<br />boa história.</h1><p>Um lugar para quem gosta de descobrir música e guardar boas histórias em vinil.</p><div className="account-record" aria-hidden="true"><span>g.</span></div><p className="account-caption">Encontre novas histórias.<br /><a href="#/catalog">Explore nosso catálogo.</a></p></aside>
       <div className="account-panels">{notice ? <div role="status" className="account-notice">{notice}</div> : null}
-        {loading ? <section className="account-card" role="status">Preparando seu acesso…</section> :
+        {publicRoute ? <Suspense fallback={<p role="status">Carregando catálogo…</p>}><PublicCatalog mode={route.name === 'edition' ? 'edition' : 'catalog'} query={route.query ?? ''} /></Suspense> : loading ? <section className="account-card" role="status">Preparando seu acesso…</section> :
           route.name === 'catalog-admin' && user ? user.context === 'STAFF' ? <Suspense fallback={<p role="status">Carregando catálogo…</p>}><CatalogAdmin /></Suspense> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente a equipe pode administrar o catálogo.</p></section> :
           route.name === 'staff' && user ? user.context === 'STAFF' && user.role === 'ADMIN' ? <Staff user={user} onUser={setUser} notify={setNotice} /> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente administradores podem gerenciar a equipe.</p></section> :
           route.name === 'profile' && user ? <Profile user={user} onUser={setUser} notify={setNotice} /> :
