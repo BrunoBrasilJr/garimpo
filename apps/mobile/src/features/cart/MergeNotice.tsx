@@ -6,7 +6,7 @@ import { Button } from '../catalog/Controls';
 import { styles as s } from '../catalog/styles';
 import { guestCart, subscribeGuest, accountCartChanged } from './storage';
 import { cartRequest, cartError } from './client';
-export function MergeNotice({ user, client, open }: { user: AccountView; client: MobileAccountClient; open: () => void }) {
+export function MergeNotice({ user, client, open, settled }: { user: AccountView; client: MobileAccountClient; open: () => void; settled?: (accountId: string) => void }) {
   const [data, setData] = useState<GuestCartState>(), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const alive = useRef(true), running = useRef(false), controller = useRef<AbortController | null>(null);
   const merge = useCallback(async () => {
@@ -23,8 +23,8 @@ export function MergeNotice({ user, client, open }: { user: AccountView; client:
       let failure = cause;
       if (intent && cause instanceof MobileError && cause.code === 'CART_VERSION_CONFLICT') try { await guestCart.discard(intent.key); } catch (storageFailure) { failure = storageFailure; }
       if (alive.current) setError(cartError(failure));
-    } finally { running.current = false; if (alive.current) setBusy(false); }
-  }, [client, user.id]);
+    } finally { running.current = false; if (alive.current) { setBusy(false); settled?.(user.id); } }
+  }, [client, user.id, settled]);
   useEffect(() => {
     alive.current = true; let active = true; queueMicrotask(() => { if (active) void merge(); });
     const stop = subscribeGuest(() => { void guestCart.read().then(value => { if (alive.current) setData(value); }).catch(cause => { if (alive.current) setError(cartError(cause)); }); });

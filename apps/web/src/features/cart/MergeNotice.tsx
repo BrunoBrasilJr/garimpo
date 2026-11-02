@@ -4,7 +4,7 @@ import { ClientError } from '../account/client';
 import { guestCart } from './storage';
 import { cartChanged, cartError, cartRequest } from './client';
 /** One owner-scoped coordinator at the app root. Navigation never duplicates the merge operation. */
-export function MergeNotice({ user }: { user: AccountView }) {
+export function MergeNotice({ user, settled }: { user: AccountView; settled?: (accountId: string) => void }) {
   const [data, setData] = useState<GuestCartState>(), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const alive = useRef(true), running = useRef(false), controller = useRef<AbortController | null>(null);
   const merge = useCallback(async () => {
@@ -20,8 +20,8 @@ export function MergeNotice({ user }: { user: AccountView }) {
       let failure = cause;
       if (intent && cause instanceof ClientError && cause.code === 'CART_VERSION_CONFLICT') try { await guestCart.discard(intent.key); } catch (storageFailure) { failure = storageFailure; }
       if (alive.current) setError(cartError(failure));
-    } finally { running.current = false; if (alive.current) setBusy(false); }
-  }, [user.id]);
+    } finally { running.current = false; if (alive.current) { setBusy(false); settled?.(user.id); } }
+  }, [user.id, settled]);
   useEffect(() => {
     alive.current = true; let active = true; queueMicrotask(() => { if (active) void merge(); });
     const changed = () => { void guestCart.read().then(value => { if (alive.current) setData(value); }).catch(cause => { if (alive.current) setError(cartError(cause)); }); };

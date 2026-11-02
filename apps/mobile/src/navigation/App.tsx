@@ -32,6 +32,7 @@ export default function App() {
   const [user, setUser] = useState<AccountView | null>(null), [screen, setScreen] = useState<Screen>('login'), [notice, setNotice] = useState(''), [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState<Address[]>([]), [editing, setEditing] = useState<Address | null>(null), [deleteId, setDeleteId] = useState('');
   const [exitFailed, setExitFailed] = useState(false);
+  const [cartReady, setCartReady] = useState(''), [loginEpoch, setLoginEpoch] = useState(0);
   const epoch = useRef(0), leaving = useRef(false);
   const [catalogEdition, setCatalogEdition] = useState('');
   useEffect(() => {
@@ -66,7 +67,7 @@ export default function App() {
     epoch.current++;
     try { await client?.logout(); setExitFailed(false); setNotice('Você saiu da sua conta.'); }
     catch (cause) { setExitFailed(true); setNotice(errorMessage(cause) + ' Não foi possível confirmar a saída completa.'); }
-    finally { leaving.current = false; setUser(null); setAddresses([]); setEditing(null); setScreen('login'); }
+    finally { leaving.current = false; setUser(null); setCartReady(''); setAddresses([]); setEditing(null); setScreen('login'); }
   }
   const formProps = { notify: setNotice };
   function content() {
@@ -74,7 +75,7 @@ export default function App() {
     if (screen === 'saved' && user && client) return <Saved client={client} open={editionId => { setCatalogEdition(editionId); setScreen('catalog'); }} />;
     if (loading) return <Text accessibilityRole="alert" style={styles.body}>Preparando seu acesso…</Text>;
     if (exitFailed) return <Button title="Tentar sair novamente" onPress={() => { void logout(); }} />;
-    if (screen === 'cart') return <Cart key={user?.id ?? 'visitor'} user={user} client={client} origin={process.env.EXPO_PUBLIC_API_ORIGIN ?? ''} login={() => setScreen('login')} browse={() => setScreen('catalog')} />;
+    if (screen === 'cart') return user && cartReady !== user.id ? <Text allowFontScaling accessibilityLiveRegion="polite" style={styles.body}>Conferindo carrinho deste aparelho…</Text> : <Cart key={user?.id ?? 'visitor'} user={user} client={client} origin={process.env.EXPO_PUBLIC_API_ORIGIN ?? ''} login={() => setScreen('login')} browse={() => setScreen('catalog')} />;
     if (screen === 'register') return <AccountForm {...formProps} title="Crie sua conta" fields={[{ name: 'name', label: 'Nome completo' }, email, { ...password, newPassword: true }]} submit="Criar conta" onSubmit={async values => {
       await call('/auth/register', 'POST', values, false); setNotice('Conta criada! Confirme seu e-mail pelo link recebido e entre para continuar.'); setScreen('login');
     }} />;
@@ -130,7 +131,7 @@ export default function App() {
     </>;
     return <><AccountForm {...formProps} title="Bom te ver de novo" fields={[email, password]} submit="Entrar" onSubmit={async values => {
       if (!client) throw new MobileError(0, {}, 'A conexão segura está indisponível. Tente novamente em instantes.');
-      setUser(await client.login(values.email ?? '', values.password ?? '')); setScreen('profile'); setNotice('Você entrou na sua conta.');
+      setCartReady(''); setUser(await client.login(values.email ?? '', values.password ?? '')); setLoginEpoch(value => value + 1); setScreen('profile'); setNotice('Você entrou na sua conta.');
     }} /><Button title="Esqueci minha senha" onPress={() => setScreen('reset')} /></>;
   }
   return <SafeAreaView style={styles.screen}><StatusBar style="dark" /><KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -141,7 +142,7 @@ export default function App() {
       <View style={styles.navigation}><Button title="Explorar discos" onPress={() => { setCatalogEdition(''); setScreen('catalog'); }} /><Button title="Carrinho" onPress={() => setScreen('cart')} />{user ? <><Button title="Minha conta" onPress={() => setScreen('profile')} /><Button title="Endereços" onPress={() => setScreen('addresses')} /><Button title="Meus desejos e alertas" onPress={() => setScreen('saved')} /><Button title="Sair" onPress={() => { void logout(); }} /></> :
         <><Button title="Entrar" onPress={() => setScreen('login')} /><Button title="Criar conta" onPress={() => setScreen('register')} /><Button title="Recuperar acesso" onPress={() => setScreen('reset')} /><Button title="Confirmar e-mail" onPress={() => setScreen('confirm')} /></>}</View>
       {notice ? <Text style={styles.notice} accessibilityRole="alert" accessibilityLiveRegion="polite">{notice}</Text> : null}
-      {!loading && !exitFailed && user?.context === 'CUSTOMER' && client ? <MergeNotice key={user.id} user={user} client={client} open={() => setScreen('cart')} /> : null}
+      {!loading && !exitFailed && user?.context === 'CUSTOMER' && client ? <MergeNotice key={user.id + ':' + loginEpoch} user={user} client={client} open={() => setScreen('cart')} settled={setCartReady} /> : null}
       <View key={screen} style={styles.panels}>{content()}</View>
       <Text style={styles.footer}>Garimpo · Música que encontra você.</Text>
     </ScrollView>
