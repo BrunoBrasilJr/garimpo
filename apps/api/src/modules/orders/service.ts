@@ -17,6 +17,7 @@ import { FreightError } from '../freight/errors.ts';
 import { ownAddress } from '../checkout/quotes.ts';
 import { orderPendingCount } from './pending-orders.ts';
 import type { CreateOrderInput } from './validation.ts';
+import * as validate from './validation.ts';
 const include = { items: { include: { units: { orderBy: { logicalIndex: 'asc' } } }, orderBy: { offerId: 'asc' } }, charges: { orderBy: { createdAt: 'asc' } } } satisfies Prisma.OrderInclude;
 type OrderRecord = Prisma.OrderGetPayload<{ include: typeof include }>;
 function cents(value: bigint): number { const number = Number(value); if (!Number.isSafeInteger(number) || number < 0) throw new Error('Stored monetary total is outside the exact JSON range.'); return number; }
@@ -32,6 +33,7 @@ export class Orders {
       charges: row.charges.map(charge => ({ id: charge.id, method: charge.method as 'PIX' | 'BOLETO', amountCents: cents(charge.amountCents), status: charge.status, expiresAt: charge.expiresAt.toISOString() })) };
   }
   async create(access: string, input: CreateOrderInput, key: string): Promise<OrderCreationView> {
+    input = validate.parse(validate.create, input); key = validate.parse(validate.key, key);
     const requestHash = payloadHash(input);
     const result = await serializable(this.accounts.db, async tx => {
       const user = await lockCustomer(this.accounts, tx, access), receipt = { actorScope: user.id, operation: 'ORDER.CREATE', key };
@@ -41,17 +43,21 @@ export class Orders {
         const row = await tx.order.findFirst({ where: { id: replay.resultRef, userId: user.id }, include }); if (!row) throw missing(); return { row };
       }
       const checkout = await tx.checkout.findFirst({ where: { id: input.checkoutId, userId: user.id }, include: checkoutInclude }); if (!checkout) throw missing();
-      await lockOffers(tx, checkout.items.map(item => item.offerId)); await lockCoupons(tx, [checkout.couponUsage?.couponId]); const now = this.accounts.clock.now();
+      await lockOffers(tx, checkout.items.map(item => item.offerId)); await lockCoupons(tx, [checkout.couponUsage?.couponId]); let now = this.accounts.clock.now();
       if (checkout.status !== 'ACTIVE') throw new CartError(409, 'CHECKOUT_UNAVAILABLE', 'Esta finalização já foi encerrada ou usada em um pedido.');
       if (checkout.expiresAt <= now) { await closeCheckout(tx, checkout, 'EXPIRED', this.accounts.clock, 'ORDER_AFTER_CHECKOUT_DEADLINE'); return { error: new CartError(409, 'CHECKOUT_EXPIRED', 'O prazo da finalização terminou. Confira o carrinho para iniciar outra.') }; }
       if (checkout.version !== input.version) throw new CartError(409, 'CHECKOUT_VERSION_CONFLICT', 'A finalização mudou. Atualize e confirme os dados.');
-      await requireFirstOrderEmail(tx, user); requirePendingCapacity(await orderPendingCount(this.accounts.clock).inspect(tx, user.id));
+      await requireFirstOrderEmail(tx, user);
       const cart = await tx.cart.findUniqueOrThrow({ where: { id: checkout.cartId } }); if (cart.userId !== user.id || cart.version !== checkout.cartVersion) throw new CartError(409, 'CART_VERSION_CONFLICT', 'O carrinho mudou. Confira os itens novamente.');
       const accepted = checkout.freightSnapshot as unknown as AcceptedFreight | null;
       if (!accepted || !checkout.freightRevision || checkout.addressId !== input.addressId || accepted.address.id !== input.addressId || checkout.freightRevision !== input.freightRevision) throw new FreightError(409, 'FREIGHT_CONFIRMATION_REQUIRED', 'Escolha um endereço próprio, confira a cotação e aceite o frete.');
       const address = await ownAddress(tx, user.id, input.addressId), freight = await new Freight(this.accounts).quote(tx, address.zip, true);
       if (!freight.served) throw new FreightError(422, 'ZIP_NOT_SERVED', 'Este CEP não é atendido. Corrija o endereço antes de vencer a finalização.');
       if (freightRevision(freight, address) !== input.freightRevision) throw new FreightError(409, 'FREIGHT_CONFIRMATION_REQUIRED', 'O endereço ou o frete mudou. Confira e aceite a nova cotação.');
+      // Re-read time after the final potentially blocking configuration lock.
+      now = this.accounts.clock.now();
+      if (checkout.expiresAt <= now) { await closeCheckout(tx, checkout, 'EXPIRED', this.accounts.clock, 'ORDER_AFTER_FREIGHT_LOCK_DEADLINE'); return { error: new CartError(409, 'CHECKOUT_EXPIRED', 'O prazo da finalização terminou. Confira o carrinho para iniciar outra.') }; }
+      requirePendingCapacity(await orderPendingCount(this.accounts.clock).inspect(tx, user.id));
       const snapshot = checkout.quoteSnapshot as unknown as CheckoutSnapshot;
       const otherHolds = await reservedQuantities(tx, checkout.items.map(item => item.offerId), now, checkout.id), offers = await tx.offer.findMany({ where: { id: { in: checkout.items.map(item => item.offerId) } } });
       if (checkout.items.some(item => item.quantity > (offers.find(offer => offer.id === item.offerId)?.stockOnHand ?? 0) - (otherHolds.get(item.offerId) ?? 0))) throw new CartError(409, 'INSUFFICIENT_STOCK', 'Não foi possível confirmar todo o saldo reservado. Tente novamente após conferir os itens.');

@@ -12,6 +12,7 @@ import { CartError, missing } from '../cart/errors.ts';
 import { expireOwn, lockCustomer, checkoutInclude } from './lifecycle.ts';
 import { Checkouts } from './service.ts';
 import type { QuoteInput, AddressInput } from '../orders/validation.ts';
+import * as validate from '../orders/validation.ts';
 export async function ownAddress(tx: Prisma.TransactionClient, userId: string, id: string): Promise<DeliveryAddressSnapshot> {
   const row = await tx.address.findFirst({ where: { id, userId, deletedAt: null } }); if (!row) throw missing();
   return { id: row.id, recipient: row.recipient, zip: row.zip, region: row.region, city: row.city, neighborhood: row.neighborhood, street: row.street, number: row.number, complement: row.complement };
@@ -20,6 +21,7 @@ export class CheckoutQuotes {
   readonly accounts: Accounts;
   constructor(accounts: Accounts) { this.accounts = accounts; }
   async quote(access: string, input: QuoteInput): Promise<CheckoutQuote> {
+    input = validate.parse(validate.quote, input);
     const result = await serializable(this.accounts.db, async tx => {
       if ('items' in input) {
         const units = [...input.items].sort((a, b) => a.offerId.localeCompare(b.offerId)).flatMap(line => Array.from({ length: line.quantity }, (_unused, index) => ({ id: unitIdentity(line.offerId, index), offerId: line.offerId })));
@@ -33,6 +35,7 @@ export class CheckoutQuotes {
     if (result.error) throw result.error; return result.value!;
   }
   async accept(access: string, id: string, input: AddressInput): Promise<CheckoutView> {
+    input = validate.parse(validate.address, input);
     const result = await serializable(this.accounts.db, async tx => {
       const user = await lockCustomer(this.accounts, tx, access), row = await expireOwn(tx, user.id, this.accounts.clock); if (!row || row.id !== id) return { error: missing() };
       if (row.version !== input.version) throw new CartError(409, 'CHECKOUT_VERSION_CONFLICT', 'A finalização mudou. Atualize antes de aceitar o frete.');

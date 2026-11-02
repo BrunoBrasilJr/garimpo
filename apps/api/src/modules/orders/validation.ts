@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { id, zip } from '../freight/validation.ts';
+import { CartError } from '../cart/errors.ts';
 const version = z.number().int().min(1).max(2147483647), revision = z.string().regex(/^[a-f0-9]{64}$/);
 const item = z.object({ offerId: id, quantity: z.number().int().min(1).max(1000) }).strict();
 const items = z.array(item).min(1).max(100).refine(values => new Set(values.map(value => value.offerId)).size === values.length && values.reduce((sum, value) => sum + value.quantity, 0) <= 1000);
@@ -10,3 +11,4 @@ export const key = z.string().min(1).max(128).regex(/^[A-Za-z0-9._:-]+$/);
 export type QuoteInput = z.infer<typeof quote>;
 export type AddressInput = z.infer<typeof address>;
 export type CreateOrderInput = z.infer<typeof create>;
+export function parse<T>(schema: z.ZodType<T>, value: unknown): T { const result = schema.safeParse(value); if (!result.success) throw new CartError(422, 'INVALID_CHECKOUT_INPUT', 'Confira os itens, endereço, método e revisões informados.'); return result.data; }
