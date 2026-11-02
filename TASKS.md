@@ -20,7 +20,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
-| 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | IN_PROGRESS |
+| 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | DONE |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | BLOCKED |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | BLOCKED |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | BLOCKED |
@@ -1725,7 +1725,7 @@ Allowed Changes PASS com precisões PRIMARY rastreáveis anteriores à edição;
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -1806,6 +1806,53 @@ Precisão PRIMARY de validação antes da edição: tests/e2e/account/harness.mj
 Validações intermediárias: 14a6cec build/tipos/lint e 75 unitários PASS; 53cce57 build/tipos/lint e 11 integrações de avaliações PASS, incluindo concorrência forçada e falha SQL real. Nova suíte de navegador inicialmente falhou por orçamento global de 60s: um caso durante login e outro ainda no setup de page/Firefox, antes de atingir avaliações; terceiro sem alcançar formulário. Logs browser-check-02 preservados, screenshot inspecionado. Diagnóstico da base de teste sem transação bloqueadora; comandos anteriores de compilação também ficaram lentos. Uma execução longa de tsc foi interrompida para diagnóstico e não conta como PASS; rodada posterior completa de tipos/lint passou sem relaxar flags. Decisão de teste rastreável: orçamento global dos três cenários novos passa a 180s, incluindo preparo por API, CA/Firefox e múltiplos logins scrypt/trocas de ator; asserções continuam em 10s, custos criptográficos e regras intactos. Não é SLA de produto nem aprovação de desempenho; demais suítes mantêm seus limites. IN_PROGRESS → FAILED → IN_PROGRESS para essa revalidação. Incidental Controls.tsx: parâmetro clearable opcional com default anterior, apenas para não oferecer Todos numa nota obrigatória 1–5; comportamento de filtros preservado. Nenhum DONE antecipado.
 
 Revalidação b02e32d: os dois E2E web passaram; o nativo encontrou corrida de montagem do composer enquanto a consulta privada inicial ainda estava pendente. Screenshot native-note-failure.png mostrou formulário recomposto/modal fechado, não falha de backend. Correção PRIMARY d1e1b2a: só montar composer após mine conhecido e usar chave estável da compra; erro da consulta não libera formulário novo. Native-retest com seleção real de nota, publicação bearer e edição após ocultação PASS. Regressão adicional segura pausa somente a primeira requisição privada e depois a continua ao servidor real, comprovando ausência de composer durante a consulta e manutenção das demais asserções; nenhuma resposta/compra/API é simulada além da porta de teste já permitida. Revalidação completa pendente antes de DONE.
+
+#### TASK Execution Report
+
+TASK: TASK-013. Status: DONE (IN_PROGRESS → IN_REVIEW → DONE após correções e revisão final). Branch real feature/TASK-013-avaliacoes-moderacao, base d96e312. Commits reais: 0832de4, 14a6cec, 53cce57, 69c31dc, fdf5be7, bc69abb, b02e32d, d1e1b2a, f120c55, 97676e6; fechamento documental posterior próprio. Continuidade autorizada até pelo menos 28/37.
+
+##### Primary Changes
+
+PRIMARY: TASKS.md; prisma/schema.prisma e migrations/202611020003_reviews/migration.sql somente Review/ReviewRevision/ReviewVisibility, relações inversas e índices; modules/reviews/{errors,purchases,router,service}.ts; app.ts somente composição/porta explícita; contracts/src/reviews/**; web/features/reviews/**; web/features/admin/reviews/**; mobile/features/reviews/**; tests/reviews/**; tests/e2e/account/harness.mjs somente opção de porta em código da fixture; docs/architecture/api.md somente contratos afetados.
+
+Publicação por cliente/edição/pedido entregue com unidade mantida, chave única, nota inteira 1–5 e comentário texto. Porta padrão selada UNAVAILABLE nega criação/edição/liberação quando não comprova a compra; sem chave HTTP/env para selecionar fixture. Não existe tabela/pedido fictício em runtime. Adaptador real permanece TASK-023, ocultação automática por pós-venda TASK-026, conforme divisão expressa do backlog. Histórico de cada criação/edição/moderação é imutável também por trigger PostgreSQL e atômico com conteúdo/auditoria. Revisão otimista e lock impedem edição/liberação de revisão antiga. ADMIN/OPERATOR moderam pela web; edição pelo autor de conteúdo HIDDEN mantém ocultação e marca análise pendente. Retenção zero/compra não entregue impede novo conteúdo/liberação.
+
+Consulta pública exclui ocultas da lista/média e omite compra, e-mail, IDs de conta e histórico; usa somente primeiro nome. Privados só do titular; equipe tem histórico autorizado. Interfaces de consulta/edição e composer com contexto da compra preparado para o fluxo de pedidos posterior, sem pedir UUID ao cliente. Composer só monta após consulta privada conhecida, com chave estável da compra; erro não libera criação. Rótulos/estados/ampliação, texto sem HTML, paginação/erros/estado vazio e resumo localizado. Revisão React aplicada: limpeza de respostas antigas, leitura pública independente da privada, estado derivado e carregamento lazy da moderação.
+
+##### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| packages/contracts/src/index.ts | exportar tipos reviews | contrato do workspace |
+| package.json | test:reviews e verify | incluir gate novo, sem dependências |
+| tests/core/run-integration.mjs | suite/schema task013 | preservar isolamento da base original |
+| tests/catalog/http.ts | opção adicional de composição de review em fixture | reutilizar API HTTPS/certificado real; defaults anteriores intactos |
+| web/navigation/{App.tsx,route.ts} | rota/link e lazy da moderação | alcance mínimo em contexto de equipe existente |
+| web/features/catalog/Edition.tsx | encaixe ReviewSection | integrar seção pública nova sem alterar busca/ofertas |
+| mobile/navigation/App.tsx | seção de avaliações no callback do catálogo | integração mínima usando o cliente seguro existente |
+| mobile/features/catalog/Controls.tsx | clearable opcional, default anterior | nota obrigatória não oferece Todos; filtros mantêm comportamento |
+
+Nove arquivos: a linha de navegação web contém dois. Necessários, causais e mínimos, todos ligados ao mesmo recurso, sem função independente/regra nova/arquitetura/quebra de contrato ou alteração de autenticação/proteção de dados, nem proibição. Novo router protegido e porta de fixture são PRIMARY declarados antes da edição. Sem refatoração geral.
+
+##### Tests Executed
+
+Ubuntu WSL2, Node 24.22.1/npm 11.19.1/PostgreSQL 17, clone nativo com hashes conferidos. f120c55: npm run verify aprovou build/tipos/lint, 75 unitários (incluindo processos reais source/dist com HTTPS obrigatório), core 9, contas 14 e mensagens 16 integrações; catálogo teve falha de certificado recém-emitido ainda não válido, não contabilizada como PASS. Datas do certificado e relógios Windows/WSL/Node foram conferidos, alinhados; nenhuma dispensa de TLS/backdating/custo alterada. Retomada sem alteração desse código: test:catalog 19/19 PASS, CA confiada normalmente. Causa transitória exata não comprovada, falha preservada em final-check.log.
+
+resume-final em f120c55: inventory 12, engagement 12 e reviews 11 integrações PASS; audit:toolchain PASS na política estrita vigente; exports Android 605 módulos/iOS 607 PASS, somente bundles JavaScript/Hermes, sem APK/IPA ou dispositivo alegado. Vite/Metro prepararam os mesmos componentes para o ambiente isolado; 20 E2E PASS = reviews 3, engagement 2, catálogo web 3/mobile compartilhado 3, contas/equipe 7, estoque administrativo 2, script exit 0. Certificados confiados na CA isolada, ignoreHTTPSErrors=false, bancos/APIs reais; somente a porta de compra é fixture permitida pela própria TASK.
+
+Foram demonstrados: negativa padrão do runtime e snapshots inválidos, compra não entregue/devolvida integral, parcial mantida, uma avaliação por pedido independentemente de unidades/troca, cliente alheio bloqueado, ADMIN/OPERATOR autorizados e mobile sem administração, dados privados omitidos e média sem ocultas, corrente de quatro revisões, SQL recusando mutação/exclusão do histórico, falha SQL revertendo o conteúdo, criação concorrente única e duas edições realmente sobrepostas por terceiro lock com um vencedor. Browser verifica comentário como texto sem criar tag/evento, revisão imediata, ocultação/edição/liberação explícita e bearer de cliente separado de cookie staff. Primeira consulta privada foi pausada e continuada ao servidor real, sem substituir resposta, para comprovar que o composer não aparece prematuramente nem perde o modal de nota.
+
+97676e6 alterou somente texto de resumo e fidelidade do preview: build web, tipos web/mobile, lint dirigido, exports Android/iOS e os três E2E de avaliações PASS novamente. Screenshot web com CSS global real/390 px/200% e nativo compartilhado/390 px inspecionados visualmente; nenhuma rolagem horizontal/clipping constatada. Sem execução física Android/iOS, TalkBack/VoiceOver, fonte do sistema ou integração real de compra/pós-venda inferida. Aceitação integral permanece TASK-033.
+
+Evidências locais test-results/reviews/{first-check,integration-check,browser-check-02,browser-retest,native-retest,final-check,catalog-recheck,resume-final,visual-check}.log e capturas web-narrow-final.png/native-shared-narrow.png; falhas e interrupção do diagnóstico de tipos preservadas, não aprovadas. Cenários novos usam preparação separada/bounded e orçamento de 180s para fluxo multiator; asserções 10s/custos/guardas intactos, sem SLA de desempenho inventado. Somente schemas novos garimpo_test, sem reset/drop/truncate/restauração sobre base original. Função/trigger de falha existem só no schema isolado e são retirados no finally; trigger real de imutabilidade permanece. Processos/harness próprios encerrados, PostgreSQL e ZIP alheio preservados. Dependências/lock/patches inalterados; auditoria bruta FAIL/exit 1 com 7 low conhecidos de deepmerge, zero moderate/high/critical; mitigação exata e regressões PASS, sem alegação de audit limpo. Warning pg/Prisma preexistente preservado.
+
+##### Quality Gates
+
+Build PASS; Lint PASS; Unit Tests PASS (75); Integration Tests PASS (93 acumulados = 82 anteriores + 11 novos); API Tests PASS (contratos, fronteiras e autorização reais); Security PASS no escopo/política de mitigação vigente, auditoria bruta FAIL explícita; Acceptance Criteria PASS no incremento com porta real futura expressa; Regression Tests PASS (20 E2E e suítes acumuladas). Gates 01–08 aplicáveis satisfeitos. Total 188 casos distintos PASS, sem contar repetições.
+
+##### Scope Validation e Definition of Done
+
+Allowed Changes PASS com precisões PRIMARY rastreáveis; Incidental Changes PASS (tabela); Forbidden Changes PASS; Scope Creep NONE. Sem pedido, pós-venda, cobrança, servidor público ou teste humano fictícios. Definition of Done PASS. Contagem 13/37 DONE. Next Eligible TASK: TASK-014 candidata com TASK-009 DONE e PD-006 resolvida; DoR/contratos monetários/Scope Guard próprios antes da promoção. Continuidade autorizada até 28/37, sem saltar checkpoints.
 
 ### TASK-014 Implementar administração de cupons e promoções
 
