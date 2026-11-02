@@ -41,7 +41,8 @@ export function ReviewSection({ editionId, orderId }: { editionId: string; order
     </>}
     {privateError ? <p role="alert">{privateError}</p> : null}
     {customer ? <><h3>Suas avaliações</h3>{mine?.items.length === 0 ? <p>Depois de receber uma compra, você poderá avaliá-la pelo pedido.</p> : mine?.items.map(item => <article key={item.id}><p>{item.visibility === 'HIDDEN' ? item.awaitingModeration ? 'Oculta, aguardando análise' : 'Oculta pela equipe' : 'Publicada'}</p><ReviewForm key={item.id + item.version} editionId={editionId} existing={item} saved={() => setRevision(value => value + 1)} /></article>)}
-      {orderId && !mine?.items.some(item => item.orderId === orderId) ? <ReviewForm editionId={editionId} orderId={orderId} saved={() => setRevision(value => value + 1)} /> : null}
+      {!mine && !privateError ? <p role="status">Conferindo suas avaliações…</p> : null}
+      {orderId && mine && !mine.items.some(item => item.orderId === orderId) ? <ReviewForm key={orderId} editionId={editionId} orderId={orderId} saved={() => setRevision(value => value + 1)} /> : null}
     </> : <p><a href="#/login">Entre com sua conta</a> para consultar suas avaliações.</p>}
     <div className="review-actions"><button className="secondary" disabled={page === 1} onClick={() => setPage(value => value - 1)}>Avaliações anteriores</button><span>Página {page}</span><button className="secondary" disabled={page * 20 >= Math.max(data?.total ?? 0, mine?.total ?? 0)} onClick={() => setPage(value => value + 1)}>Próximas avaliações</button><button className="secondary" onClick={() => setRevision(value => value + 1)}>Atualizar avaliações</button></div>
   </section>;
