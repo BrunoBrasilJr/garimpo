@@ -1,9 +1,10 @@
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import { randomUUID } from 'node:crypto';
-import { mkdtemp } from 'node:fs/promises';
+import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Client } from 'pg';
+import sharp from 'sharp';
 import type { CatalogEdition, CatalogOffer, CatalogMetadata, StockPage, StockAdjustmentResult } from '@garimpo/contracts';
 import { createDatabase } from '../../apps/api/src/persistence/client.ts';
 import type { Database } from '../../apps/api/src/persistence/client.ts';
@@ -33,11 +34,23 @@ async function edition() {
   expect(result.status).toBe(201); return result.body;
 }
 async function offer(editionId: string, stock = 3, kind = 'NEW', key = randomUUID()) {
-  const result = await server.call<CatalogOffer>(`/admin/editions/${editionId}/offers`, 'POST', { kind, priceCents: 5000, stockOnHand: stock }, { ...headers(), 'Idempotency-Key': key });
+  const result = await server.call<CatalogOffer>(`/admin/editions/${editionId}/offers`, 'POST', { kind, priceCents: 5000, stockOnHand: stock, ...(kind === 'USED' ? { discGrade: 'VG', sleeveGrade: 'VG+', particulars: 'Exemplar sintético' } : {}) }, { ...headers(), 'Idempotency-Key': key });
   expect(result.status).toBe(201); return result.body;
 }
 const adjust = (id: string, delta: number, key = randomUUID(), bundle = admin) => server.call<StockAdjustmentResult>('/admin/offers/' + id + '/stock-adjustments', 'POST', { delta, reason: 'Conferência sintética' }, { ...headers(bundle), 'Idempotency-Key': key });
 const list = (id: string, instance = server) => instance.call<StockPage>('/admin/stock?editionId=' + id, 'GET', undefined, headers());
+async function publish(row: CatalogEdition, items: CatalogOffer[]) {
+  const png = await sharp({ create: { width: 3, height: 3, channels: 3, background: 'orange' } }).png().toBuffer();
+  const upload = async (owner: string, id: string) => {
+    expect((await server.call(`/admin/${owner}/${id}/images?description=Foto%20sintetica`, 'POST', png, { ...headers(), 'Content-Type': 'image/png' })).status).toBe(201);
+  };
+  await upload('editions', row.id);
+  expect((await server.call('/admin/editions/' + row.id, 'PATCH', { active: true }, headers())).status).toBe(200);
+  for (const item of items) {
+    if (item.kind === 'USED') await upload('offers', item.id);
+    expect((await server.call('/admin/offers/' + item.id, 'PATCH', { version: item.version, active: true }, headers())).status).toBe(200);
+  }
+}
 beforeAll(async () => {
   const value = process.env.TEST_DATABASE_URL; if (!value) throw new Error('Separate test database required.');
   const url = new URL(value), schema = url.searchParams.get('schema');
@@ -105,7 +118,7 @@ test('failure to enqueue rolls back quantity, ledger and audit together', async 
 });
 test('default runtime adapter preserves unknown balances, blocks reduction/deletion and allows safe addition/inactivation', async () => {
   const row = await edition(), item = await offer(row.id);
-  await db.edition.update({ where: { id: row.id }, data: { active: true } }); await db.offer.update({ where: { id: item.id }, data: { active: true } });
+  await publish(row, [item]);
   const panel = await list(row.id, closed); expect(panel.status).toBe(200);
   expect(panel.body.items[0]).toMatchObject({ bindingsStatus: 'UNAVAILABLE', newAvailable: null, lowStockNew: null, offers: [{ reservedQuantity: null, availableQuantity: null }] });
   const path = '/admin/offers/' + item.id;
@@ -124,7 +137,7 @@ test('used stock stays individual, negative balances and malformed input cannot 
 });
 test('dashboard aggregates used copies by edition, thresholds use availability, and warnings send no messages', async () => {
   const row = await edition(), fresh = await offer(row.id, 5), usedA = await offer(row.id, 1, 'USED'), usedB = await offer(row.id, 1, 'USED');
-  await db.edition.update({ where: { id: row.id }, data: { active: true } }); await db.offer.updateMany({ where: { editionId: row.id }, data: { active: true } });
+  await publish(row, [fresh, usedA, usedB]);
   snapshots.set(row.id, { status: 'KNOWN', hasHistory: true, offers: { [fresh.id]: { reservedQuantity: 1, protectedQuantity: 3 }, [usedA.id]: { reservedQuantity: 1, protectedQuantity: 1 }, [usedB.id]: { reservedQuantity: 0, protectedQuantity: 0 } } });
   const before = await db.domainEvent.count(), messages = await db.demoMessage.count();
   expect((await server.call('/admin/editions/' + row.id + '/low-stock', 'PATCH', { lowStockNewThreshold: 2 }, headers(operator))).status).toBe(200);
@@ -168,4 +181,18 @@ test('concurrent retry of the same addition records one effect across independen
   expect(results.every(result => result.status === 'fulfilled')).toBe(true);
   expect((await db.offer.findUniqueOrThrow({ where: { id: item.id } })).stockOnHand).toBe(2);
   expect(await db.stockMovement.count({ where: { offerId: item.id } })).toBe(1);
+});
+test('the actual migration consolidates existing positive stock without changing original balances', async () => {
+  const client = new Client({ connectionString: process.env.TEST_DATABASE_URL! }); await client.connect();
+  const schema = 'task009_backfill_' + randomUUID().replaceAll('-', ''), positive = randomUUID(), zero = randomUUID();
+  try {
+    await client.query(`CREATE SCHEMA "${schema}"`); await client.query(`SET search_path TO "${schema}"`);
+    await client.query('CREATE TABLE "User" (id UUID PRIMARY KEY); CREATE TABLE "Offer" (id UUID PRIMARY KEY, version INTEGER NOT NULL, "stockOnHand" INTEGER NOT NULL, "createdAt" TIMESTAMPTZ(3) NOT NULL)');
+    await client.query('INSERT INTO "Offer" VALUES ($1,7,5,$3),($2,1,0,$3)', [positive, zero, clock.now()]);
+    await client.query(await readFile(new URL('../../apps/api/prisma/migrations/202611020001_inventory/migration.sql', import.meta.url), 'utf8'));
+    const rows = await client.query('SELECT "offerId", "offerVersion", "deltaOnHand", "balanceBefore", "balanceAfter", "actorId", reason FROM "StockMovement"');
+    expect(rows.rows).toEqual([{ offerId: positive, offerVersion: 7, deltaOnHand: 5, balanceBefore: 0, balanceAfter: 5, actorId: null, reason: 'Saldo inicial consolidado' }]);
+    expect((await client.query('SELECT "stockOnHand" FROM "Offer" WHERE id=$1', [positive])).rows).toEqual([{ stockOnHand: 5 }]);
+    expect((await client.query('SELECT "stockOnHand" FROM "Offer" WHERE id=$1', [zero])).rows).toEqual([{ stockOnHand: 0 }]);
+  } finally { await client.end(); }
 });
