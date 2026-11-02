@@ -20,7 +20,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
-| 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | BLOCKED |
+| 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | IN_PROGRESS |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | BLOCKED |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | BLOCKED |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | BLOCKED |
@@ -1725,7 +1725,7 @@ Allowed Changes PASS com precisões PRIMARY rastreáveis anteriores à edição;
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -1792,6 +1792,14 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR
+
+2026-11-02, branch real feature/TASK-013-avaliacoes-moderacao, base d96e312. Continuidade até 28/37 explicitamente autorizada. Dependências 008/010/011 DONE e 174 casos acumulados válidos; ADR-001 ACCEPTED, PD-006 resolvida (estrelas inteiras 1–5). AGENTS/conciliação, README/regras/pendências, TASKS/Scope Guard, ADR/API/testes e código/suítes relacionados relidos. DoR PASS; BLOCKED → READY → IN_PROGRESS. A porta de compra é parte explícita deste incremento; a ausência do adaptador real até TASK-023 exige negar publicação, não antecipar pedidos nem usar mock no runtime.
+
+PRIMARY nos caminhos previstos; contracts usa src/reviews/** conforme estrutura compilada. Precisão PRIMARY antes da edição sob delegação: apps/api/src/app.ts somente registro do router protegido/público e opção explícita de porta; docs/architecture/api.md somente wire/versão/erros/listagem própria necessários à edição. Schema somente Review, ReviewRevision, enums e relações inversas User/Edition; orderId UUID lógico sem criar tabela Order. Sem dependência/SDK/infraestrutura nova. Incidental previsto: exports, runner/comando dos testes, navegação da equipe e encaixe das seções públicas web/mobile, todos mínimos e sujeitos aos nove critérios.
+
+Plano: unicidade user/edition/order; rating 1–5 e comentário texto até 4000 caracteres (limite técnico adotado sob delegação, sem atribuir ao PDF). Criação/edição/verificação de liberação na mesma transação da porta de elegibilidade; porta padrão selada UNAVAILABLE, sem configuração HTTP/env para liberar fake. Porta deve ler no tx recebido e confirmar entrega/unidades mantidas; quantidade inválida/estado desconhecido nega operação. Fixtures somente em testes. Publicação inicial imediata quando elegível; edição oculta continua HIDDEN/awaitingModeration até liberação explícita ADMIN/OPERATOR da revisão atual. Versão otimista e lock de review, histórico imutável de cada criação/edição/moderação com autor/motivo, auditoria na mesma transação. Devolução automática/conexão de pedido permanecem 026/023. Lista pública só visíveis, média sem ocultas e sem e-mail/dados de compra; cliente lista/edita próprias; equipe modera pela web. Composer recebe contexto de compra do chamador, pronto para o fluxo de pedidos posterior; não pedir UUID técnico ao cliente nem inventar compra elegível. Regressões reais de concorrência/SQL/autorização/interfaces e entrada Node source/dist antes de DONE.
 
 ### TASK-014 Implementar administração de cupons e promoções
 
