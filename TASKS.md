@@ -2390,6 +2390,10 @@ Decisões de contrato: configuração versionada por ADMIN, faixas de CEP inclus
 
 Gates planejados: validação/monetário unitários, migration em schema separado, autorização/CSRF/propriedade e payloads reais, ausência/não atendimento/alteração de endereço, fronteiras de prazo, reserva/pedido/cupom/limite concorrentes e rollback de falha auditável, snapshots imutáveis e replay/restart, painel ADMIN E2E HTTPS, regressões afetadas. Sem produção/túnel, banco original/reset, execução física/leitor ou confirmação de pagamento antecipada.
 
+#### Precisão de regressão — antes da edição
+
+O gate routes-check em 71f9ae1 passou build/tipos/lint e 107/108 unitários; o único FAIL é o teste histórico de bootstrap que exigia 404 para /orders quando essa rota ainda não existia. O novo router corretamente devolve 403 HTTPS_REQUIRED em HTTP. IN_PROGRESS → FAILED → IN_PROGRESS para adequação rastreável, sem DONE. PRIMARY adicional mínimo sob delegação: tests/bootstrap/api.test.ts somente atualizar esse cenário para provar a nova proteção HTTPS do POST /orders e preservar 404 em caminho inexistente. Não remover teste nem relaxar guarda para obter 404; acrescentar assert do código de erro. Demais casos e comandos preservados.
+
 ### TASK-019 Implementar simulador, cobranças e estornos automáticos
 
 #### Status
