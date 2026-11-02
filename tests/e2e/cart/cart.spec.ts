@@ -91,3 +91,19 @@ test('native shared components persist guest cart in AsyncStorage, merge on bear
   await page.setViewportSize({ width: 390, height: 844 }); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.screenshot({ path: resolve(app.directory, 'native-cart-narrow.png'), fullPage: true });
 });
+
+test('coupon replacement cancels the original hold, requires confirmation again and cart edits remain authoritative', async ({ page, app, scenario }) => {
+  const admin = await session(app, app.credentials.adminEmail, app.credentials.adminPassword), suffix = scenario.data.main.replaceAll('-', '').slice(0, 12).toUpperCase();
+  const codes = ['A' + suffix, 'B' + suffix];
+  for (const [index, code] of codes.entries()) expect((await admin.call('/admin/coupons', 'POST', { code, type: 'FIXED', amount: (index + 1) * 1000, startsAt: '2020-01-01T00:00:00Z', endsAt: '2100-01-01T00:00:00Z', active: true })).status).toBe(201);
+  await login(page, app.origin, scenario.customer.input.email, scenario.customer.input.password); await addNew(page, app.origin, scenario.data.main); await page.goto(app.origin + '/#/cart');
+  const confirm = page.getByRole('checkbox', { name: 'Conferi os itens e os valores atuais' }), reserve = page.getByRole('button', { name: 'Reservar conjunto por 15 minutos', exact: true });
+  await page.getByLabel('Código do cupom', { exact: true }).fill(codes[0]!); await page.getByRole('button', { name: 'Conferir cupom', exact: true }).click(); await expect(page.getByText(/desconto do cupom: R\$\s*10,00/)).toBeVisible();
+  await confirm.check(); await reserve.click(); const active = page.getByRole('region', { name: 'Finalização em andamento', exact: true }); await expect(active).toBeVisible(); const original = await active.getAttribute('data-checkout-id');
+  app.advance(2 * 60 * 1000); await page.getByLabel('Código do cupom', { exact: true }).fill(codes[1]!); await page.getByRole('button', { name: 'Conferir cupom', exact: true }).click();
+  await expect(active).toHaveCount(0); await expect(page.getByText(/desconto do cupom: R\$\s*20,00/)).toBeVisible(); await expect(confirm).not.toBeChecked(); await expect(reserve).toBeDisabled();
+  await confirm.check(); await reserve.click(); await expect(active).toBeVisible(); expect(await active.getAttribute('data-checkout-id')).not.toBe(original);
+  await page.getByLabel('Quantidade de ' + scenario.data.mainTitle, { exact: true }).fill('2'); await page.getByRole('button', { name: 'Atualizar quantidade', exact: true }).click();
+  await expect(active).toHaveCount(0); await expect(page.getByRole('article')).toContainText('quantidade no carrinho: 2'); await expect(confirm).not.toBeChecked();
+  await page.getByRole('button', { name: 'Esvaziar carrinho da conta', exact: true }).click(); await expect(page.getByText('Seu carrinho está vazio.', { exact: true })).toBeVisible();
+});

@@ -2267,6 +2267,10 @@ apps/mobile/package.json e package-lock.json PRIMARY somente @react-native-async
 
 Incidental previsto: exports/registro mínimos diretamente causados, sujeitos aos nove critérios. Gates: tipos/build/lint/unitários do protocolo e contexto, banco/API existente, E2E real Firefox+RNW para visitante/mescla/retry/preços/checkout retomado/prazo/conflitos/conta trocada, layout/teclado/texto e exports Android/iOS. TalkBack e dispositivo real não executados/alegados. Dependência nova exige validar instalação e política de segurança, sem ocultar auditoria bruta.
 
+#### Validação em andamento — 2026-11-02
+
+Implementação e fixtures até 3f3597f: protocolo local versionado/mescla durável, interfaces web/native, contexto de conta restritivo e seis cenários de aceitação HTTPS com banco isolado. Nenhum resultado E2E aprovado antecipadamente. Primeira instalação limpa em 7dd5f67 passou, mas tipos falharam no wrapper genérico de navigator.locks; corrigido em 4e329ef. Gates em 66299c4 passaram com 103 unitários. O novo gate de prontidão após mescla revelou callback de acesso também anulável: f78f180 falhou typecheck, corrigido em 3f3597f. Histórico IN_PROGRESS → FAILED → IN_PROGRESS, sem remover testes/validações. Build, tipos, lint e 103 unitários novamente PASS em test-results/cart-ui/acceptance-check2.log; E2E, exportações e regressões finais ainda pendentes. Log da primeira tentativa preservado em acceptance-check.log. Nenhum DONE nem percentual adicional por implementação não validada.
+
 ### TASK-018 Implementar frete, cotação e pedidos
 
 #### Status
