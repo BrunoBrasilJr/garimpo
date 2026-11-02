@@ -11,6 +11,7 @@ import type { AuthPolicy, SessionBundle } from './service.ts';
 import { AccountError } from './errors.ts';
 import * as validate from './validation.ts';
 import { createStaff, listStaff, changeStaff } from './staff/service.ts';
+import { registerEngagementRoutes } from '../engagement/router.ts';
 
 const names = { access: '__Host-garimpo-access', refresh: '__Host-garimpo-refresh', csrf: '__Host-garimpo-csrf' };
 function cookies(request: Request): Map<string, string> {
@@ -72,7 +73,7 @@ export function createAccountsRouter(options: AccountsOptions = {}) {
     }
     if (request.method === 'OPTIONS') {
       if (suppliedOrigin !== origin) throw new AccountError(403, 'ORIGIN_INVALID');
-      response.set('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
+      response.set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
       response.set('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-CSRF-Token,X-Garimpo-Client');
       response.sendStatus(204); return;
     }
@@ -107,6 +108,7 @@ export function createAccountsRouter(options: AccountsOptions = {}) {
     response.sendStatus(204);
   });
   const mutation = async (request: Request) => { if (!mobile(request)) await service().csrf(access(request), csrf(request)); };
+  registerEngagementRoutes(router, service, access, mutation);
   router.get('/me', async (request, response) => { response.json(await service().profile(access(request))); });
   router.patch('/me', async (request, response) => {
     await mutation(request);

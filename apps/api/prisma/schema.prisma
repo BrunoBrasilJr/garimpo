@@ -57,6 +57,8 @@ model Edition {
   tracks               Track[]
   offers               Offer[]
   images               ProductImage[]
+  wishes               WishlistEntry[]
+  availabilityAlerts   AvailabilityAlert[]
 
   @@index([labelId])
   @@index([primaryGenreId])
@@ -222,6 +224,8 @@ model User {
   messages        DemoMessage[]
   addresses       Address[]
   stockMovements  StockMovement[]
+  wishes          WishlistEntry[]
+  availabilityAlerts AvailabilityAlert[]
 }
 
 model Session {
@@ -312,6 +316,7 @@ model DomainEvent {
   lastErrorCode String?
   createdAt     DateTime      @default(now()) @db.Timestamptz(3)
   messages      DemoMessage[]
+  availabilityAlerts AvailabilityAlert[]
 
   @@index([processedAt, createdAt, id])
 }
@@ -330,10 +335,54 @@ model DemoMessage {
   deliveredAt    DateTime?     @db.Timestamptz(3)
   attempts       Int           @default(0)
   createdAt      DateTime      @default(now()) @db.Timestamptz(3)
+  availabilityAlertId String? @unique @db.Uuid
+  availabilityAlert AvailabilityAlert? @relation(fields: [availabilityAlertId], references: [id], onDelete: Restrict)
 
   @@index([userId])
   @@index([eventId])
   @@index([status, createdAt])
+}
+
+enum AvailabilityKind {
+  NEW
+  USED
+  ANY
+}
+
+enum AvailabilityStatus {
+  ACTIVE
+  DELIVERED
+  CANCELLED
+}
+
+model WishlistEntry {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  editionId String @db.Uuid
+  edition Edition @relation(fields: [editionId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@unique([userId, editionId])
+  @@index([editionId])
+  @@index([userId, createdAt, id])
+}
+
+model AvailabilityAlert {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  editionId String @db.Uuid
+  edition Edition @relation(fields: [editionId], references: [id], onDelete: Restrict)
+  kind AvailabilityKind
+  status AvailabilityStatus @default(ACTIVE)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  closedAt DateTime? @db.Timestamptz(3)
+  message DemoMessage?
+  triggerEventId String? @db.Uuid
+  triggerEvent DomainEvent? @relation(fields: [triggerEventId], references: [id], onDelete: Restrict)
+  @@index([userId, createdAt, id])
+  @@index([editionId, status, kind, createdAt])
+  @@index([triggerEventId])
 }
 
 model IdempotencyRecord {

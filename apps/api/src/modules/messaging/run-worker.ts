@@ -1,11 +1,24 @@
 import { configuredMessages } from './config.ts';
 import { consumeRegistration, deliverNext } from './worker.ts';
+import { consumeAvailability, deliverAvailability } from './availability.ts';
 
 let messages: ReturnType<typeof configuredMessages>;
 try {
   messages = configuredMessages();
   if (!messages) throw new Error('Configure local test mode, database and separate protected keys.');
   let prepared = 0, delivered = 0;
+  for (const consume of [consumeAvailability]) for (let index = 0; index < 100; index++) {
+    const result = await consume(messages);
+    if (result === 'EMPTY') break;
+    if (result === 'FAILED') throw new Error('Availability preparation failed; retained for retry.');
+    prepared++;
+  }
+  for (let index = 0; index < 100; index++) {
+    const result = await deliverAvailability(messages);
+    if (result === 'EMPTY') break;
+    if (result === 'FAILED') throw new Error('Availability delivery failed; retained for retry.');
+    delivered++;
+  }
   for (let index = 0; index < 100; index++) {
     const result = await consumeRegistration(messages);
     if (result === 'EMPTY') break;

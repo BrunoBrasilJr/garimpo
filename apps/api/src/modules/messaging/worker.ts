@@ -33,7 +33,7 @@ export async function consumeRegistration(messages: AccessMessages): Promise<'EM
 /** Local delivery is a durable mailbox state transition, never external I/O within a transaction. */
 export async function deliverNext(messages: AccessMessages, localCheck: (id: string) => void = () => {}): Promise<'EMPTY' | 'DELIVERED' | 'FAILED'> {
   return messages.accounts.db.$transaction(async tx => {
-    const rows = await tx.$queryRaw<{ id: string }[]>`SELECT id FROM "DemoMessage" WHERE status IN ('PENDING', 'FAILED')
+    const rows = await tx.$queryRaw<{ id: string }[]>`SELECT id FROM "DemoMessage" WHERE type LIKE 'ACCESS.%' AND status IN ('PENDING', 'FAILED')
       ORDER BY attempts, "createdAt", id FOR UPDATE SKIP LOCKED LIMIT 1`;
     const row = rows[0]; if (!row) return 'EMPTY';
     let status: 'DELIVERED' | 'FAILED' = 'DELIVERED';

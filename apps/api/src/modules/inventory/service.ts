@@ -9,6 +9,7 @@ import { serializable } from '../../persistence/transaction.ts';
 import { appendAudit } from '../../core/audit.ts';
 import { enqueue } from '../../core/outbox.ts';
 import { adjustedStock, lowStock } from './rules.ts';
+import { availability, availabilityReturned } from '../engagement/availability.ts';
 
 const movementInclude = { actor: { select: { name: true } } } satisfies Prisma.StockMovementInclude;
 function movementView(row: Prisma.StockMovementGetPayload<{ include: typeof movementInclude }>): StockMovementView {
@@ -25,6 +26,7 @@ export class Inventory {
       await tx.$queryRaw`SELECT id FROM "Edition" WHERE id = ${first.editionId}::uuid FOR UPDATE`;
       await tx.$queryRaw`SELECT id FROM "Offer" WHERE id = ${offerId}::uuid FOR UPDATE`;
       const offer = await tx.offer.findUniqueOrThrow({ where: { id: offerId } });
+      const beforeAvailability = await availability(tx, offer.editionId);
       const stockOnHand = adjustedStock(offer.kind, offer.stockOnHand, delta);
       if (delta < 0) {
         const snapshot = requireKnown(await this.catalog.commercialBindings.inspect(tx, offer.editionId, [offerId]), [offerId]);
@@ -38,6 +40,7 @@ export class Inventory {
         result: 'SUCCESS', reason: 'EXPLICIT_STOCK_ADJUSTMENT', changes: { delta, before: offer.stockOnHand, after: stockOnHand, reason } }, clock);
       await enqueue(tx, { type: 'INVENTORY.STOCK_CHANGED', aggregateId: offerId,
         payload: { offerId, editionId: offer.editionId, before: offer.stockOnHand, after: stockOnHand } }, clock);
+      await availabilityReturned(tx, offer.editionId, beforeAvailability, clock);
       return movement.id;
     }, clock);
     const movement = await db.stockMovement.findUniqueOrThrow({ where: { id: result.resultRef }, include: movementInclude });

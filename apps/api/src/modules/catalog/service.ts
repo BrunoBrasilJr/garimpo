@@ -15,6 +15,7 @@ import type { CatalogQuery, EditionCreate, EditionPatch, OfferCreate, OfferPatch
 import { recordOpening } from '../inventory/ledger.ts';
 import { requireUnbound, unavailableCommercialBindings } from './lifecycle.ts';
 import type { CommercialBindings } from './lifecycle.ts';
+import { availability, availabilityReturned } from '../engagement/availability.ts';
 
 type Tx = Prisma.TransactionClient;
 const includeOffer = { images: { orderBy: [{ position: 'asc' }, { id: 'asc' }] } } satisfies Prisma.OfferInclude;
@@ -115,6 +116,7 @@ export class Catalog {
   async updateEdition(access: string, id: string, input: EditionPatch, reason?: string) {
     return serializable(this.db, async tx => {
       const actor = await this.staff(tx, access); await this.lockEdition(tx, id);
+      const beforeAvailability = await availability(tx, id);
       const previous = await tx.edition.findUniqueOrThrow({ where: { id }, include: editionInclude });
       const fields = this.fields(input, previous), genres = input.genreIds ?? previous.genres.map(item => item.genreId);
       if (!genres.includes(fields.primaryGenreId)) throw publication(['primaryGenreId']);
@@ -135,6 +137,7 @@ export class Catalog {
       this.validatePublication(edition);
       await this.record(tx, actor.id, reason ? 'CATALOG.EDITION_INACTIVATED' : 'CATALOG.EDITION_UPDATED', 'EDITION', id,
         { fields: Object.keys(input), beforeActive: previous.active, afterActive: edition.active, ...(reason ? { reason } : {}) });
+      await availabilityReturned(tx, id, beforeAvailability, this.clock);
       return editionView(edition);
     });
   }
@@ -142,6 +145,7 @@ export class Catalog {
     const actor = await this.staff(this.db, access);
     const command = await idempotent(this.db, { actorScope: actor.id, operation: 'CATALOG.OFFER_CREATE', key, payload: { editionId, ...input } }, async tx => {
       await this.staff(tx, access); await this.lockEdition(tx, editionId);
+      const beforeAvailability = await availability(tx, editionId);
       const data = { editionId, kind: input.kind, priceCents: input.priceCents,
         stockOnHand: input.stockOnHand, active: input.active, discGrade: input.discGrade ?? null,
         sleeveGrade: input.sleeveGrade ?? null, particulars: input.particulars ?? null };
@@ -150,6 +154,7 @@ export class Catalog {
       const offer = await tx.offer.create({ data, include: includeOffer });
       await recordOpening(tx, offer, actor.id, this.clock);
       await this.record(tx, actor.id, 'CATALOG.OFFER_CREATED', 'OFFER', offer.id, { kind: offer.kind, priceCents: offer.priceCents, stockOnHand: offer.stockOnHand });
+      await availabilityReturned(tx, editionId, beforeAvailability, this.clock);
       return offer.id;
     }, this.clock);
     const offer = await this.db.offer.findUnique({ where: { id: command.resultRef }, include: { ...includeOffer, edition: true } });
@@ -161,6 +166,7 @@ export class Catalog {
       const actor = await this.staff(tx, access);
       const previous = await tx.offer.findUnique({ where: { id }, include: { ...includeOffer, edition: { include: { images: true } } } }); if (!previous) throw missing();
       await this.lockEdition(tx, previous.editionId);
+      const beforeAvailability = await availability(tx, previous.editionId);
       const expected = 'version' in input ? input.version : previous.version;
       const patch: Partial<OfferPatch> = input;
       if (previous.version !== expected) throw conflict();
@@ -174,6 +180,7 @@ export class Catalog {
       const offer = await tx.offer.update({ where: { id, version: expected }, data, include: { ...includeOffer, edition: true } });
       await this.record(tx, actor.id, reason ? 'CATALOG.OFFER_INACTIVATED' : 'CATALOG.OFFER_UPDATED', 'OFFER', id,
         { fields: Object.keys(input), beforePriceCents: previous.priceCents, afterPriceCents: offer.priceCents, beforeActive: previous.active, afterActive: offer.active, ...(reason ? { reason } : {}) });
+      await availabilityReturned(tx, previous.editionId, beforeAvailability, this.clock);
       return offerView(offer, offer.edition.active);
     });
   }
