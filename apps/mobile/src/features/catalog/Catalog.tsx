@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { BackHandler, Image, Text, View } from 'react-native';
-import type { CatalogPage, CatalogFilters } from '@garimpo/contracts';
+import type { CatalogPage, CatalogFilters, CatalogEdition, CatalogOffer } from '@garimpo/contracts';
 import { MobileCatalogClient, message, money } from './client';
 import { Button } from './Controls';
 import { Filters } from './Filters';
 import { Edition } from './Edition';
 import { styles as s } from './styles';
 
-export default function Catalog({ origin, initialQuery = '', initialEdition = '', actions }: { origin: string; initialQuery?: string; initialEdition?: string; actions?: (editionId: string) => ReactNode }) {
+export default function Catalog({ origin, initialQuery = '', initialEdition = '', actions, cart }: { origin: string; initialQuery?: string; initialEdition?: string; actions?: (editionId: string) => ReactNode; cart?: ((edition: CatalogEdition, offer: CatalogOffer | undefined) => ReactNode) | undefined }) {
   const client = useMemo(() => { try { return new MobileCatalogClient(origin); } catch { return null; } }, [origin]);
   const [query, setQuery] = useState(initialQuery), [edition, setEdition] = useState(initialEdition), [data, setData] = useState<CatalogPage>(), [options, setOptions] = useState<CatalogFilters>(), [loading, setLoading] = useState(true), [error, setError] = useState(''), [retry, setRetry] = useState(0);
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function Catalog({ origin, initialQuery = '', initialEdition = ''
   }, [client, query, retry]);
   useEffect(() => { if (!edition) return; const handler = BackHandler.addEventListener('hardwareBackPress', () => { setEdition(''); return true; }); return () => handler.remove(); }, [edition]);
   function page(number: number) { const params = new URLSearchParams(query); params.set('page', String(number)); setQuery(params.toString()); }
-  if (edition && client) return <><Edition client={client} id={edition} back={() => setEdition('')} />{actions?.(edition)}</>;
+  if (edition && client) return <><Edition client={client} id={edition} back={() => setEdition('')} cart={cart} />{actions?.(edition)}</>;
   return <View style={s.page}><Text allowFontScaling accessibilityRole="header" style={s.title}>Explore os discos</Text><Text allowFontScaling style={s.text}>Novos, usados e edições para guardar boas histórias.</Text>
     {options ? <Filters key={query} options={options} query={query} apply={setQuery} busy={loading} /> : null}
     {error ? <><Text allowFontScaling accessibilityRole="alert" accessibilityLiveRegion="polite" style={s.alert}>{error}</Text><Button title="Tentar novamente" onPress={() => setRetry(value => value + 1)} /></> : null}

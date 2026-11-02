@@ -32,7 +32,7 @@ function AccountCart({ user }: { user: AccountView }) {
   async function mutation(work: (signal: AbortSignal) => Promise<unknown>, success: string, selectedCoupon = coupon) {
     setBusy(true); setError(''); setNotice(''); generation.current++; controller.current?.abort(); const operation = new AbortController(); controller.current = operation;
     try { await work(operation.signal); if (alive.current) { setNotice(success); reserveIntent.current = null; setConfirmed(''); await load(selectedCoupon); return true; } return false; }
-    catch (cause) { if (alive.current && !operation.signal.aborted) { setError(cartError(cause)); if (cause instanceof ClientError && cause.code === 'CART_VERSION_CONFLICT') await load(selectedCoupon); } return false; }
+    catch (cause) { if (alive.current && !operation.signal.aborted) { setError(cartError(cause)); if (cause instanceof ClientError && cause.code === 'CART_VERSION_CONFLICT') await load(selectedCoupon); else if (cause instanceof ClientError && (cause.status === 401 || cause.status === 403)) { setData(undefined); setCheckout(null); setConfirmed(''); } } return false; }
     finally { if (alive.current) setBusy(false); }
   }
   async function applyCoupon() {
@@ -40,7 +40,7 @@ function AccountCart({ user }: { user: AccountView }) {
     const changed = await mutation(async signal => {
       const active = await cartRequest<CheckoutView>(user.id, '/me/checkout', 'GET', undefined, signal).catch(cause => { if (cause instanceof ClientError && cause.status === 404) return null; throw cause; });
       if (active && active.couponCode !== (value || null)) await cartRequest(user.id, '/checkouts/' + active.id, 'DELETE', undefined, signal);
-    }, 'Cupom conferido com os valores atuais. Confirme os itens antes de reservar.', value);
+    }, 'Confira abaixo a validade e os valores do cupom informado.', value);
     if (alive.current && changed) { setCoupon(value); setConfirmed(''); }
   }
   async function reserve() {
@@ -54,6 +54,7 @@ function AccountCart({ user }: { user: AccountView }) {
       if (!alive.current || operation.signal.aborted) return;
       setError(cartError(cause));
       if (cause instanceof ClientError && ['CART_VERSION_CONFLICT', 'PRICE_CONFIRMATION_REQUIRED', 'INSUFFICIENT_STOCK', 'COUPON_LIMIT_REACHED', 'PENDING_ORDER_LIMIT'].includes(cause.code)) { reserveIntent.current = null; setConfirmed(''); await load(coupon); }
+      else if (cause instanceof ClientError && (cause.status === 401 || cause.status === 403)) { setData(undefined); setCheckout(null); setConfirmed(''); }
     } finally { if (alive.current) setBusy(false); }
   }
   return <section className="account-card cart-view"><h2>Seu carrinho</h2><p>Adicionar não reserva estoque. A finalização só reserva o conjunto após conferir e confirmar os valores no servidor.</p>

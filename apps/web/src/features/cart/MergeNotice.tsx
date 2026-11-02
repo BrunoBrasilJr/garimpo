@@ -17,8 +17,9 @@ export function MergeNotice({ user }: { user: AccountView }) {
       if (!alive.current) return;
       setData(await guestCart.acknowledge(intent.key)); setNotice('Carrinho deste aparelho mesclado à sua conta.' + (result.warnings.length ? ' ' + result.warnings.join(' ') : '')); cartChanged();
     } catch (cause) {
-      if (intent && cause instanceof ClientError && cause.code === 'CART_VERSION_CONFLICT') await guestCart.discard(intent.key).catch(() => {});
-      if (alive.current) setError(cartError(cause));
+      let failure = cause;
+      if (intent && cause instanceof ClientError && cause.code === 'CART_VERSION_CONFLICT') try { await guestCart.discard(intent.key); } catch (storageFailure) { failure = storageFailure; }
+      if (alive.current) setError(cartError(failure));
     } finally { running.current = false; if (alive.current) setBusy(false); }
   }, [user.id]);
   useEffect(() => {

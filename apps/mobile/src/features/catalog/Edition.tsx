@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import type { CatalogEdition, CatalogImage, CatalogOffer, CatalogTrack } from '@garimpo/contracts';
 import { MobileCatalogClient, message, money } from './client';
@@ -21,7 +22,7 @@ function Offer({ offer, index, selected, select, client }: { offer: CatalogOffer
     </Pressable>
   </View>;
 }
-export function Edition({ client, id, back }: { client: MobileCatalogClient; id: string; back: () => void }) {
+export function Edition({ client, id, back, cart }: { client: MobileCatalogClient; id: string; back: () => void; cart?: ((edition: CatalogEdition, offer: CatalogOffer | undefined) => ReactNode) | undefined }) {
   const [data, setData] = useState<CatalogEdition>(), [error, setError] = useState(''), [retry, setRetry] = useState(0), [selected, setSelected] = useState(''), [track, setTrack] = useState<CatalogTrack | null>(null);
   useEffect(() => {
     const controller = new AbortController(); setData(undefined); setError(''); setTrack(null); setSelected('');
@@ -46,6 +47,7 @@ export function Edition({ client, id, back }: { client: MobileCatalogClient; id:
       <Text allowFontScaling accessibilityRole="header" style={s.heading}>Ofertas novas</Text>{!fresh.length ? <Text allowFontScaling style={s.text}>Nenhuma oferta nova cadastrada.</Text> : fresh.map((offer, index) => <Offer key={offer.id} offer={offer} index={index + 1} selected={selected} select={setSelected} client={client} />)}
       <Text allowFontScaling accessibilityRole="header" style={s.heading}>Exemplares usados</Text>{!used.length ? <Text allowFontScaling style={s.text}>Nenhum exemplar usado cadastrado.</Text> : used.map((offer, index) => <Offer key={offer.id} offer={offer} index={index + 1} selected={selected} select={setSelected} client={client} />)}
       {chosen ? <Text allowFontScaling accessibilityLiveRegion="polite" style={s.text}>{chosen.kind === 'NEW' ? 'Oferta nova selecionada' : 'Usado selecionado'} · {money(chosen.priceCents)}. Esta seleção não reserva estoque.</Text> : null}
+      {cart?.(data, chosen)}
     </>}
   </View>;
 }
