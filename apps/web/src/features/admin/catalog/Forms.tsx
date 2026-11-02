@@ -28,7 +28,7 @@ export function Input({ label, hint, ...props }: InputHTMLAttributes<HTMLInputEl
   return <div className="catalog-field"><label htmlFor={id}>{label}</label><input {...props} id={id} aria-invalid={invalid} aria-describedby={hint ? id + '-hint' : undefined} />{hint ? <small id={id + '-hint'}>{hint}</small> : null}</div>;
 }
 export function Select({ label, name, options, value, multiple = false, required = true }: {
-  label: string; name: string; options: { value: string; label: string }[]; value?: string | string[]; multiple?: boolean; required?: boolean;
+  label: string; name: string; options: { value: string; label: string }[]; value?: string | string[] | undefined; multiple?: boolean; required?: boolean;
 }) {
   const id = useId(), fields = useContext(Fields);
   return <div className="catalog-field"><label htmlFor={id}>{label}</label><select id={id} name={name} defaultValue={value} multiple={multiple} required={required}

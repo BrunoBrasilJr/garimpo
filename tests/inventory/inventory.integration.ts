@@ -94,6 +94,15 @@ test('reserved and committed quantities prevent destructive reductions without l
   expect(await db.auditLog.count({ where: { targetId: item.id, action: 'INVENTORY.ADJUSTED' } })).toBe(0);
   expect((await adjust(item.id, -1)).body.stockOnHand).toBe(2);
 });
+test('failure to enqueue rolls back quantity, ledger and audit together', async () => {
+  const row = await edition(), item = await offer(row.id);
+  await control.query('ALTER TABLE "DomainEvent" ADD CONSTRAINT task009_reject_effect CHECK (type <> \'INVENTORY.STOCK_CHANGED\') NOT VALID');
+  try { expect((await adjust(item.id, 2)).status).toBeGreaterThanOrEqual(500); }
+  finally { await control.query('ALTER TABLE "DomainEvent" DROP CONSTRAINT task009_reject_effect'); }
+  expect((await db.offer.findUniqueOrThrow({ where: { id: item.id } })).stockOnHand).toBe(3);
+  expect(await db.stockMovement.count({ where: { offerId: item.id } })).toBe(1);
+  expect(await db.auditLog.count({ where: { targetId: item.id, action: 'INVENTORY.ADJUSTED' } })).toBe(0);
+});
 test('default runtime adapter preserves unknown balances, blocks reduction/deletion and allows safe addition/inactivation', async () => {
   const row = await edition(), item = await offer(row.id);
   await db.edition.update({ where: { id: row.id }, data: { active: true } }); await db.offer.update({ where: { id: item.id }, data: { active: true } });
