@@ -122,7 +122,7 @@ test('default runtime reads real orders, caps pending purchases at three and ign
   expect(await f.db.$transaction(tx => orderPendingCount(f.clock).inspect(tx, buyer.user.id))).toEqual({ status: 'KNOWN', count: 3 });
   const product = await f.offer(), preview = await f.draft(buyer, product.id), denied = await f.server.call<{ code: string }>('/checkouts', 'POST', preview, { ...credentials(buyer), 'Idempotency-Key': randomUUID() }); expect(denied.status).toBe(409); expect(denied.body.code).toBe('PENDING_ORDER_LIMIT');
   expect(await f.db.checkout.count({ where: { userId: buyer.user.id, status: 'ACTIVE' } })).toBe(0);
-  f.advance(31 * 60 * 1000); const renewed = await f.accounts.refresh(buyer.refreshToken);
+  f.advance(31 * 60 * 1000); const renewed = await f.accounts.renew(buyer.refreshToken, buyer.csrfToken);
   expect(await f.db.$transaction(tx => orderPendingCount(f.clock).inspect(tx, buyer.user.id))).toEqual({ status: 'KNOWN', count: 0 });
   const resumed = await f.server.call<CheckoutView>('/checkouts', 'POST', preview, { ...credentials(renewed), 'Idempotency-Key': randomUUID() }); expect(resumed.status).toBe(201);
   const oldOfferIds = created.flatMap(order => order.units.map(unit => unit.offerId)); expect(await f.db.$transaction(tx => reservedQuantities(tx, oldOfferIds, f.clock.now()))).toEqual(new Map());
@@ -130,7 +130,7 @@ test('default runtime reads real orders, caps pending purchases at three and ign
 });
 
 test('expired checkout is closed durably at the exact boundary and no order or initial charge is created', async () => {
-  const ready = await f.ready(buyer); f.advance(Date.parse(ready.checkout.expiresAt) - f.clock.now().getTime()); const renewed = await f.accounts.refresh(buyer.refreshToken);
+  const ready = await f.ready(buyer); f.advance(Date.parse(ready.checkout.expiresAt) - f.clock.now().getTime()); const renewed = await f.accounts.renew(buyer.refreshToken, buyer.csrfToken);
   await expect(f.orders.create(renewed.accessToken, ready.body, ready.key)).rejects.toMatchObject({ code: 'CHECKOUT_EXPIRED' }); expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0);
   expect((await f.db.checkout.findUniqueOrThrow({ where: { id: ready.checkout.id } })).status).toBe('EXPIRED'); expect((await f.db.reservation.findFirstOrThrow({ where: { checkoutItem: { checkoutId: ready.checkout.id } } })).status).toBe('EXPIRED');
 });
@@ -162,8 +162,8 @@ async function overlap<T, U>(table: 'User' | 'Offer' | 'FreightRate', id: string
 test('two independent sessions replaying the same order key commit one order, charge, unit and receipt', async () => {
   const ready = await f.ready(buyer), result = await overlap('User', buyer.user.id, () => f.orders.create(buyer.accessToken, ready.body, ready.key), () => f.secondOrders.create(buyer.accessToken, ready.body, ready.key));
   expect(result.every(value => value.status === 'fulfilled')).toBe(true); const ids = result.map(value => value.status === 'fulfilled' ? value.value.id : 'failed'); expect(new Set(ids).size).toBe(1);
-  expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(1); expect(await f.db.paymentCharge.count({ where: { orderId: ids[0] } })).toBe(1); expect(await f.db.idempotencyRecord.count({ where: { actorScope: buyer.user.id, operation: 'ORDER.CREATE', key: ready.key } })).toBe(1);
-  expect(await f.db.auditLog.count({ where: { targetId: ids[0], action: 'ORDER.CREATED' } })).toBe(1); expect(await f.db.domainEvent.count({ where: { aggregateId: ids[0], type: 'ORDER.CREATED' } })).toBe(1);
+  expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(1); expect(await f.db.paymentCharge.count({ where: { orderId: ids[0]! } })).toBe(1); expect(await f.db.idempotencyRecord.count({ where: { actorScope: buyer.user.id, operation: 'ORDER.CREATE', key: ready.key } })).toBe(1);
+  expect(await f.db.auditLog.count({ where: { targetId: ids[0]!, action: 'ORDER.CREATED' } })).toBe(1); expect(await f.db.domainEvent.count({ where: { aggregateId: ids[0]!, type: 'ORDER.CREATED' } })).toBe(1);
 });
 
 test('reservation-to-order transfer never exposes the same unique used copy to another concurrent checkout', async () => {
