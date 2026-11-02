@@ -19,7 +19,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
-| 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | BLOCKED |
+| 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | IN_PROGRESS |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | BLOCKED |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | BLOCKED |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | BLOCKED |
@@ -1597,7 +1597,7 @@ Allowed Changes PASS com precisões PRIMARY registradas antes da edição; Incid
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -1663,6 +1663,14 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR
+
+2026-11-02, branch real feature/TASK-012-desejos-alertas, base 5968540. Responsável renovou execução contínua até pelo menos 75% (28/37), sem permissões rotineiras. Dependências 008–011 DONE, 158 casos acumulados válidos; tipos/build/lint/segurança e regressões pertinentes passaram na 011. ADR-001/004/005 ACCEPTED; AGENTS/conciliação, README/regras/pendências, TASK/Scope Guard, contratos/API/testes, persistência/mensagens/autorização e suas suítes relidos. DoR PASS; BLOCKED → READY → IN_PROGRESS. Nenhuma aprovação acadêmica/nativa presumida.
+
+PRIMARY nos caminhos previstos; contracts usa packages/contracts/src/engagement/** conforme estrutura existente. Precisões PRIMARY sob delegação explícita, registradas antes da edição: catalog/service.ts e inventory/service.ts somente captura transacional antes/depois de disponibilidade e evento de retorno; accounts/router.ts somente registro das novas rotas com helpers de sessão/CSRF existentes e PUT no OPTIONS; messaging/worker.ts somente impedir que o worker de acesso consuma mensagens do novo tipo; messaging/run-worker.ts somente compor o consumer de disponibilidade e seu emissor local. Não tratar autorização/roteamento de mensagens como incidental. Schema permite WishlistEntry, AvailabilityAlert e FK opcional única de DemoMessage para ativação do alerta, relações inversas e índices correspondentes; nenhum outro modelo comercial. docs/architecture/api.md somente wire/paginação/erros destes endpoints. Incidental previsto: exports, comandos/runner de testes e navegação mínima web/mobile; sujeito aos nove critérios.
+
+Plano: desejo único user/edition, independente do alerta, ambos autenticados CUSTOMER. Ativações de alerta com IDs históricos permanentes, condição NEW/USED/ANY, unicidade parcial só ACTIVE. Evento durável de transição indisponível → disponível por condição, capturado no mesmo commit do saldo/publicação, sob lock da edição; não executar serviço externo na transação. Consumidor dedicado prepara uma mensagem por ativação, conteúdo protegido pelo mecanismo existente. Entrega local confirma mensagem e fecha alerta atomicamente; falha preserva inscrição, retry sem duplicação; cancelamento próprio impede entrega pendente. Inscrições posteriores ao evento não recebem reposição antiga. Disponibilidade nesta fase segue ofertas públicas ativas/saldo físico do catálogo; integração com reservas/liberações comerciais continua explicitamente TASK-023, sem fabricar reservas anteriores. API paginada page/pageSize (20/100), IDs próprios e dados de edição sem campos administrativos. Interfaces mantêm desejos e alertas separados e explicam ausência de reserva. Sem cobrança, reserva, e-mail externo, permissões nativas ou dependências novas.
 
 ### TASK-013 Implementar avaliações e moderação
 
