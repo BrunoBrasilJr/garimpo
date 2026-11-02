@@ -36,7 +36,7 @@ export function ReviewSection({ editionId, orderId }: { editionId: string; order
   }, [editionId, page, revision]);
   return <section className="review-section" aria-label="Avaliações de compras verificadas"><h2>Avaliações de compras verificadas</h2>
     {error ? <p role="alert">{error}</p> : !data ? <p role="status">Carregando avaliações…</p> : <>
-      <p>{data.summary.count ? `${data.summary.average} de 5 · ${data.summary.count} avaliações` : 'Esta edição ainda não tem avaliações publicadas.'}</p>
+      <p>{data.summary.count ? `${data.summary.average?.toLocaleString('pt-BR')} de 5 · ${data.summary.count} ${data.summary.count === 1 ? 'avaliação' : 'avaliações'}` : 'Esta edição ainda não tem avaliações publicadas.'}</p>
       {data.items.map(item => <article key={item.id}><h3>{item.authorName} · {item.rating} de 5</h3><p>{item.comment}</p></article>)}
     </>}
     {privateError ? <p role="alert">{privateError}</p> : null}
