@@ -81,12 +81,14 @@ test('cart API enforces real HTTPS, CSRF/origin, customer ownership and separate
 });
 test('adding and editing a cart never reserve stock; ownership, stale revisions and physical single-copy quantity hold', async () => {
   const buyer = buyers[0]!, row = await offer(), used = await offer('USED', 1), before = await db.reservation.count();
+  const userBefore = await db.user.findUniqueOrThrow({ where: { id: buyer.user.id } });
   const cart = await add(buyer, row.id, 2); expect(cart.items[0]).toMatchObject({ quantity: 2, availableQuantity: 5 }); expect(await db.reservation.count()).toBe(before);
   expect((await db.offer.findUniqueOrThrow({ where: { id: row.id } })).stockOnHand).toBe(5);
   expect((await server.call('/me/cart/items/' + cart.items[0]!.id, 'PATCH', { version: cart.version, quantity: 3 }, credentials(buyers[1]!))).status).toBe(404);
   await carts.change(buyer.accessToken, { type: 'UPDATE', itemId: cart.items[0]!.id, version: cart.version, quantity: 3 });
   await expect(carts.change(buyer.accessToken, { type: 'UPDATE', itemId: cart.items[0]!.id, version: cart.version, quantity: 1 })).rejects.toMatchObject({ status: 409 });
   await add(buyer, used.id); await expect(add(buyer, used.id)).rejects.toMatchObject({ code: 'USED_QUANTITY' });
+  expect(await db.user.findUniqueOrThrow({ where: { id: buyer.user.id } })).toEqual(userBefore);
 });
 test('guest merge sums new copies only to current capacity, deduplicates used copies, warns and replays without doubling', async () => {
   const buyer = buyers[0]!, fresh = await offer('NEW', 3), used = await offer('USED', 1), gone = await offer('NEW', 0); await add(buyer, fresh.id, 2);
