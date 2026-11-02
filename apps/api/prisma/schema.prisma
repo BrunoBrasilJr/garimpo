@@ -59,6 +59,7 @@ model Edition {
   images               ProductImage[]
   wishes               WishlistEntry[]
   availabilityAlerts   AvailabilityAlert[]
+  reviews              Review[]
 
   @@index([labelId])
   @@index([primaryGenreId])
@@ -226,6 +227,8 @@ model User {
   stockMovements  StockMovement[]
   wishes          WishlistEntry[]
   availabilityAlerts AvailabilityAlert[]
+  reviews         Review[]
+  reviewRevisions ReviewRevision[]
 }
 
 model Session {
@@ -383,6 +386,51 @@ model AvailabilityAlert {
   @@index([userId, createdAt, id])
   @@index([editionId, status, kind, createdAt])
   @@index([triggerEventId])
+}
+
+enum ReviewVisibility {
+  PUBLIC
+  HIDDEN
+}
+
+model Review {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  editionId String @db.Uuid
+  edition Edition @relation(fields: [editionId], references: [id], onDelete: Restrict)
+  orderId String @db.Uuid
+  rating Int
+  comment String @db.VarChar(4000)
+  visibility ReviewVisibility @default(PUBLIC)
+  awaitingModeration Boolean @default(false)
+  hiddenReason String? @db.VarChar(500)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  revisions ReviewRevision[]
+  @@unique([userId, editionId, orderId])
+  @@index([editionId, visibility, createdAt, id])
+  @@index([userId, createdAt, id])
+  @@index([orderId])
+}
+
+model ReviewRevision {
+  id String @id @default(uuid()) @db.Uuid
+  reviewId String @db.Uuid
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  actorId String @db.Uuid
+  actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  version Int
+  rating Int
+  comment String @db.VarChar(4000)
+  visibility ReviewVisibility
+  awaitingModeration Boolean
+  action String @db.VarChar(30)
+  reason String @db.VarChar(500)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@unique([reviewId, version])
+  @@index([actorId])
 }
 
 model IdempotencyRecord {
