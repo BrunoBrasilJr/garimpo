@@ -12,6 +12,9 @@ import { CatalogError, missing, conflict, publication } from './errors.ts';
 import { editionInclude, editionView, offerView, imageView } from './views.ts';
 import type { EditionRecord } from './views.ts';
 import type { CatalogQuery, EditionCreate, EditionPatch, OfferCreate, OfferPatch } from './validation.ts';
+import { recordOpening } from '../inventory/ledger.ts';
+import { requireUnbound, unavailableCommercialBindings } from './lifecycle.ts';
+import type { CommercialBindings } from './lifecycle.ts';
 
 type Tx = Prisma.TransactionClient;
 const includeOffer = { images: { orderBy: [{ position: 'asc' }, { id: 'asc' }] } } satisfies Prisma.OfferInclude;
@@ -19,7 +22,7 @@ const literalLike = (value: string) => value.replace(/[\\%_]/g, '\\$&');
 export class Catalog {
   readonly db: Database;
   readonly clock: Clock;
-  constructor(readonly accounts: Accounts, readonly images = new PublicImageStore()) { this.db = accounts.db; this.clock = accounts.clock; }
+  constructor(readonly accounts: Accounts, readonly images = new PublicImageStore(), readonly commercialBindings: CommercialBindings = unavailableCommercialBindings) { this.db = accounts.db; this.clock = accounts.clock; }
 
   async staff(tx: Tx | Database, access: string) {
     const { user } = await this.accounts.authorize(tx, access);
@@ -145,6 +148,7 @@ export class Catalog {
       this.validateOffer({ ...data, images: [] });
       if (data.kind === 'NEW' && data.active && !await tx.productImage.count({ where: { editionId } })) throw publication(['images']);
       const offer = await tx.offer.create({ data, include: includeOffer });
+      await recordOpening(tx, offer, actor.id, this.clock);
       await this.record(tx, actor.id, 'CATALOG.OFFER_CREATED', 'OFFER', offer.id, { kind: offer.kind, priceCents: offer.priceCents, stockOnHand: offer.stockOnHand });
       return offer.id;
     }, this.clock);
@@ -218,6 +222,8 @@ export class Catalog {
       const offer = kind === 'offer' ? await tx.offer.findUnique({ where: { id } }) : null;
       if (kind === 'offer' && !offer) throw missing();
       await this.lockEdition(tx, kind === 'edition' ? id : offer!.editionId);
+      const offerIds = kind === 'edition' ? (await tx.offer.findMany({ where: { editionId: id }, select: { id: true } })).map(item => item.id) : [id];
+      await requireUnbound(this.commercialBindings, tx, kind === 'edition' ? id : offer!.editionId, offerIds);
       // Restrictive commercial FKs may abort these deletes; never cascade a commercial history.
       if (kind === 'edition') { await tx.offer.deleteMany({ where: { editionId: id } }); await tx.edition.delete({ where: { id } }); }
       else await tx.offer.delete({ where: { id } });

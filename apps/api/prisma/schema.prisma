@@ -132,6 +132,7 @@ model Offer {
   createdAt    DateTime        @default(now()) @db.Timestamptz(3)
   updatedAt    DateTime        @updatedAt @db.Timestamptz(3)
   images       ProductImage[]
+  movements    StockMovement[]
 
   @@index([editionId, kind, active])
   @@index([active, priceCents])
@@ -157,6 +158,25 @@ model ProductImage {
 
   @@unique([editionId, position])
   @@unique([offerId, position])
+}
+
+model StockMovement {
+  id            String   @id @default(uuid()) @db.Uuid
+  offerId       String   @db.Uuid
+  offer         Offer    @relation(fields: [offerId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  deltaOnHand   Int
+  offerVersion  Int
+  balanceBefore Int
+  balanceAfter  Int
+  reason        String   @db.VarChar(500)
+  originKey     String   @unique @db.VarChar(200)
+  actorId       String?  @db.Uuid
+  actor         User?    @relation(fields: [actorId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([offerId, createdAt, id])
+  @@index([actorId])
+  @@unique([offerId, offerVersion])
 }
 
 enum AccountContext {
@@ -201,6 +221,7 @@ model User {
   auditLogs       AuditLog[]
   messages        DemoMessage[]
   addresses       Address[]
+  stockMovements  StockMovement[]
 }
 
 model Session {

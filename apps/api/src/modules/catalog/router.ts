@@ -11,9 +11,11 @@ import { PublicImageStore, MAX_IMAGE_BYTES } from '../media/store.ts';
 import { Catalog } from './service.ts';
 import { CatalogError, missing, conflict } from './errors.ts';
 import * as input from './validation.ts';
+import { registerInventoryRoutes } from '../inventory/router.ts';
+import type { CommercialBindings } from './lifecycle.ts';
 
-export interface CatalogOptions extends AccountsOptions { mediaRoot?: string }
-const routePrefix = /^\/(editions|catalog|admin\/(editions|offers|images|catalog-metadata)|media\/products)(\/|$)/;
+export interface CatalogOptions extends AccountsOptions { mediaRoot?: string; commercialBindings?: CommercialBindings }
+const routePrefix = /^\/(editions|catalog|admin\/(editions|offers|images|catalog-metadata|stock)|media\/products)(\/|$)/;
 function cookie(request: Request, name: string) {
   const values = (request.get('cookie') ?? '').split(';').map(value => value.trim()).filter(value => value.startsWith(name + '='));
   if (values.length > 1) throw new AccountError(422, 'AMBIGUOUS_CREDENTIALS');
@@ -26,7 +28,7 @@ export function createCatalogRouter(options: CatalogOptions = {}) {
   const db = options.db ?? (process.env.DATABASE_URL ? createDatabase(process.env.DATABASE_URL) : undefined);
   const accounts = db ? new Accounts(db, options.clock, options.policy) : undefined;
   const images = new PublicImageStore(options.mediaRoot ?? process.env.MEDIA_PUBLIC_ROOT);
-  const catalog = accounts ? new Catalog(accounts, images) : undefined;
+  const catalog = accounts ? new Catalog(accounts, images, options.commercialBindings) : undefined;
   const service = () => { if (!catalog) throw new CatalogError(503, 'DATABASE_UNAVAILABLE', 'O catálogo está temporariamente indisponível.'); return catalog; };
   const origin = options.webOrigin ?? process.env.WEB_ORIGIN ?? 'https://localhost:5173';
   if (new URL(origin).protocol !== 'https:' || new URL(origin).origin !== origin) throw new Error('WEB_ORIGIN must be an exact HTTPS origin.');
@@ -62,6 +64,7 @@ export function createCatalogRouter(options: CatalogOptions = {}) {
     next();
   });
   router.use(express.json({ limit: '128kb', strict: true }));
+  registerInventoryRoutes(router, service, access);
   router.get('/catalog/filters', async (_request, response) => { response.json(await service().filters()); });
   router.get('/editions', async (request, response) => { response.json(await service().list(input.parse(input.catalogQuery, request.query))); });
   router.get('/editions/:id', async (request, response) => { response.json(await service().detail(input.parse(input.id, request.params.id))); });

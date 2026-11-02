@@ -16,7 +16,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
-| 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | BLOCKED |
+| 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | IN_PROGRESS |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | BLOCKED |
@@ -1261,7 +1261,7 @@ Scope Validation: Allowed Changes PASS; Incidental Changes PASS, cinco arquivos 
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -1299,6 +1299,8 @@ Entregar catálogo/estoque para ADMIN/OPERATOR, movimentos e limiar de estoque b
 - tests/inventory/**
 - TASKS.md — somente estado/evidência desta TASK e prontidão comprovada de dependentes
 
+Precisão de caminho: contratos em packages/contracts/src/inventory/** no src existente do workspace. Sob a delegação explícita de continuidade/decisões técnicas sem novas permissões genéricas, PRIMARY adicionais estritamente necessários: catalog/service.ts e catalog/router.ts somente para acoplar o livro do estoque inicial, a guarda lifecycle e o registro das rotas de estoque no transporte administrativo já protegido; docs/architecture/api.md e data-model.md somente contratos/estado conservador/StockMovement; tests/catalog/catalog.integration.ts somente fixture explícita da porta comercial no ambiente isolado, mantendo provas de FK e demais critérios anteriores. Não tratar esses acoplamentos de regra como limpeza incidental nem alterar autenticação de contas. Guardas comerciais sem adaptador real falham fechadas; mocks de teste nunca são padrão de runtime. Não criar modelos de pedido/reserva/atendimento antecipadamente.
+
 #### Incidental Changes Policy
 
 MINIMAL_DIRECTLY_CAUSED_CHANGES_ALLOWED
@@ -1325,7 +1327,9 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+Início em 2026-11-02, branch real feature/TASK-009-catalogo-estoque, base 4bcf2e8. TASK-008 DONE, código/API/contratos reais e 127 casos acumulados PASS, instalação limpa atual válida; ADR-001/003/006 ACCEPTED. Requisitos, contratos, testes, Scope Guard e código existente relidos. PD-006 resolvida na tarefa anterior; nenhuma PD bloqueia este incremento. DoR PASS; BLOCKED → READY → IN_PROGRESS. Continuidade já autorizada, ZIP alheio preservado, sem aprovação genérica pendente.
+
+Plano: painel web da equipe para metadados/edições/faixas/ofertas/fotos; movimento físico inicial e ajustes atômicos/idempotentes; limiar de novos por edição e ausência de usados disponíveis só no painel. Porta comercial retornará indisponibilidade conservadora enquanto não integrada: não inventar reservado=0/disponível conhecido, impedir reduções ou exclusões sem informação confiável, permitir adições que não invadem vínculos. Integração comercial completa permanece nas tarefas previstas. Saldo desconhecido não será exibido como zero; alerta só quando demonstrável, sem e-mail. Incidental previsto: navegação/registro web, exports de contratos, comandos/configuração da suíte inventory e relações inversas necessárias ao modelo StockMovement, todos mínimos e sujeitos aos nove critérios na revisão. Nenhum gate novo aprovado antecipadamente.
 
 ### TASK-010 Criar catálogo público no site
 

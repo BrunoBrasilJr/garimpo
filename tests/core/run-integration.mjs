@@ -13,8 +13,8 @@ if (url.pathname !== '/garimpo_test' || !['localhost', '127.0.0.1'].includes(url
   throw new Error('Integration tests require a separate loopback/garimpo_test database. No development fallback.');
 }
 const suite = process.argv[2] ?? 'core';
-if (!['core', 'accounts', 'messaging', 'catalog'].includes(suite)) throw new Error('Unknown integration suite.');
-const schema = `task${suite === 'core' ? '003' : suite === 'accounts' ? '004' : suite === 'messaging' ? '005' : '008'}_${randomUUID().replaceAll('-', '')}`;
+if (!['core', 'accounts', 'messaging', 'catalog', 'inventory'].includes(suite)) throw new Error('Unknown integration suite.');
+const schema = `task${suite === 'core' ? '003' : suite === 'accounts' ? '004' : suite === 'messaging' ? '005' : suite === 'catalog' ? '008' : '009'}_${randomUUID().replaceAll('-', '')}`;
 url.searchParams.set('schema', schema);
 const admin = new Client({ connectionString: value });
 try {

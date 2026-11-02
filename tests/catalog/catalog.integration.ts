@@ -15,6 +15,7 @@ import { Catalog } from '../../apps/api/src/modules/catalog/service.ts';
 import { PublicImageStore, MAX_IMAGE_BYTES } from '../../apps/api/src/modules/media/store.ts';
 import { offerCreate, parse } from '../../apps/api/src/modules/catalog/validation.ts';
 import { openCatalogServer, web } from './http.ts';
+import { isolatedNoCommercialBindings } from '../inventory/fixtures.ts';
 
 const password = 'Uma frase longa de teste para catalogo!';
 const clock = { now: () => new Date('2026-11-02T03:00:00Z') };
@@ -65,7 +66,7 @@ beforeAll(async () => {
   await accounts.register({ name: 'Cliente sintético', email: customerEmail, password }); customer = await accounts.login(customerEmail, password, 'web');
   mediaRoot = await mkdtemp(join(tmpdir(), 'garimpo-catalog-media-'));
   catalog = new Catalog(accounts, new PublicImageStore(mediaRoot)); second = new Catalog(new Accounts(other, clock), new PublicImageStore(mediaRoot));
-  server = await openCatalogServer({ db, clock, mediaRoot });
+  server = await openCatalogServer({ db, clock, mediaRoot, commercialBindings: isolatedNoCommercialBindings });
   png = await sharp({ create: { width: 4, height: 6, channels: 3, background: 'orange' } }).png().toBuffer();
   control = new Client({ connectionString: value }); await control.connect();
   await control.query(`SET search_path TO "${schema}"`);
@@ -220,7 +221,7 @@ test('stale offer revision conflicts instead of silently replacing a newer price
   expect((await db.offer.findUniqueOrThrow({ where: { id: item.id } })).priceCents).toBe(7000);
 });
 test('inactivation preserves identities and stock; restrictive references prevent destructive deletion atomically', async () => {
-  const edition = await published(), item = await offer(edition.id);
+  const edition = await published(), item = await offer(edition.id, { stockOnHand: 0 });
   // A structural FK fixture, not a claim that orders/reviews have already been implemented.
   await db.$executeRawUnsafe('CREATE TABLE "CatalogReferenceProbe" (id UUID PRIMARY KEY, "editionId" UUID REFERENCES "Edition"(id) ON DELETE RESTRICT, "offerId" UUID REFERENCES "Offer"(id) ON DELETE RESTRICT)');
   await db.$executeRaw`INSERT INTO "CatalogReferenceProbe" (id, "editionId", "offerId") VALUES (${randomUUID()}::uuid, ${edition.id}::uuid, ${item.id}::uuid)`;

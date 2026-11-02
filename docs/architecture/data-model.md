@@ -19,6 +19,7 @@ Proposta documental relacional, sem schema executável. PKs geradas pelo servido
 | TrackArtist | trackId FK; artistId FK; PK composta | N:M; busca inclui participantes da faixa |
 | ConditionGrade | code PK; label; rank UNIQUE | Vocabulário Goldmine PD-006; usado exige mídia e capa |
 | Offer | id PK; editionId FK; kind NEW/USED; priceCents; discGrade FK?; sleeveGrade FK?; particulars?; stockOnHand; active; version | N:1 Edition; USED quantidade 0/1 e descrição/condições/foto; NEW inteiro não negativo; índice editionId/kind/active |
+| StockMovement | id PK; offerId FK; offerVersion; deltaOnHand; balanceBefore; balanceAfter; reason; originKey UNIQUE; actorId FK?; createdAt | Livro físico somente de acréscimo pela aplicação; UNIQUE offerId/offerVersion; saldos não negativos e diferença igual ao delta não nulo; FKs RESTRICT; índice offerId/createdAt/id e actorId. Abertura positiva consolidada explicitamente na migration, sem inventar vendas anteriores. |
 | ProductImage | id PK; editionId FK?; offerId FK?; storageKey UNIQUE; description; position; contentHash | Dono exclusivo Edition ou Offer; público; 10/edição ou 8/usado; JPEG/PNG/WebP até 5 MB |
 | WishlistEntry | userId FK; editionId FK; PK composta | N:M User/Edition; nenhuma reserva automática |
 | AvailabilityAlert | id PK; userId FK; editionId FK; kind NEW/USED/ANY; active; activationKey; notifiedAt? | N:1 User/Edition; encerra após sucesso; índice edição/kind/active |
