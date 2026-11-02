@@ -21,7 +21,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | DONE |
-| 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | BLOCKED |
+| 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | IN_PROGRESS |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | BLOCKED |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | BLOCKED |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | BLOCKED |
@@ -1858,7 +1858,7 @@ Allowed Changes PASS com precisões PRIMARY rastreáveis; Incidental Changes PAS
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -1923,6 +1923,16 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR
+
+2026-11-02, branch real feature/TASK-014-cupons-promocoes, base 63d0dc9. Continuidade até 28/37 renovada. TASK-009 DONE com artefatos válidos; 188 casos/gates acumulados atuais PASS, sem regressão conhecida. ADR-001/004 ACCEPTED; PD-006 resolvida para percentual/fixo. AGENTS/conciliação, README/regras/pendências, TASK/Scope Guard, ADR/API/modelo/testes, catálogo/estoque/contas/interfaces e suas suítes relidos; orientações de PostgreSQL/React aplicadas. DoR PASS; BLOCKED → READY → IN_PROGRESS.
+
+PRIMARY nos caminhos previstos; contracts usa src/pricing/**. Precisões PRIMARY antes da edição sob delegação: app.ts somente registro do router ADMIN; docs/architecture/{api,parametros}.md somente wire e parâmetros monetários deste módulo; catalog/service.ts e novo catalog/public-pricing.ts somente integrar preço promocional efetivo na consulta pública e em seus filtros, sem mudar listagem/preço-base administrativo, busca por artistas/faixas, publicação/estoque ou regras comerciais futuras. Filtrar preço-base e depois trocar apenas o texto seria incorreto; consulta paginada deve aplicar o mesmo cálculo no servidor, na mesma oferta, preservando regressões. Não tratar alteração de preço/autoridade como incidental. Schema somente Coupon/CouponTarget/Promotion/PromotionOffer, enum e relações inversas; sem CouponUsage/checkout/pedido nesta tarefa.
+
+Decisões técnicas sob delegação, documentadas antes do código, não atribuídas ao PDF: percentual em basis points inteiros (100 = 1%, 1–10000); FIXED em centavos; desconto percentual trunca a fração de centavo com BigInt, preço nunca negativo, menor promoção vence e empate usa ID estável. Cupom calculado no subtotal elegível pós-promoção, sem argumento de frete; rateio por maiores restos/ID estável conforme ADR-004. Alvos tipados exclusivos OFFER/EDITION/GENRE combinam por união (qualquer alvo corresponde); vazio cobre todas as ofertas. Política de combinação explicitada conforme pendência técnica do modelo, sem reinterpretar respostas do PDF. Código normalizado para maiúsculas, único; validação de períodos [startsAt,endsAt), versões e payloads estritos. Limites de uso são cadastrados, mas uso/reserva real somente 016/018; não exibir contadores fictícios como zero.
+
+Incidental previsto: exports, comandos/runner de teste, relação de router/fixtures mínima e navegação ADMIN, sujeitos aos nove critérios. Painel não expõe UUID para digitação: seletores por nomes/condição/referência de estoque. Sem SDK/dependência nova, conta OPERATOR configurando desconto, uso de cupom/reserva antecipado ou cobrança real. Critérios de moeda e fronteiras de permissão, períodos/sobreposição/estorno de centavos, catálogo público com promoção e filtros coerentes, rollback e versão concorrente serão demonstrados em testes reais antes de DONE.
 
 ### TASK-015 Checkpoint PHASE-02
 
