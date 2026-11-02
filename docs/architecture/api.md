@@ -172,6 +172,24 @@ teste protegido é implementado; nenhum e-mail externo é enviado.
 | API-009.03 | PATCH | /me/reviews/{id} | nota, comentário | avaliação atualizada | 200 |
 | API-009.04 | DEPRECATED | /me/reviews/{id} (DELETE antigo) | N/A | Exclusão pelo autor não especificada no PDF; não implementar sem decisão | N/A |
 
+Wire de avaliações (TASK-013): rating inteiro 1–5; comment texto não vazio até
+4000 caracteres. POST recebe apenas orderId/rating/comment; PATCH recebe
+revision/rating/comment, com revision inteira positiva. Uma compra/edição/cliente
+tem um ID estável e versões crescentes. 409 REVIEW_ALREADY_EXISTS ou
+REVIEW_REVISION_CONFLICT; 403 REVIEW_NOT_ELIGIBLE; 503 REVIEW_PURCHASE_UNAVAILABLE
+quando a porta real não pode comprovar entrega/unidade mantida. Nenhuma chave
+HTTP/env seleciona fixture. OrderId é vínculo lógico até TASK-023, sem tabela
+de pedidos criada neste incremento. Retorno/pós-venda automático permanece 026.
+
+GET público aceita page/pageSize (1/20, máximo 100) e retorna
+`{items,page,pageSize,total,summary:{count,average}}`; average nula sem avaliação.
+Somente PUBLIC entra na lista/média. Item público contém id/authorName (primeiro
+nome)/rating/comment/createdAt/updatedAt, sem e-mail, compra, IDs de conta ou
+histórico. Cliente usa GET /me/reviews, com paginação e editionId/visibility
+opcionais, para localizar/editar as próprias avaliações; item privado acrescenta
+editionId/editionTitle/orderId/version/visibility/awaitingModeration/hiddenReason.
+Leituras públicas dos clientes omitem credenciais. Comentário é texto, sem HTML.
+
 ## RF-010 Manter carrinho e iniciar reserva
 
 **Atores:** Visitante no carrinho; cliente no checkout. **Pré-condição:** Catálogo disponível; checkout exige conta apta e menos de 3 pendentes.
@@ -397,6 +415,18 @@ teste protegido é implementado; nenhum e-mail externo é enviado.
 | API-022.01 | GET | /admin/reviews | filtros/paginação | avaliações incluindo ocultas | 200 |
 | API-022.02 | POST | /admin/reviews/{id}/hide | motivo | avaliação oculta | 200 |
 | API-022.03 | POST | /admin/reviews/{id}/release | motivo, revisão | avaliação liberada se compra ainda elegível | 200; 409 estado/versão; 422 dados |
+
+Moderação usa `{revision,reason}` (motivo não vazio, até 500 caracteres) tanto
+em hide quanto em release; o cliente envia a versão que examinou. GET da equipe
+aceita page/pageSize/editionId/visibility, mesmo envelope da lista privada.
+GET /admin/reviews/{id}/history retorna itens por version ascendente com
+rating/comment/visibility/awaitingModeration/action/reason/actorName/createdAt.
+Histórico é imutável também no PostgreSQL. Edição pelo autor de conteúdo HIDDEN
+mantém esse estado e marca awaitingModeration; só a equipe libera a revisão
+atual, revalidando elegibilidade na mesma transação. ADMIN/OPERATOR por sessão
+web/origem/CSRF; mobile não administra. Cliente não lê histórico nem lista
+alheia. Composer recebe contexto da compra entregue do fluxo de pedido futuro;
+não pede UUID técnico ao usuário nem inventa compra para liberar publicação.
 
 ## RF-023 Consultar relatórios
 

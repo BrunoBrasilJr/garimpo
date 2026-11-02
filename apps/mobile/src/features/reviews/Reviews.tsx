@@ -15,7 +15,7 @@ export function ReviewForm({ client, editionId, orderId, existing, saved }: { cl
     catch (cause) { setError(errorMessage(cause)); } finally { setBusy(false); }
   }
   return <View style={s.card}><Text allowFontScaling accessibilityRole="header" style={s.subheading}>{existing ? 'Editar sua avaliação' : 'Avaliar esta compra'}</Text>
-    <Choice label="Nota" value={String(rating)} options={[1, 2, 3, 4, 5].map(value => ({ value: String(value), label: value + (value === 1 ? ' estrela' : ' estrelas') }))} change={value => { if (value) setRating(Number(value)); }} />
+    <Choice label="Nota" value={String(rating)} clearable={false} options={[1, 2, 3, 4, 5].map(value => ({ value: String(value), label: value + (value === 1 ? ' estrela' : ' estrelas') }))} change={value => { if (value) setRating(Number(value)); }} />
     <Text allowFontScaling style={s.label}>Comentário</Text><TextInput accessibilityLabel="Comentário" allowFontScaling multiline maxLength={4000} value={comment} onChangeText={setComment} style={[s.input, { minHeight: 130, textAlignVertical: 'top' }]} />
     {existing?.visibility === 'HIDDEN' ? <Text allowFontScaling style={s.help}>Esta avaliação está oculta. Editar mantém o conteúdo oculto até nova análise da equipe.</Text> : null}
     {error ? <Text allowFontScaling accessibilityRole="alert" style={s.alert}>{error}</Text> : null}<Button title={busy ? 'Salvando…' : existing ? 'Salvar avaliação' : 'Publicar avaliação'} disabled={busy || !comment.trim() || !existing && !orderId} onPress={() => { void submit(); }} />
