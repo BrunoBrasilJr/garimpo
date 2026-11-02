@@ -78,13 +78,15 @@ test('cart API enforces real HTTPS, CSRF/origin, customer ownership and separate
   expect((await server.call('/me/cart', 'GET', undefined, { 'X-Garimpo-Client': 'mobile', Authorization: 'Bearer ' + buyer.accessToken })).status).toBe(200);
   expect((await server.call('/me/cart', 'GET', undefined, { ...credentials(buyer), 'X-Garimpo-Client': 'mobile', Authorization: 'Bearer ' + buyer.accessToken })).status).toBe(422);
   expect((await server.call('/me/cart', 'GET', undefined, { 'X-Garimpo-Client': 'mobile', Authorization: 'Bearer ' + admin.accessToken })).status).toBe(403);
+  expect((await server.call('/me/cart/items', 'POST', Buffer.from(JSON.stringify({ text: 'x'.repeat(33000) })), { ...credentials(buyer), 'Content-Type': 'application/json' })).status).toBe(422);
 });
 test('adding and editing a cart never reserve stock; ownership, stale revisions and physical single-copy quantity hold', async () => {
   const buyer = buyers[0]!, row = await offer(), used = await offer('USED', 1), before = await db.reservation.count();
   const userBefore = await db.user.findUniqueOrThrow({ where: { id: buyer.user.id } });
   const cart = await add(buyer, row.id, 2); expect(cart.items[0]).toMatchObject({ quantity: 2, availableQuantity: 5 }); expect(await db.reservation.count()).toBe(before);
   expect((await db.offer.findUniqueOrThrow({ where: { id: row.id } })).stockOnHand).toBe(5);
-  expect((await server.call('/me/cart/items/' + cart.items[0]!.id, 'PATCH', { version: cart.version, quantity: 3 }, credentials(buyers[1]!))).status).toBe(404);
+  const foreignCart = await carts.read(buyers[1]!.accessToken);
+  expect((await server.call('/me/cart/items/' + cart.items[0]!.id, 'PATCH', { version: foreignCart.version, quantity: 3 }, credentials(buyers[1]!))).status).toBe(404);
   await carts.change(buyer.accessToken, { type: 'UPDATE', itemId: cart.items[0]!.id, version: cart.version, quantity: 3 });
   await expect(carts.change(buyer.accessToken, { type: 'UPDATE', itemId: cart.items[0]!.id, version: cart.version, quantity: 1 })).rejects.toMatchObject({ status: 409 });
   await add(buyer, used.id); await expect(add(buyer, used.id)).rejects.toMatchObject({ code: 'USED_QUANTITY' });
