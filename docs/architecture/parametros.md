@@ -1,5 +1,32 @@
 # Parâmetros e decisões pendentes
 
+## Parâmetros de descontos — TASK-014, 2026-11-02
+
+Decisão técnica do agente sob a delegação explícita de execução contínua, sem
+atribuir novas respostas ao PDF: PERCENT usa basis points inteiros (100 = 1%,
+intervalo 1–10000) e FIXED usa centavos inteiros. Desconto percentual usa divisão
+inteira exata com BigInt, descartando a fração menor que um centavo. Promoção
+reduz o preço-base unitário até zero; sobreposição escolhe o menor preço e, em
+empate, o ID estável. A presença da promoção aplicável escolhida identifica item
+promocional, inclusive se uma fração truncada não reduzir aquele centavo.
+
+CouponTarget identifica exatamente um OFFER (produto/oferta), EDITION ou GENRE.
+Múltiplos alvos combinam por união: basta corresponder a qualquer alvo; vazio
+significa todas as ofertas. Esta política documenta a combinação em aberto do
+modelo, mantendo os tipos de restrição já confirmados. allowPromotional controla
+se uma unidade com promoção pode participar do cupom. Mínimo/desconto usam só
+esse conjunto após promoção, sem frete. Fixo é limitado ao subtotal elegível;
+rateio por maiores restos/ID estável já ratificado preserva soma exata.
+
+Períodos são UTC, início inclusivo/fim exclusivo, com fim posterior ao início.
+Código de cupom é normalizado para maiúsculas e único; código permanece estável
+na edição. Controle otimista usa version. Limites de uso cadastrados não são
+contadores: ledger/reserva real continua TASK-016/018. Até integrar o ledger, a
+consulta administrativa informa estado NOT_INTEGRATED em vez de inventar usos
+zero. Preço público e filtros usam a mesma promoção efetiva; administração do
+catálogo continua editando preço-base. Nenhuma cobrança, uso ou reserva é feita
+por cadastrar/consultar desconto.
+
 ## Deliberação residual PD-006 — 2026-11-01
 
 Origem posterior: o responsável recebeu proposta concreta com os três vocabulários e pediu seguir sem novas permissões, delegando decisões rotineiras; reiterou autonomia para executar o trabalho enquanto ausente. O agente adotou o pacote abaixo sob essa delegação, sem atribuir aprovação nominal dos valores ao professor nem novas respostas ao PDF. Registro inicial na TASK-007, consolidação prévia ao código da TASK-008.

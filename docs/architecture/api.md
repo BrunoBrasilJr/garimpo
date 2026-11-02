@@ -371,6 +371,27 @@ Leituras públicas dos clientes omitem credenciais. Comentário é texto, sem HT
 | API-019.05 | POST | /admin/promotions | ofertas, desconto, validade | promoção | 201 |
 | API-019.06 | PATCH | /admin/promotions/{id} | campos permitidos, active | promoção atualizada | 200 |
 
+Wire de preços (TASK-014): type PERCENT/FIXED; amount em basis points inteiros
+(100 = 1%, até 10000) ou centavos, respectivamente. startsAt/endsAt são instantes
+ISO UTC, intervalo início inclusivo/fim exclusivo; name da promoção identifica-a
+no painel. Promotion recebe offerIds; Coupon recebe code, minimumEligibleCents
+(padrão 0), totalLimit/perUserLimit anuláveis, allowPromotional (padrão false),
+targets e active. Cada alvo é `{kind:OFFER|EDITION|GENRE,id}`; união entre alvos,
+vazio cobre todos. Code normalizado A–Z/0–9/_/- (3–40), único e imutável depois
+de criado. PATCH exige version e ao menos um campo permitido. Alteração de alvo
+é substituição atômica. GET aceita page/pageSize (1/20, máximo 100), active
+opcional, e retorna `{items,page,pageSize,total}`; os itens trazem version,
+período, alvos/ofertas identificados por rótulo e uso NOT_INTEGRATED até o ledger
+real. 409 para código duplicado/versão alterada; 422 para dados/intervalos/alvos
+inválidos; ADMIN web/origem/CSRF obrigatórios, OPERATOR/cliente/mobile negados.
+
+Catálogo público conserva seu contrato de priceCents, agora preço promocional
+efetivo; minPrice/maxPrice e conservação/disponibilidade correspondem à mesma
+oferta. Preço-base administrativo permanece inalterado. Descontos usam inteiros,
+fração de centavo truncada e preço não negativo; promoções não somam. A cotação
+interna rateia cupom por maiores restos/ID estável, sem incluir frete nem criar
+uso/reserva; reservas/consumo/limites concorrentes pertencem a TASK-016/018.
+
 ## RF-020 Administrar logística e atendimentos
 
 **Atores:** ADMIN/OPERATOR. **Pré-condição:** Pedido pago ou atendimento autorizado.
