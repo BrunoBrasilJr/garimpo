@@ -19,7 +19,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
-| 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | IN_PROGRESS |
+| 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | BLOCKED |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | BLOCKED |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | BLOCKED |
@@ -1597,7 +1597,7 @@ Allowed Changes PASS com precisões PRIMARY registradas antes da edição; Incid
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -1675,6 +1675,51 @@ Plano: desejo único user/edition, independente do alerta, ambos autenticados CU
 Validação intermediária: 20514cd build/tipos/lint PASS; bc48f51 tipos/lint e sete integrações de desejos/alertas PASS. d3c1dc5: build/tipos/lint, 73 unitários e 70 integrações anteriores PASS; novos casos 10/11 PASS. Corrida real revelou violação da unicidade parcial corretamente impedindo segunda ativação, mas erro Prisma P2002 não mapeado ao 409 do contrato. IN_PROGRESS → FAILED → IN_PROGRESS para mapear somente esse conflito na inscrição, preservando constraint, teste e custo/transação. Log test-results/engagement/full-check.log preservado. Incidental mínimo adicional: messaging/service.ts apenas o tipo do conteúdo decodificado passa a contemplar a variante de disponibilidade, sem inventar expiração de token numa mensagem comercial e sem mudar descriptografia/autorização. Novo tipo pertence ao contrato engagement. Revalidação dirigida pendente; nenhum DONE antecipado.
 
 Precisão PRIMARY adicional sob a delegação contínua: a prova real de entrada em Node strip-only falhou com ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX no novo Engagement; a cadeia importada também contém parameter properties anteriores em catalog/service.ts, catalog/errors.ts e inventory/service.ts. Evidência antes: test-results/engagement/source-entry-before.log. A causa não é resolvida por tsc/Vitest, que transformam essa sintaxe. Decisão técnica: converter somente os quatro construtores para declarações de campo/atribuições explícitas equivalentes, sem mudar flags, dependências, guardas, custos, contratos ou negócio. Não classificar correção transitiva pré-existente como incidental. Nova regressão em tests/engagement deve iniciar os processos reais source e dist, conferir health e rejeição HTTPS de rota protegida e encerrar só seus processos. IN_PROGRESS → FAILED → IN_PROGRESS, sem DONE até esse gate passar; 12 integrações e 17 E2E anteriores preservados como evidência dos recortes já validados. Correções de seletor/rótulo web preservadas nos logs final-check/retest/ui-retest.
+
+#### TASK Execution Report
+
+TASK: TASK-012. Status: DONE (IN_PROGRESS → IN_REVIEW → DONE após correções/gates). Branch real feature/TASK-012-desejos-alertas, base 5968540. Commits reais f63f2b8, 20514cd, bc48f51, d3c1dc5, 45a0ad3, e203e33, f45772b, 9cc7038, fce2eff; fechamento documental posterior próprio. Continuidade até 28/37 explicitamente renovada pelo responsável.
+
+##### Primary Changes
+
+PRIMARY: TASKS.md; prisma/schema.prisma e migrations/202611020002_engagement/migration.sql somente WishlistEntry/AvailabilityAlert, enums, relações inversas, vínculo opcional de DemoMessage e índices; modules/engagement/**; messaging/availability.ts; accounts/router.ts no registro/PUT; catalog/service.ts e inventory/service.ts nos pontos de captura previamente declarados; messaging/{worker,run-worker}.ts no roteamento/composição dedicados; catalog/errors.ts e os quatro construtores no ajuste estrito de entrada Node declarado; contracts/src/engagement/**; web/features/engagement/**; mobile/features/engagement/**; tests/engagement/**; docs/architecture/api.md somente os endpoints afetados.
+
+Desejo único por cliente/edição e independente de alerta. Ativações NEW/USED/ANY com unicidade parcial ACTIVE e histórico permanente; nova inscrição após envio tem outro ID. Captura transacional de retorno indisponível → disponível por condição, sob lock da edição; público elegível congelado por vínculo ao evento, sem depender de ordenação de timestamps ou incluir inscrições posteriores. Mensagem protegida e deduplicada por ativação. Consumidor próprio não rouba eventos futuros; worker de acesso só entrega ACCESS. Falha de preparação/envio mantém recuperação durável; sucesso confirma mensagem e encerra alerta na mesma transação. Cancelamento impede entrega pendente; conta bloqueada/encerrada/inativa não recebe; destinatário usa e-mail atual da conta no envio local. Nenhuma reserva/prioridade ou e-mail externo. Integração de reservas/liberações comerciais permanece TASK-023, conforme recorte já previsto.
+
+API CUSTOMER em HTTPS com guardas existentes de origem/CSRF/cookie ou bearer; paginação limitada, campos estritos e propriedade no servidor. Interfaces web/mobile para salvar/inscrever separadamente, consultar/remover/cancelar, estados vazios/erro/falha/histórico. Sem administração mobile. Rótulos, semântica e ampliação preservados. Revisão React aplicada: consultas independentes em paralelo, cleanup de leitura antiga, módulos web lazy e estado derivado sem duplicação. Roteiro reproduzível em tests/engagement/README.md. Construtores agora usam campos explícitos equivalentes, compatíveis com o comando Node strip-only ratificado; nenhuma flag/biblioteca/guarda foi relaxada.
+
+##### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| packages/contracts/src/index.ts | exportar tipos engagement | expor o contrato do workspace |
+| messaging/service.ts | união de tipos do corpo decodificado | aviso comercial não inventa expiração de token; descriptografia/acesso inalterados |
+| package.json | test:engagement e verify | incluir o gate novo, sem dependência/lockfile novo |
+| tests/core/run-integration.mjs | seleção engagement/schema task012 | reutilizar isolamento e proteção da base original |
+| web/navigation/{App.tsx,route.ts} | rota saved/link e lazy | alcançar a nova tela com contexto de cliente existente |
+| web/features/catalog/Edition.tsx | encaixe de EngagementActions | ações da edição, sem alterar busca/regra comercial |
+| mobile/navigation/App.tsx | tela/link saved e callback para edição | registro mínimo usando o mesmo cliente seguro existente |
+| mobile/features/catalog/Catalog.tsx | callback de ações e edição inicial opcional | conectar os recursos e voltar da lista ao detalhe, sem alterar consulta pública |
+
+Os nove arquivos (a linha de navegação web contém dois) satisfazem necessidade/causalidade/minimalidade; são diretamente ligados ao mesmo recurso, sem função independente, regra nova, arquitetura significativa, quebra de contrato, comportamento de autenticação/proteção de dados ou proibição. Configuração de rotas protegidas/worker e correção transitiva de Node são PRIMARY declarados, não incidentais.
+
+##### Tests Executed
+
+Ubuntu WSL2, Node 24.22.1/npm 11.19.1/PostgreSQL 17, clone nativo com fonte conferida por hash. d3c1dc5: build/tipos/lint, 73 unitários e core 9/contas 14/mensagens 16/catálogo 19/estoque 12 integrações PASS; teste novo de corrida revelou P2002, corrigido sem remover constraint/teste. e203e33: build/tipos/lint, 11 integrações novas, auditoria restrita e exports Android (604 módulos)/iOS (606) PASS. f45772b: tipos/lint, 12 integrações PASS, incluindo CLI real npm messages:work em processo Node strip-only e entrega verificada no banco. 9cc7038: build web/tipos/lint, 17 E2E PASS = engagement web+componentes nativos compartilhados 2, catálogo web 3, catálogo mobile compartilhado 3, contas/equipe 7 e administração estoque 2. Firefox real/CA isolada confiada, sem ignoreHTTPSErrors; API/banco/provedor de áudio reais. Capturas web 390 px/200% e nativa compartilhada 390 px inspecionadas visualmente. Não alegar execução física Android/iOS, TalkBack/VoiceOver ou fonte ampliada pelo sistema; estes permanecem para TASK-033.
+
+fce2eff, após falha reproduzida de entrada source: npm run build, npm run typecheck, npm run lint e npm test PASS (75 unitários/17 arquivos); source e dist iniciaram processos reais, responderam health por socket e negaram rota protegida sem HTTPS. Regressões catálogo 19, estoque 12 e engagement 12 PASS; import direto da app em Node strip-only PASS, script exit 0. Apenas construtores equivalentes foram alterados após os 17 E2E; seus fluxos foram reconferidos por integração e regressão real de entrada, sem repetir suítes sem risco novo. Demais 39 integrações anteriores continuam aplicáveis, sem alteração desses módulos. Total acumulado 174 casos distintos PASS = 75 unitários + 82 integrações + 17 E2E, sem contar repetições.
+
+Demonstrações incluem dois clientes e terceiro controlador de locks, unicidade concorrente de desejos/alertas, entrega concorrente única, rollback conjunto saldo/público/outbox, falha real SQL ao preparar mensagem com retry, condição USED após publicação, inscrição tardia com timestamp idêntico, falha de envio/cancelamento/privacidade. Sem reset/drop/truncate/restauração da base original; schemas novos em garimpo_test preservados. Função/trigger de falha existem só no schema isolado do caso e são removidos no finally. Processos/provedores/harness próprios encerrados; PostgreSQL local preservado. ZIP alheio preservado.
+
+Logs locais test-results/engagement/{first-check,second-check,full-check,final-check,retest,ui-retest,source-entry-before,entry-check}.log; capturas web-narrow-large-text.png e native-shared-narrow.png. Falhas de seletor ambíguo e associação do rótulo web corrigidas mantendo asserções estritas/timeout, sem mascarar falhas. Auditoria bruta permanece FAIL/exit 1 com 7 low conhecidos, zero moderate/high/critical; audit:toolchain PASS na política restrita de hashes/mitigação, sem alegação de audit limpo. Sem dependências/patches novos. Warning pg/Prisma preexistente preservado.
+
+##### Quality Gates
+
+Build PASS; Lint PASS; Unit Tests PASS (75); Integration Tests PASS (82 acumulados, incluindo 12 novos); API Tests PASS (TLS/origem/CSRF/bearer/propriedade/contratos e composição real); Security PASS no escopo/política vigente, auditoria bruta FAIL explicitada; Acceptance Criteria PASS; Regression Tests PASS (17 E2E, suites anteriores e processos source/dist). Gates 01–08 aplicáveis satisfeitos.
+
+##### Scope Validation e Definition of Done
+
+Allowed Changes PASS com precisões PRIMARY rastreáveis anteriores à edição; Incidental Changes PASS (tabela); Forbidden Changes PASS; Scope Creep NONE. Sem pedido/pagamento/reserva/pós-venda antecipados, infraestrutura pública ou mensagens externas. Definition of Done PASS. Contagem 12/37 DONE. Next Eligible TASK: TASK-013 candidata, dependências 008/010/011 DONE; sua própria DoR/porta de compra/Scope Guard será revalidada antes da promoção. Continuidade explicitamente autorizada até 28/37, respeitando checkpoints.
 
 ### TASK-013 Implementar avaliações e moderação
 
