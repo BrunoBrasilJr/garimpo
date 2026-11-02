@@ -29,7 +29,7 @@ test('ADMIN creates and edits a targeted coupon, preserves its code and enlarged
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await form.getByLabel('Código do cupom').focus(); await expect(form.getByLabel('Código do cupom')).toBeFocused();
   await page.screenshot({ path: resolve(app.directory, 'pricing-narrow-enlarged.png'), fullPage: true });
-  await page.getByRole('button', { name: 'Sair', exact: true }).click(); const customer = await app.customer(); await login(page, customer.input.email, customer.input.password);
+  await page.getByRole('button', { name: 'Sair', exact: true }).click(); await page.getByRole('form', { name: 'Bom te ver de novo' }).waitFor(); const customer = await app.customer(); await login(page, customer.input.email, customer.input.password);
   await expect(page.getByRole('link', { name: 'Descontos', exact: true })).toHaveCount(0);
   await page.goto(app.origin + '/#/pricing-admin'); await expect(page.getByRole('heading', { name: 'Acesso restrito', exact: true })).toBeVisible(); await expect(page.getByRole('form', { name: 'Configurar cupom' })).toHaveCount(0);
 });
@@ -47,7 +47,8 @@ test('ADMIN promotions use human offer selection and public search displays the 
     // The new-campaign form retains its values after creation; explicitly clear its selected target.
     await form.getByRole('button', { name: /^Remover alvo / }).click();
   }
-  await page.getByRole('button', { name: 'Sair', exact: true }).click(); await page.goto(app.origin + '/#/catalog?q=' + encodeURIComponent(data.marker) + '&minPrice=4900&maxPrice=5000&available=true');
+  await page.getByRole('button', { name: 'Sair', exact: true }).click(); await page.getByRole('form', { name: 'Bom te ver de novo' }).waitFor();
+  await page.goto(app.origin + '/#/catalog?q=' + encodeURIComponent(data.marker) + '&minPrice=4900&maxPrice=5000&available=true');
   await expect(page.getByRole('heading', { name: '1 edição encontrada', exact: true })).toBeVisible(); await expect(page.getByRole('article', { name: data.mainTitle, exact: true })).toContainText('R$ 49,90');
   await page.getByRole('link', { name: data.mainTitle, exact: true }).click(); await expect(page.getByRole('region', { name: 'Ofertas novas', exact: true })).toContainText('R$ 49,90');
 });
