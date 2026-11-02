@@ -7,7 +7,7 @@ import { styles as s } from './styles';
 export function AudioPreview({ url, title, close }: { url: string; title: string; close: () => void }) {
   const player = useAudioPlayer({ uri: url }, { updateInterval: 500, downloadFirst: false }), status = useAudioPlayerStatus(player);
   const [failed, setFailed] = useState(false);
-  useEffect(() => { const subscription = AppState.addEventListener('change', value => { if (value !== 'active') player.pause(); }); return () => subscription.remove(); }, [player]);
+  useEffect(() => { const subscription = AppState.addEventListener('change', value => { if (value !== 'active') { try { player.pause(); } catch { setFailed(true); } } }); return () => subscription.remove(); }, [player]);
   const error = failed || Boolean(status.error) || status.playbackState === 'error';
   return <View style={s.card}><Text allowFontScaling accessibilityRole="header" style={s.subheading}>Prévia de {title}</Text>
     {error ? <Text allowFontScaling accessibilityRole="alert" style={s.alert}>Não foi possível reproduzir esta prévia. O catálogo continua disponível.</Text> : <>

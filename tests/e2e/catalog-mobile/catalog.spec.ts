@@ -1,4 +1,4 @@
-import { test, expect } from '../account/fixtures';
+import { test, expect } from './fixtures';
 import { seedCatalog } from '../catalog-web/seed';
 import { audioProvider } from '../catalog-web/audio';
 
@@ -57,8 +57,8 @@ test('shared mobile pagination and semantics survive narrow layout with simulate
   await page.getByRole('button', { name: /^Ver edição / }).click(); await page.getByRole('button', { name: 'Voltar aos resultados', exact: true }).click(); await expect(page.getByText('Página 2 de 3', { exact: true })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.evaluate(() => {
-    const values = Array.from(document.querySelectorAll<HTMLElement>('[dir="auto"]')).map(element => ({ element, size: parseFloat(getComputedStyle(element).fontSize) }));
-    for (const { element, size } of values) if (size > 0) element.style.fontSize = size * 2 + 'px';
+    const values = Array.from(document.querySelectorAll<HTMLElement>('[dir="auto"]')).map(element => ({ element, size: parseFloat(getComputedStyle(element).fontSize), line: parseFloat(getComputedStyle(element).lineHeight) }));
+    for (const { element, size, line } of values) { if (size > 0) element.style.fontSize = size * 2 + 'px'; if (line > 0) element.style.lineHeight = line * 2 + 'px'; }
   });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.getByRole('button', { name: 'Próxima página', exact: true })).toBeVisible();
