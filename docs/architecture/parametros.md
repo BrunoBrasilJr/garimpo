@@ -1,5 +1,17 @@
 # Parâmetros e decisões pendentes
 
+## Deliberação residual PD-006 — 2026-11-01
+
+Origem posterior: o responsável recebeu proposta concreta com os três vocabulários e pediu seguir sem novas permissões, delegando decisões rotineiras; reiterou autonomia para executar o trabalho enquanto ausente. O agente adotou o pacote abaixo sob essa delegação, sem atribuir aprovação nominal dos valores ao professor nem novas respostas ao PDF. Registro inicial na TASK-007, consolidação prévia ao código da TASK-008.
+
+Goldmine, da melhor para a pior conservação: M (Mint), NM (Near Mint), VG+ (Very Good Plus), VG (Very Good), G+ (Good Plus), G (Good), F (Fair), P (Poor). Disco e capa recebem valores independentes em cada usado. Não converter ausência de informação em uma nota. Referência do vocabulário: https://www.goldminemag.com/columns/vinyl-value/vinyl-finds-grading-vinyl-part-one.
+
+Avaliações: estrelas inteiras de 1 a 5. Promoções: percentual ou valor fixo em centavos de real, sem somar promoções concorrentes e mantendo as regras já definidas de menor preço/acumulação com cupom. Adotar vocabulário não implementa antecipadamente TASK-013/014; suas regras de elegibilidade, períodos e cálculo seguem os requisitos existentes.
+
+Parâmetros técnicos de mídia deste incremento, sob a mesma delegação: 5 MB significa 5.000.000 de bytes; JPEG/PNG/WebP devem ser realmente decodificados e regravados, sem confiar no nome ou MIME declarado. Limitar decodificação a 40 milhões de pixels e dimensão individual de 10.000 pixels para conter consumo de memória, sem apresentar esses limites operacionais como regra do PDF. Arquivo normalizado também respeita 5 MB. Chave imutável gerada pelo servidor, hash dos bytes persistidos, raiz pública dedicada e nenhuma montagem de evidência privada. Não coletar órfãos antes da política de retenção/backup da TASK-030.
+
+Rascunho usa active=false; publicação exige mínimos no servidor e imagem da própria entidade. Ofertas nascem com estoque físico inicial permitido por API-017.04 (NEW inteiro não negativo, USED 0/1); alterações posteriores de saldo e livro de estoque pertencem à TASK-009. Valores monetários e filtros minPrice/maxPrice usam centavos inteiros. Preço/condições/disponibilidade devem selecionar a mesma oferta, evitando combinar preço de um exemplar com conservação de outro. Resumo de busca reflete ofertas correspondentes aos filtros; detalhe sem filtros mantém a visão da edição inteira.
+
 Fonte final: PDF, 14 rodadas. Valores decididos não voltam para entrevista; apenas escolhas ausentes são pendências.
 
 ## Valores confirmados
@@ -25,7 +37,7 @@ Fonte final: PDF, 14 rodadas. Valores decididos não voltam para entrevista; ape
 | PD-003 | Exigências adicionais: Confirmar rubrica e eventuais exigências formais de acessibilidade/implantação; preservar critérios de projeto já definidos. | TASK-033, TASK-037 |
 | PD-004 | Tabela de frete: Definir faixas de CEP/região, cobertura, preços e prazos; não inventar valores ou cobertura nacional obrigatória. | TASK-018 |
 | PD-005 | Parâmetros técnicos: Ratificar stack herdada, versões, sessão, hash, proteção das mensagens, armazenamento, prazo de links de alteração/reativação e estratégia transacional. Reset 30min, confirmação inicial 24h e limites de imagens já decididos. | TASK-001 e módulos dependentes |
-| PD-006 | Vocabulários residuais: Escala numérica de avaliação, enumeração Goldmine e tipos de desconto das promoções não especificados. Sobreposição, acumulação, alerta NEW/USED/ANY e estoque baixo estão resolvidos e não devem ser reabertos. | TASK-008, TASK-013, TASK-014 |
+| PD-006 | RESOLVIDA por decisão técnica delegada em 2026-11-01, no registro acima: Goldmine M/NM/VG+/VG/G+/G/F/P separada; estrelas inteiras 1–5; promoções percentuais/fixas em centavos. Preservar as demais regras já definidas, sem atribuir enumerações ao PDF. | TASK-008, TASK-013, TASK-014 |
 | PD-007 | Volume e metas de desempenho: Definir tamanhos de dados, usuários simultâneos, metas e método de aferição. Números da versão anterior não são requisitos. | TASK-034 |
 | PD-008 | Retenção e backup: Definir retenção de dados pessoais/anonimização e condições após retenção; definir retenção de backups, frequência dos testes e destino. | TASK-022, TASK-030, TASK-035 |
 | PD-009 | Devoluções integrais em solicitações parciais sucessivas: PDF distingue devolução integral/parcial, mas não explicita quando devolver frete se várias solicitações parciais somarem o pedido inteiro. Definir antes desse caso; não presumir reembolso cumulativo de frete. | TASK-026 |

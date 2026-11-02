@@ -384,7 +384,7 @@ Novos idênticos têm estoque por quantidade; usados são exemplares individuais
 
 ### RN-005 Conservação e particularidades
 
-Cada usado exige Goldmine separada para mídia e capa, descrição das particularidades/defeitos e ao menos uma foto própria. Escala completa Goldmine não foi enumerada no PDF; registrar vocabulário em PD-006 antes do cadastro.
+Cada usado exige Goldmine separada para mídia e capa, descrição das particularidades/defeitos e ao menos uma foto própria. Escala completa não foi enumerada no PDF; PD-006 adota M, NM, VG+, VG, G+, G, F e P, por decisão técnica sob a delegação posterior do responsável, registrada nos parâmetros.
 
 **Fonte:** R02-P3; R14-P6. **Requisitos:** RF-006, RF-017. **Casos:** UC-006, UC-017. **Impacto:** Edition, Offer, ProductImage, Track, TrackArtist.
 
@@ -1287,7 +1287,7 @@ Autorização por papel e propriedade em toda operação. OPERATOR não herda po
 | PD-003 | **PENDENTE DE DECISÃO — Exigências adicionais:** Confirmar rubrica e eventuais exigências formais de acessibilidade/implantação; preservar critérios de projeto já definidos. | TASK-033, TASK-037 |
 | PD-004 | **PENDENTE DE DECISÃO — Tabela de frete:** Definir faixas de CEP/região, cobertura, preços e prazos; não inventar valores ou cobertura nacional obrigatória. | TASK-018 |
 | PD-005 | **PENDENTE DE DECISÃO — Parâmetros técnicos:** Ratificar stack herdada, versões, sessão, hash, proteção das mensagens, armazenamento, prazo de links de alteração/reativação e estratégia transacional. Reset 30min, confirmação inicial 24h e limites de imagens já decididos. | TASK-001 e módulos dependentes |
-| PD-006 | **PENDENTE DE DECISÃO — Vocabulários residuais:** Escala numérica de avaliação, enumeração Goldmine e tipos de desconto das promoções não especificados. Sobreposição, acumulação, alerta NEW/USED/ANY e estoque baixo estão resolvidos e não devem ser reabertos. | TASK-008, TASK-013, TASK-014 |
+| PD-006 | **RESOLVIDA POR DECISÃO TÉCNICA DELEGADA EM 2026-11-01 — Vocabulários residuais:** Goldmine M/NM/VG+/VG/G+/G/F/P separada para mídia/capa; avaliação em estrelas inteiras de 1 a 5; promoção percentual ou valor fixo em centavos de real. Origem e limites em docs/architecture/parametros.md; não são enumerações atribuídas ao PDF. Sobreposição, acumulação, alerta NEW/USED/ANY e estoque baixo já definidos permanecem preservados. | TASK-008, TASK-013, TASK-014 |
 | PD-007 | **PENDENTE DE DECISÃO — Volume e metas de desempenho:** Definir tamanhos de dados, usuários simultâneos, metas e método de aferição. Números da versão anterior não são requisitos. | TASK-034 |
 | PD-008 | **PENDENTE DE DECISÃO — Retenção e backup:** Definir retenção de dados pessoais/anonimização e condições após retenção; definir retenção de backups, frequência dos testes e destino. | TASK-022, TASK-030, TASK-035 |
 | PD-009 | **PENDENTE DE DECISÃO — Devoluções integrais em solicitações parciais sucessivas:** PDF distingue devolução integral/parcial, mas não explicita quando devolver frete se várias solicitações parciais somarem o pedido inteiro. Definir antes desse caso; não presumir reembolso cumulativo de frete. | TASK-026 |

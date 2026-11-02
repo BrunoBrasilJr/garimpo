@@ -1,8 +1,18 @@
 # Contratos iniciais da API
 
-Planejamento, sem endpoints implementados. Base `/api/v1`, exceto LOCAL. Os IDs existentes são preservados; operações sem fundamento na fonte final são DEPRECATED e não devem ser implementadas.
+Contratos de referência; estado da implementação em TASKS.md. Base `/api/v1`, exceto LOCAL. Os IDs existentes são preservados; operações sem fundamento na fonte final são DEPRECATED e não devem ser implementadas.
 
 ## Convenções
+
+### Detalhamento de catálogo e mídia — TASK-008
+
+PD-006 e limites técnicos estão em parâmetros, por decisão delegada posterior ao PDF. Campos priceCents, minPrice e maxPrice são centavos inteiros. artist/genre recebem IDs; discCondition/sleeveCondition recebem códigos Goldmine. Filtros de preço, condições e disponibilidade aplicam-se à mesma oferta; o resumo retornado considera essas ofertas correspondentes. Sem oferta/preço correspondente não há correspondência ao filtro monetário. Sem filtro monetário/conservação, edição publicada sem ofertas pode aparecer como indisponível. Ordenação estável por título/id e paginação limitada a 100 itens. Década usa somente editionYear, sem preencher anos desconhecidos.
+
+Edição/oferta são criadas como rascunho (active=false); PATCH com active=true publica somente após validar metadados e imagem própria. Atualização de oferta requer version, retornando 409 em revisão desatualizada. stockOnHand só é aceito na criação como estoque inicial de API-017.04; não é editável por PATCH de metadados. Criação de oferta exige Idempotency-Key, escopo por usuário/operação, com rejeição de payload diferente. Nenhum endpoint de ajuste/reserva de estoque é implementado nesta etapa.
+
+Upload de imagem usa corpo binário com Content-Type image/jpeg, image/png ou image/webp; description e position opcional são query parameters codificados na URL. Não se usa nome de arquivo do cliente. Limites e conteúdo são conferidos no servidor; retorno contém chave/URL pública imutável, hash e metadados da imagem normalizada. Até dez imagens por edição e oito por usado; novo usa imagem da edição. Remover última foto de entidade publicada é rejeitado. Raiz pública dedicada não expõe diretórios de código, banco, caixa técnica ou evidências privadas. Arquivos imutáveis sem referência aguardam coleta coordenada ao backup/retenção; remover referência não apaga silenciosamente bytes preservados.
+
+Administração exige sessão web ativa ADMIN/OPERATOR, HTTPS, Origin e CSRF nas mutações; USER e cliente mobile são rejeitados. Rotas de catálogo próprias mantêm guardas dentro do módulo sem alterar a autenticação existente. Exclusão respeita FKs restritivas; vínculos comerciais dos incrementos posteriores continuam condição de integração explicitamente testada nos checkpoints correspondentes, sem inventar pedidos/reservas nesta etapa.
 
 Dinheiro em centavos; datas com fuso; relógio do servidor controla prazos. Mutação crítica exige chave idempotente e revisão quando indicada: repetição do mesmo payload retorna efeito anterior; payload diferente com mesma chave é conflito. Totais são calculados no servidor.
 
@@ -286,6 +296,7 @@ Operações de recibo/inspeção não autorizam estorno implicitamente. Estorno 
 | API-017.14 | PATCH | /admin/catalog-metadata/{type}/{id} | nome e dados permitidos | metadado | 200 |
 | API-017.15 | DELETE | /admin/catalog-metadata/{type}/{id} | tipo, id sem vínculos | sem corpo | 204; 409 vinculado |
 | API-017.16 | POST | /admin/editions/{id}/images | imagem, descrição, ordem | imagem da edição; até 10 | 201; 413 tamanho; 415 tipo |
+| API-017.17 | GET | /admin/editions/{id} | id, sessão web de equipe | detalhe administrativo, incluindo rascunho/inativo para edição | 200; 404 ausente |
 
 ## RF-018 Controlar estoque
 

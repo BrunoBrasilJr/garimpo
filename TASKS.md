@@ -15,7 +15,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
-| 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | BLOCKED |
+| 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | IN_PROGRESS |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | BLOCKED |
@@ -1158,7 +1158,7 @@ Conferência final própria PASS: 37 tarefas, 79 dependências, grafo sem ciclos
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -1197,6 +1197,8 @@ Criar edições/ofertas, anos distintos, gênero principal, artistas de faixa/ed
 - TASKS.md — somente estado/evidência desta TASK e prontidão comprovada de dependentes
 - apps/api/prisma/** somente TrackArtist e campos anos/gênero principal/imagem por edição
 
+Precisão do caminho existente: o módulo de contratos fica em packages/contracts/src/catalog/**, sob o src já compilado do workspace; mesma responsabilidade do caminho esquemático acima. Preparação documental sob a delegação explícita de 01/11 acrescenta como PRIMARY apenas README.md (RN-005/PD-006), docs/architecture/parametros.md (vocabulários e parâmetros técnicos de catálogo/mídia) e docs/architecture/api.md (detalhamento de wire do catálogo já especificado). A necessidade foi identificada antes da edição: consolidar a decisão residual adotada e tornar os contratos reproduzíveis, sem atribuir novas respostas ao PDF ou executar avaliações/promoções futuras. apps/api/package.json e lockfile são PRIMARY somente para sharp 0.35.5, necessário para decodificar/regravar bytes de imagem, com versões oficiais e compatibilidade consultadas. Não alterar SDK ou dependências alheias.
+
 #### Incidental Changes Policy
 
 MINIMAL_DIRECTLY_CAUSED_CHANGES_ALLOWED
@@ -1223,7 +1225,13 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+Início em 2026-11-01, branch real feature/TASK-008-catalogo-api, base ae95b0a (TASK-007 DONE). DoR PASS: dependência concluída e 91 casos/gates acumulados atuais válidos; ADR-001/006 ACCEPTED; requisitos/contratos/testes relidos; vocabulário PD-006 definido por decisão técnica sob a delegação recebida, consolidado documentalmente antes do código. Transições BLOCKED → READY → IN_PROGRESS. ZIP alheio preservado. Nenhuma implantação ou serviço pago necessário.
+
+Plano PRIMARY: módulo catalog/media, contratos src/catalog, onze modelos de catálogo/mídia e respectivas constraints/migration, testes catalog/media, documentos residuais delimitados acima, dependência de decoder e TASKS. Incidental previsto: registro mínimo em app.ts, export de contratos, comando test:catalog/verify, inclusão da suíte catalog no runner de integração já protegido e maxWorkers=2 na configuração unitária para limitar memória dos novos testes de imagens no computador de 8 GB, preservando limites/asserções e concorrência real dos testes transacionais. Necessários, causados diretamente pelo incremento, mínimos, sem funcionalidade independente/regra nova/arquitetura/quebra de contrato/mudança da autenticação existente ou violação de Forbidden Changes; aplicar os nove critérios novamente na revisão. Não refatorar segurança de contas nem criar modelos de pedidos, reservas, avaliações, promoções ou evidências privadas. Registro físico inicial segue API-017.04; ajustes e livro de estoque pertencem à TASK-009, integrações comerciais aos incrementos posteriores.
+
+Construção em andamento: tipos e lint de API/contratos passaram antes da adição dos novos testes. Sharp 0.35.5 fixado, quatro pacotes Linux acrescentados com scripts de instalação/verificação executados; lockfile adiciona somente suas dependências opcionais de plataforma, sem atualização das demais. O comando de diff da CLI Prisma retornou exit 0 sem materializar arquivo; nenhuma migration vazia foi aceita. SQL foi escrito/revisado explicitamente para os onze modelos, incluindo vocabulário, limites locais e FK diferível que exige gênero principal pertencente à edição. Implantação, testes de banco e prova de integridade ainda pendentes. Não registrar essa preparação como DONE ou PASS dos testes novos.
+
+Validação dirigida posterior em 2026-11-02: tipos completos PASS; primeira conferência de lint FAILED por import não usado em teste, corrigido, lint dirigido posterior PASS. Unitários novos PASS, 17 casos (12 mídia, cinco contratos). Integração/API PASS, 19 casos em task008_98e396745ba54b6688637569c0b7227c; três migrations aplicadas com sucesso, concorrência real comprovada por duas aplicações bloqueadas simultaneamente em pg_stat_activity antes da liberação. Sem resets da base original. Logs: test-results/catalog/code-first-check.log, unit-first-check.log e database-first-check.log. Aviso de depreciação do driver pg preservado na saída, sem upgrade oportunista ou supressão. Acrescentada validação de NUL/tamanho após normalização de nomes; essa última mudança e a regressão acumulada ainda exigem rodada integral. Status continua IN_PROGRESS, não DONE; nenhum aceite de interface antecipado.
 
 ### TASK-009 Administrar catálogo e estoque inicial
 
