@@ -77,7 +77,11 @@ export class GuestCartStore {
     return this.update(state => {
       const pending = state.pending.find(intent => intent.cartId === cartId); if (pending) return pending;
       if (!uuid.test(cartId) || !positive(version) || !state.items.length) throw new GuestDataError('Atualize o carrinho antes de mesclar.');
-      const intent: GuestMergeIntent = { key: 'guest.' + this.id(), cartId, version, batchRevision: state.revision, lines: copy(state.items) };
+      // Units whose earlier account-bound outcome is unknown must not be sent to a different account.
+      const held = new Set(state.pending.flatMap(intent => intent.lines.flatMap(line => line.units.map(unit => line.entryId + ':' + unit))));
+      const available = state.items.map(line => ({ ...copy(line), units: line.units.filter(unit => !held.has(line.entryId + ':' + unit)) })).filter(line => line.units.length > 0);
+      if (!available.length) throw new GuestDataError('Há uma mescla pendente de outro acesso. Confira a conta anterior antes de mesclar esses itens novamente.');
+      const intent: GuestMergeIntent = { key: 'guest.' + this.id(), cartId, version, batchRevision: state.revision, lines: available };
       state.pending.push(intent); return intent;
     });
   }

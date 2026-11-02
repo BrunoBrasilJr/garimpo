@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import type { CatalogEdition, CatalogImage, CatalogOffer, CatalogTrack } from '@garimpo/contracts';
+import type { AccountView, CatalogEdition, CatalogImage, CatalogOffer, CatalogTrack } from '@garimpo/contracts';
 import { catalogParams, price, readCatalog } from './api';
 import { EngagementActions } from '../engagement/Engagement';
 import { ReviewSection } from '../reviews/Reviews';
+import { AddToCart } from '../cart/Add';
 
 export function Photos({ images }: { images: CatalogImage[] }) {
   return <div className="shop-photos">{images.map(image => <figure key={image.id}><a href={image.url} target="_blank" rel="noopener noreferrer" aria-label={'Ampliar foto: ' + image.description}><img src={image.url} alt={image.description} width={240} height={240} loading="lazy" decoding="async" /></a><figcaption>{image.description}</figcaption></figure>)}</div>;
@@ -22,7 +23,7 @@ function Offer({ offer, index, selected, select }: { offer: CatalogOffer; index:
     <label className="shop-select-offer"><input type="radio" name="selectedOffer" checked={selected === offer.id} disabled={!offer.available} onChange={() => select(offer.id)} />Selecionar {offer.kind === 'NEW' ? 'oferta nova' : 'usado'} {index} por {price(offer.priceCents)}</label>
   </article>;
 }
-export function Edition({ query }: { query: string }) {
+export function Edition({ query, user, ready }: { query: string; user: AccountView | null; ready: boolean }) {
   const params = new URLSearchParams(query), id = params.get('id') ?? '', back = catalogParams(params.get('from') ?? '').toString();
   const [data, setData] = useState<CatalogEdition>(), [error, setError] = useState(''), [retry, setRetry] = useState(0), [selected, setSelected] = useState('');
   const heading = useRef<HTMLHeadingElement>(null);
@@ -49,6 +50,7 @@ export function Edition({ query }: { query: string }) {
       <section aria-labelledby="new-offers"><h2 id="new-offers">Ofertas novas</h2>{!data.offers.some(offer => offer.kind === 'NEW') ? <p>Nenhuma oferta nova cadastrada.</p> : data.offers.filter(offer => offer.kind === 'NEW').map((offer, index) => <Offer key={offer.id} offer={offer} index={index + 1} selected={selected} select={setSelected} />)}</section>
       <section aria-labelledby="used-offers"><h2 id="used-offers">Exemplares usados</h2>{!data.offers.some(offer => offer.kind === 'USED') ? <p>Nenhum exemplar usado cadastrado.</p> : data.offers.filter(offer => offer.kind === 'USED').map((offer, index) => <Offer key={offer.id} offer={offer} index={index + 1} selected={selected} select={setSelected} />)}</section>
       {selectedOffer ? <p role="status">{selectedOffer.kind === 'NEW' ? 'Oferta nova selecionada' : 'Usado selecionado'} · {price(selectedOffer.priceCents)}. Esta seleção não reserva estoque.</p> : null}
+      <AddToCart key={(user?.id ?? 'visitor') + ':' + (selectedOffer?.id ?? '')} editionId={data.id} offer={selectedOffer} user={user} ready={ready} />
       <EngagementActions editionId={data.id} />
       <ReviewSection editionId={data.id} />
     </>}

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import type { CatalogFilters, CatalogPage } from '@garimpo/contracts';
+import type { AccountView, CatalogFilters, CatalogPage } from '@garimpo/contracts';
 import { catalogParams, price, readCatalog } from './api';
 import { Filters } from './Filters';
 import { Edition } from './Edition';
 import './catalog.css';
 
-export default function Catalog({ mode, query }: { mode: 'catalog' | 'edition'; query: string }) {
-  return <div className="shop">{mode === 'edition' ? <Edition query={query} /> : <Search query={query} />}</div>;
+export default function Catalog({ mode, query, user = null, ready = true }: { mode: 'catalog' | 'edition'; query: string; user?: AccountView | null; ready?: boolean }) {
+  return <div className="shop">{mode === 'edition' ? <Edition query={query} user={user} ready={ready} /> : <Search query={query} />}</div>;
 }
 function Search({ query }: { query: string }) {
   const key = catalogParams(query).toString(), params = new URLSearchParams(key);

@@ -1,0 +1,8 @@
+.cart-view, .cart-view article, .cart-view form { display: grid; gap: 14px; min-width: 0; }
+.cart-view :is(h2,h3,h4,p,label,button,a) { min-width: 0; overflow-wrap: anywhere; }
+.cart-view article, .cart-checkout { border: 1px solid #a9b4a8; border-radius: 10px; padding: 14px; }
+.cart-view label { display: grid; gap: 8px; }
+.cart-view input { min-width: 0; max-width: 100%; }
+.cart-view .cart-confirm { display: flex; align-items: flex-start; gap: 12px; }
+.cart-confirm input { width: 22px; flex: 0 0 22px; min-height: 22px; margin-top: 4px; }
+.cart-checkout { display: grid; gap: 12px; background: #e4ebdc; }
