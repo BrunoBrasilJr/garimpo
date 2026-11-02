@@ -25,7 +25,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | DONE |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | DONE |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | DONE |
-| 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | BLOCKED |
+| 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | IN_PROGRESS |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | BLOCKED |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | BLOCKED |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | BLOCKED |
@@ -2302,7 +2302,7 @@ Scope Validation: Allowed Changes PASS; Incidental Changes PASS (um arquivo expo
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2375,6 +2375,20 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR — 2026-11-02
+
+Branch real feature/TASK-018-frete-pedidos, base f91a047 enviada ao GitHub; 17/37 DONE. AGENTS/conciliação, README/pendências/referências, índice/TASK/dependências/Scope Guard, ADR-003/004 ACCEPTED, API/modelo/testes, código transacional/carrinho/preços/contas e testes reais relacionados relidos nessa ordem. Dependências 016/014 DONE, checkpoint 015 DONE. Gates recentes das dependências: build/tipos/lint, 103 unitários, 22 integrações de carrinho e 29 E2E aplicáveis PASS; segurança segue política aprovada, auditoria bruta explicitamente não limpa. DoR PASS após a decisão abaixo; BLOCKED → READY → IN_PROGRESS sob continuidade/decisões rotineiras explicitamente delegadas pelo responsável.
+
+PD-004: a estratégia de configuração é resolvida para implementação pela delegação posterior: tabela obrigatoriamente administrável, sem valores/faixas/prazos pré-carregados para uso real. Ausência de configuração e faixa não atendida negam cotação/pedido. Valores concretos são dados de operação a cadastrar por ADMIN; nenhum código presume cobertura nacional, frete grátis, calendário ou preço/prazo informado pelo professor. Fixtures isoladas têm dados sintéticos identificados. A pendência histórica é preservada em README/parâmetros com essa origem; a decisão não aprova uma tabela de produção inexistente. Não alterar invariantes nem declarar critérios de frete operacional aprovados antecipadamente.
+
+PRIMARY nos módulos checkout, inventory somente transferência de reservas, orders somente criação/snapshots, pricing somente uso/rateio, freight, accounts somente confirmação/estado; schema somente FreightRate/CepRange, Order/OrderItem/OrderUnit, PaymentCharge inicial e vínculos necessários em Checkout/Reservation/CouponUsage/User/Edition/Offer. Contratos usam packages/contracts/src/{checkout,freight} conforme estrutura existente; orders compartilha os contratos de checkout nesta tarefa. Não implementar simulador, baixa de pagamento, expiração de pedido, cancelamento/logística/pós-venda nesta tarefa; 019/021/025 permanecem responsáveis. Criar cobrança inicial ativa Pix/boleto com valor/prazo do pedido, sem código de pagamento/efeito financeiro fictício. Reserva transferida continua indisponível e não baixa físico. Outbox de criação é atômica; envio comercial fica no consumidor posterior, não simular entrega.
+
+Precisões PRIMARY sob delegação, antes da edição: app.ts e cart/router.ts somente composição de rotas comerciais protegidas e adaptador real da contagem de pendentes; orders/pending-orders.ts lê pedidos reais na transação e nega estado desconhecido. Routes de configuração continuam ADMIN/web e transação revalida autoridade, sem permissões novas de OPERATOR. navigation/{App,route} web somente link/guarda do painel de frete; docs/architecture/{api,parametros,data-model}.md e README somente resolução rastreável de PD-004/contratos/modelo, sem diário no README. tests/catalog/http.ts e tests/e2e/account/harness.mjs somente composição necessária de testes; tests/cart/cart.integration.ts e tests/e2e/cart/{unavailable.spec.ts,README.md} somente substituir a antiga ausência padrão do adaptador por injeção negativa explícita quando o runtime passar a contar pedidos reais, preservando o caso negativo e adicionando prova positiva do novo default em tests/checkout. Não remover proteção nem converter erro em sucesso por fixture. Exports/comandos/runner mínimos previstos como incidentais, sujeitos aos nove critérios.
+
+Decisões de contrato: configuração versionada por ADMIN, faixas de CEP inclusivas sem sobreposição ambígua inclusive em concorrência e constraint de banco; ausência/não atendido nunca vira zero. Prazo é o valor em dias informado pelo ADMIN, sem cálculo de calendário/feriados. Cotação pública de itens não cria carrinho/reserva; cotação de checkout é própria e usa produtos/preços congelados. Revisão de frete vincula configuração e endereço completo; alteração de endereço aceita nova cotação e mantém deadline/snapshot de produtos. CEP não atendido conserva checkout até seu prazo. Criar pedido exige endereço próprio atendido, revisão aceita, checkout vivo, conta apta/e-mail confirmado antes do primeiro pedido, limite real de três pendentes; idempotência e unicidade por checkout. Transferir reserva/consumir cupom/materializar unidades/líquidos e limpar carrinho na mesma transação, sem chamada externa. Novo prazo nasce na criação: PIX 30min, BOLETO 2 dias. Históricos/snapshots e alocação por unidade preservados, inclusive após edição de catálogo/tabela/endereço.
+
+Gates planejados: validação/monetário unitários, migration em schema separado, autorização/CSRF/propriedade e payloads reais, ausência/não atendimento/alteração de endereço, fronteiras de prazo, reserva/pedido/cupom/limite concorrentes e rollback de falha auditável, snapshots imutáveis e replay/restart, painel ADMIN E2E HTTPS, regressões afetadas. Sem produção/túnel, banco original/reset, execução física/leitor ou confirmação de pagamento antecipada.
 
 ### TASK-019 Implementar simulador, cobranças e estornos automáticos
 
