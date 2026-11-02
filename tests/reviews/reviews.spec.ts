@@ -1,7 +1,5 @@
 import type { Page } from '@playwright/test';
-import { randomUUID } from 'node:crypto';
 import { test, expect } from './browser-fixtures';
-import { seedCatalog } from '../e2e/catalog-web/seed';
 
 async function login(page: Page, origin: string, email: string, password: string) {
   await page.goto(origin + '/#/login'); const form = page.getByRole('form', { name: 'Bom te ver de novo' });
@@ -11,9 +9,8 @@ async function login(page: Page, origin: string, email: string, password: string
 async function logout(page: Page, origin: string) { await page.goto(origin + '/#/profile'); await page.getByRole('button', { name: 'Sair', exact: true }).click(); await page.getByRole('form', { name: 'Bom te ver de novo' }).waitFor(); }
 const preview = (origin: string, editionId: string, orderId: string) => origin + '/review-preview/web-preview.html?id=' + editionId + '&orderId=' + orderId;
 
-test('web composer publishes and edits verified-purchase reviews while public reads omit credentials and render comments as text', async ({ page, app, purchases }) => {
-  const data = await seedCatalog(page, app.origin, app.credentials.adminEmail, app.credentials.adminPassword), customer = await app.customer(), orderId = randomUUID();
-  purchases.set({ userId: customer.user.id, editionId: data.main, orderId });
+test('web composer publishes and edits verified-purchase reviews while public reads omit credentials and render comments as text', async ({ page, app, scenario }) => {
+  const { data, customer, orderId } = scenario;
   await login(page, app.origin, customer.input.email, customer.input.password); await page.goto(preview(app.origin, data.main, orderId));
   const comment = '<img src=x onerror="window.__reviewUnsafe=true"> disco conforme anunciado';
   const published = page.getByRole('article').filter({ has: page.getByRole('heading', { name: /^Titular · \d de 5$/ }) });
@@ -28,9 +25,8 @@ test('web composer publishes and edits verified-purchase reviews while public re
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('OPERATOR hides, author editing stays hidden, and only explicit current-revision release republishes with full history', async ({ page, app, purchases }) => {
-  const data = await seedCatalog(page, app.origin, app.credentials.adminEmail, app.credentials.adminPassword), customer = await app.customer(), orderId = randomUUID();
-  purchases.set({ userId: customer.user.id, editionId: data.main, orderId });
+test('OPERATOR hides, author editing stays hidden, and only explicit current-revision release republishes with full history', async ({ page, app, scenario }) => {
+  const { data, customer, orderId } = scenario;
   await login(page, app.origin, customer.input.email, customer.input.password); await page.goto(preview(app.origin, data.main, orderId));
   const create = page.getByRole('form', { name: 'Avaliar esta compra', exact: true }); await create.getByLabel('Comentário', { exact: true }).fill('Conteúdo original para conferência.'); await create.getByRole('button', { name: 'Publicar avaliação', exact: true }).click(); await page.getByRole('form', { name: 'Editar sua avaliação', exact: true }).waitFor();
   await logout(page, app.origin); await login(page, app.origin, app.credentials.operatorEmail, app.credentials.operatorPassword); await page.getByRole('link', { name: 'Avaliações', exact: true }).click();
@@ -45,9 +41,8 @@ test('OPERATOR hides, author editing stays hidden, and only explicit current-rev
   await page.goto(app.origin + '/#/edition?id=' + data.main); await expect(page.getByText('Conteúdo corrigido, ainda oculto.', { exact: true })).toBeVisible();
 });
 
-test('shared native forms publish and edit with bearer credentials even while an independent staff web cookie exists', async ({ page, app, purchases }) => {
-  const data = await seedCatalog(page, app.origin, app.credentials.adminEmail, app.credentials.adminPassword), customer = await app.customer(), orderId = randomUUID();
-  purchases.set({ userId: customer.user.id, editionId: data.main, orderId });
+test('shared native forms publish and edit with bearer credentials even while an independent staff web cookie exists', async ({ page, app, scenario }) => {
+  const { data, customer, orderId } = scenario;
   await page.goto(app.origin + '/reviews-mobile-preview.html?id=' + data.main + '&orderId=' + orderId);
   await page.getByRole('textbox', { name: 'E-mail', exact: true }).fill(customer.input.email); await page.getByRole('textbox', { name: 'Senha', exact: true }).fill(customer.input.password); await page.getByRole('button', { name: 'Entrar', exact: true }).click();
   await page.getByRole('button', { name: /^Nota:/ }).click(); const dialog = page.getByRole('dialog'); await expect(dialog.getByRole('radio', { name: 'Todos', exact: true })).toHaveCount(0); await dialog.getByRole('radio', { name: '3 estrelas', exact: true }).click(); await expect(dialog).toBeHidden();
