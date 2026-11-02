@@ -1,9 +1,13 @@
-import type { PriceQuote, OfferKind } from '../index.js';
+import type { PriceQuote } from '../pricing/index.js';
+import type { OfferKind, CatalogImage } from '../catalog/index.js';
 export interface CheckoutProduct {
   offerId: string; editionId: string; title: string; kind: OfferKind; quantity: number;
   discGrade: string | null; sleeveGrade: string | null; particulars: string | null;
-  editionYear: number | null; format: string; artists: string[]; primaryGenre: string;
-  images: { url: string; description: string }[]; unitIds: string[];
+  originalYear: number | null; editionYear: number | null; format: string; artists: string[];
+  primaryGenre: string; primaryGenreId: string; genres: { id: string; name: string }[];
+  label: { id: string; name: string } | null; catalogNumber: string | null; pressingCountry: string | null;
+  collectorEdition: boolean; weightGrams: number | null;
+  images: CatalogImage[]; unitIds: string[];
 }
 export interface CheckoutSnapshot {
   quote: PriceQuote; products: CheckoutProduct[]; couponSnapshot: unknown; promotionSnapshots: unknown[];

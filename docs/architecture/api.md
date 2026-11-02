@@ -210,15 +210,13 @@ Leituras públicas dos clientes omitem credenciais. Comentário é texto, sem HT
 | API-010.08 | GET | /me/checkout | sessão | checkout ativo e tempo restante | 200; 404 sem ativo |
 | API-010.09 | DELETE | /checkouts/{id} | id próprio | checkout encerrado e reservas liberadas | 204 |
 
-## RF-011 Cotar e criar pedido
-
 Detalhamento wire de RF-010 (TASK-016): revisão de carrinho é `version` inteira
 positiva. GET /me/cart aceita `couponCode` opcional para prévia de descontos;
 retorna itens atuais, problemas de disponibilidade/preço, `pricing` com status
 READY/revision/quote ou UNAVAILABLE/code/message, e serverTime. A revisão de
 preço representa os valores canônicos confirmados, sem reserva ou garantia.
 POST de item/merge exige Idempotency-Key; merge recebe `{version,items:[{offerId,
-quantity}]}` e retorna carrinho e avisos de ajustes. Novos somam até saldo
+quantity}]}`; mutações retornam `{cart,warnings}`. Novos somam até saldo
 disponível, usados não duplicam, indisponíveis são avisados. PATCH de item usa
 `{version,quantity}`, DELETE individual usa query `version`; limpar não reserva.
 
@@ -231,6 +229,8 @@ idempotente. Erros 409 CART_VERSION_CONFLICT/PRICE_CONFIRMATION_REQUIRED/
 INSUFFICIENT_STOCK/COUPON_LIMIT_REACHED/PENDING_ORDER_LIMIT; 503
 PENDING_ORDERS_UNAVAILABLE. Quantidades/linhas/payload inválidos são 422.
 Frete/CEP/pedido/pagamento e endpoint RF-011.03 não são antecipados.
+
+## RF-011 Cotar e criar pedido
 
 **Atores:** Visitante para frete; cliente para pedido. **Pré-condição:** Checkout válido, e-mail confirmado e endereço atendido para pedido.
 

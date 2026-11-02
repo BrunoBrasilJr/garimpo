@@ -55,7 +55,7 @@ export class Checkouts {
       let captured: Awaited<ReturnType<typeof captureQuote>>;
       try {
         captured = await captureQuote(tx, this.accounts, cart, input.couponCode);
-        if (captured.revision !== input.pricingRevision) throw new CartError(409, 'PRICE_CONFIRMATION_REQUIRED', 'Os valores mudaram. Atualize o carrinho e confirme os preços atuais.');
+        if (captured.revision !== input.pricingRevision) throw new CartError(409, 'PRICE_CONFIRMATION_REQUIRED', 'Os dados ou valores dos itens mudaram. Atualize o carrinho e confirme os preços atuais.');
         const lines = await physicalLines(tx, cart, now);
         if (lines.some(line => !line.active || line.quantity > line.availableQuantity)) throw new CartError(409, 'INSUFFICIENT_STOCK', 'Um dos itens não possui saldo para esta quantidade. Confira o carrinho.');
         requirePendingCapacity(await this.pendingOrders.inspect(tx, user.id));

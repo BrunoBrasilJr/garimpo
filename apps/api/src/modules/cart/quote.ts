@@ -9,7 +9,7 @@ import { CartError } from './errors.ts';
 import { quantities, unitIdentity } from './rules.ts';
 const images = { orderBy: [{ position: 'asc' }, { id: 'asc' }] } satisfies Prisma.ProductImageFindManyArgs;
 export const cartInclude = { items: { orderBy: { id: 'asc' }, include: { offer: { include: {
-  edition: { include: { artists: { include: { artist: true } }, primaryGenre: true, images } }, images
+  edition: { include: { artists: { include: { artist: true } }, primaryGenre: true, genres: { include: { genre: true }, orderBy: { genreId: 'asc' } }, label: true, images } }, images
 } } } } } satisfies Prisma.CartInclude;
 export type CartRecord = Prisma.CartGetPayload<{ include: typeof cartInclude }>;
 export const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
@@ -26,9 +26,13 @@ export async function captureQuote(tx: Prisma.TransactionClient, accounts: Accou
   const requested = cart.items.flatMap(item => Array.from({ length: item.quantity }, (_unused, index) => ({ id: unitIdentity(item.id, index), offerId: item.offerId })));
   const quote = await new Pricing(accounts).quote(tx, requested, couponCode);
   const products: CheckoutProduct[] = cart.items.map(item => ({ offerId: item.offerId, editionId: item.offer.editionId, title: item.offer.edition.title, kind: item.offer.kind, quantity: item.quantity,
-    discGrade: item.offer.discGrade, sleeveGrade: item.offer.sleeveGrade, particulars: item.offer.particulars, editionYear: item.offer.edition.editionYear, format: item.offer.edition.format,
-    artists: item.offer.edition.artists.map(value => value.artist.name).sort(), primaryGenre: item.offer.edition.primaryGenre.name,
-    images: (item.offer.kind === 'USED' ? item.offer.images : item.offer.edition.images).map(image => ({ url: '/api/v1/media/products/' + image.storageKey, description: image.description })),
+    discGrade: item.offer.discGrade, sleeveGrade: item.offer.sleeveGrade, particulars: item.offer.particulars,
+    originalYear: item.offer.edition.originalYear, editionYear: item.offer.edition.editionYear, format: item.offer.edition.format,
+    artists: item.offer.edition.artists.map(value => value.artist.name).sort(), primaryGenre: item.offer.edition.primaryGenre.name, primaryGenreId: item.offer.edition.primaryGenreId,
+    genres: item.offer.edition.genres.map(value => ({ id: value.genreId, name: value.genre.name })), label: item.offer.edition.label ? { id: item.offer.edition.label.id, name: item.offer.edition.label.name } : null,
+    catalogNumber: item.offer.edition.catalogNumber, pressingCountry: item.offer.edition.pressingCountry, collectorEdition: item.offer.edition.collectorEdition, weightGrams: item.offer.edition.weightGrams,
+    images: (item.offer.kind === 'USED' ? item.offer.images : item.offer.edition.images).map(image => ({ id: image.id, url: '/api/v1/media/products/' + image.storageKey, description: image.description,
+      position: image.position, contentHash: image.contentHash, mimeType: image.mimeType, byteSize: image.byteSize, width: image.width, height: image.height })),
     unitIds: requested.filter(unit => unit.offerId === item.offerId).map(unit => unit.id) }));
   const couponSnapshot = quote.couponId ? await tx.coupon.findUniqueOrThrow({ where: { id: quote.couponId }, include: { targets: { orderBy: { id: 'asc' } } } }) : null;
   const promotionSnapshots = await tx.promotion.findMany({ where: { id: { in: [...new Set(quote.units.map(unit => unit.promotionId).filter((id): id is string => id !== null))] } }, orderBy: { id: 'asc' } });
