@@ -43,11 +43,18 @@ test('OPERATOR hides, author editing stays hidden, and only explicit current-rev
 
 test('shared native forms publish and edit with bearer credentials even while an independent staff web cookie exists', async ({ page, app, scenario }) => {
   const { data, customer, orderId } = scenario;
+  let releaseLookup!: () => void;
+  const lookupGate = new Promise<void>(resolve => { releaseLookup = resolve; });
+  await page.route(/\/api\/v1\/me\/reviews(?:\?|$)/, async route => { await lookupGate; await route.continue(); }, { times: 1 });
   await page.goto(app.origin + '/reviews-mobile-preview.html?id=' + data.main + '&orderId=' + orderId);
   await page.getByRole('textbox', { name: 'E-mail', exact: true }).fill(customer.input.email); await page.getByRole('textbox', { name: 'Senha', exact: true }).fill(customer.input.password); await page.getByRole('button', { name: 'Entrar', exact: true }).click();
-  await expect(page.getByText('Esta edição ainda não tem avaliações publicadas.', { exact: true })).toBeVisible();
+  try {
+    await expect(page.getByText('Esta edição ainda não tem avaliações publicadas.', { exact: true })).toBeVisible();
+    await expect(page.getByText('Conferindo suas avaliações…', { exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Avaliar esta compra', exact: true })).toHaveCount(0);
+  } finally { releaseLookup(); }
   await page.getByRole('heading', { name: 'Avaliar esta compra', exact: true }).waitFor();
-  await page.getByRole('button', { name: /^Nota:/ }).click(); const dialog = page.getByRole('dialog'); await expect(dialog.getByRole('radio', { name: 'Todos', exact: true })).toHaveCount(0); await dialog.getByRole('radio', { name: '3 estrelas', exact: true }).click(); await expect(dialog).toBeHidden();
+  await page.getByRole('button', { name: /^Nota:/ }).click(); const dialog = page.getByRole('dialog'); await expect(dialog).toBeVisible(); await expect(dialog.getByRole('radio', { name: 'Todos', exact: true })).toHaveCount(0); await dialog.getByRole('radio', { name: '3 estrelas', exact: true }).click(); await expect(dialog).toBeHidden();
   await page.getByRole('textbox', { name: 'Comentário', exact: true }).fill('Avaliação pelo componente nativo compartilhado.'); await page.getByRole('button', { name: 'Publicar avaliação', exact: true }).click(); await page.getByRole('button', { name: 'Salvar avaliação', exact: true }).waitFor();
   const status = await page.evaluate(async ({ email, password, editionId }) => {
     const login = await fetch('/api/v1/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
