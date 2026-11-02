@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { AccountView, AlertView, AvailabilityKind, EngagementPage, WishView } from '@garimpo/contracts';
 import { ClientError, request, readableError } from '../account/client';
+import './engagement.css';
 
 export const conditions: { value: AvailabilityKind; label: string }[] = [{ value: 'NEW', label: 'Novo' }, { value: 'USED', label: 'Usado' }, { value: 'ANY', label: 'Novo ou usado' }];
 const states = { ACTIVE: 'Ativo', DELIVERED: 'Enviado', CANCELLED: 'Cancelado' };
@@ -14,7 +15,7 @@ export function EngagementActions({ editionId }: { editionId: string }) {
     catch (cause) { setNotice(cause instanceof ClientError && cause.code === 'ALERT_ALREADY_ACTIVE' ? 'Você já tem um alerta ativo para esta condição.' : readableError(cause)); }
     finally { setBusy(false); }
   }
-  return <section className="account-card" aria-label="Guardar edição e acompanhar disponibilidade"><h3>Para a sua coleção</h3>
+  return <section className="account-card engagement-view" aria-label="Guardar edição e acompanhar disponibilidade"><h3>Para a sua coleção</h3>
     <p>Desejos e alertas são independentes. Nenhum deles reserva estoque ou dá prioridade.</p>
     {!customer ? <p><a href="#/login">Entre com sua conta de cliente</a> para salvar desejos e criar alertas.</p> : <>
       <button disabled={busy} onClick={() => { void act(false); }}>Salvar nos desejos</button>
@@ -32,7 +33,7 @@ export default function Saved() {
     return () => controller.abort();
   }, [page, revision]);
   async function remove(path: string) { setBusy(true); try { await request(path, 'DELETE'); setRevision(value => value + 1); } catch (cause) { setError(readableError(cause)); setBusy(false); } }
-  return <section className="account-card"><h2>Meus desejos e alertas</h2><p>Salve edições para consultar depois. Alertas precisam de inscrição separada e não reservam estoque.</p>
+  return <section className="account-card engagement-view"><h2>Meus desejos e alertas</h2><p>Salve edições para consultar depois. Alertas precisam de inscrição separada e não reservam estoque.</p>
     {error ? <div role="alert"><p>{error}</p><button onClick={() => setRevision(value => value + 1)}>Tentar novamente</button></div> : null}
     {busy ? <p role="status">Atualizando sua lista…</p> : null}
     <h3>Desejos</h3>{wishes?.items.length === 0 ? <p>Nenhuma edição salva nesta página.</p> : wishes?.items.map(item => <article key={item.id}><h4>{item.edition.title}</h4>{item.edition.active ? <a href={'#/edition?id=' + item.edition.id}>Ver edição</a> : <p>Edição indisponível no catálogo.</p>}<button className="secondary" disabled={busy} onClick={() => { void remove('/me/wishlist/' + item.edition.id); }}>Remover desejo de {item.edition.title}</button></article>)}

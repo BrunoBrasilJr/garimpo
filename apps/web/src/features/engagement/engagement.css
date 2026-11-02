@@ -1,0 +1,5 @@
+.engagement-view { display: grid; gap: 18px; min-width: 0; }
+.engagement-view article { display: grid; gap: 12px; min-width: 0; border-top: 1px solid #c9cbbd; padding-top: 18px; }
+.engagement-view :is(h2,h3,h4,p,a,button) { overflow-wrap: anywhere; min-width: 0; max-width: 100%; }
+.engagement-view label { display: grid; gap: 8px; }
+.engagement-view .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }

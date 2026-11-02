@@ -47,6 +47,10 @@ export class Engagement {
       if (await tx.availabilityAlert.findFirst({ where: { userId: actor.id, editionId, kind, status: 'ACTIVE' } })) throw new AccountError(409, 'ALERT_ALREADY_ACTIVE');
       const row = await tx.availabilityAlert.create({ data: { userId: actor.id, editionId, kind, createdAt: this.accounts.clock.now() } });
       await this.audit(tx, actor.id, 'ALERT.SUBSCRIBED', row.id); return { id: row.id, kind: row.kind, status: row.status };
+    }).catch((error: unknown) => {
+      // PostgreSQL's partial unique index is the final arbiter for overlapping snapshots.
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') throw new AccountError(409, 'ALERT_ALREADY_ACTIVE');
+      throw error;
     });
   }
   async cancel(access: string, id: string) {
