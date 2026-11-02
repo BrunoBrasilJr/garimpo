@@ -14,7 +14,7 @@ export async function expireReservations(db: Database, clock: Clock = systemCloc
     const row = await tx.checkout.findUniqueOrThrow({ where: { id: candidate.id }, include: checkoutInclude });
     if (row.status !== 'ACTIVE' || row.expiresAt > clock.now()) return 0;
     await lockOffers(tx, row.items.map(item => item.offerId)); await lockCoupons(tx, [row.couponUsage?.couponId]);
-    await closeCheckout(tx, row, 'EXPIRED', clock, 'EXPIRY_JOB'); return 1;
+    await closeCheckout(tx, row, 'EXPIRED', clock, 'EXPIRY_JOB', null); return 1;
   });
   return closed;
 }

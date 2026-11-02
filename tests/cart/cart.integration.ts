@@ -231,6 +231,7 @@ test('two expiry workers forced to overlap release a durable checkout exactly on
   const results = await overlap('User', buyer.user.id, () => expireReservations(db, clock), () => expireReservations(other, clock));
   expect(results.every(result => result.status === 'fulfilled')).toBe(true); expect(results.map(result => result.status === 'fulfilled' ? result.value : -1).sort()).toEqual([0, 1]);
   expect(await db.auditLog.count({ where: { action: 'CHECKOUT.EXPIRED', targetId: frozen.id } })).toBe(1); expect(await db.domainEvent.count({ where: { type: 'CHECKOUT.EXPIRED', aggregateId: frozen.id } })).toBe(1);
+  expect((await db.auditLog.findFirstOrThrow({ where: { action: 'CHECKOUT.EXPIRED', targetId: frozen.id } })).actorId).toBeNull();
 });
 test('actual source CLI in a separate process expires persisted state and a restart has no duplicate effect', async () => {
   const buyer = buyers[0]!, row = await offer(), oldClock = { now: () => new Date(Date.now() - 16 * 60000) }, oldAccounts = new Accounts(db, oldClock), oldCarts = new Carts(oldAccounts), oldCheckouts = new Checkouts(oldAccounts, pendingOrders);

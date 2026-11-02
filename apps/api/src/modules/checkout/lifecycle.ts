@@ -18,13 +18,13 @@ export async function lockCoupons(tx: Prisma.TransactionClient, ids: (string | u
 }
 export async function activeCheckout(tx: Prisma.TransactionClient, userId: string) { return tx.checkout.findFirst({ where: { userId, status: 'ACTIVE' }, include: checkoutInclude }); }
 /** Caller owns User, then all affected editions/offers and coupons in stable order. */
-export async function closeCheckout(tx: Prisma.TransactionClient, row: CheckoutRecord, status: 'CANCELLED' | 'EXPIRED', clock: Clock, reason: string) {
+export async function closeCheckout(tx: Prisma.TransactionClient, row: CheckoutRecord, status: 'CANCELLED' | 'EXPIRED', clock: Clock, reason: string, actorId: string | null = row.userId) {
   if (row.status !== 'ACTIVE') return;
   const now = clock.now();
   await tx.reservation.updateMany({ where: { checkoutItem: { checkoutId: row.id }, status: 'ACTIVE' }, data: { status: status === 'EXPIRED' ? 'EXPIRED' : 'RELEASED', releasedAt: now } });
   await tx.couponUsage.updateMany({ where: { checkoutId: row.id, status: 'RESERVED' }, data: { status: 'RELEASED', releasedAt: now } });
   await tx.checkout.update({ where: { id: row.id, status: 'ACTIVE' }, data: { status, closedAt: now, version: { increment: 1 } } });
-  await appendAudit(tx, { actorId: row.userId, action: 'CHECKOUT.' + status, targetType: 'CHECKOUT', targetId: row.id, result: 'SUCCESS', reason, changes: {} }, clock);
+  await appendAudit(tx, { ...(actorId ? { actorId } : {}), action: 'CHECKOUT.' + status, targetType: 'CHECKOUT', targetId: row.id, result: 'SUCCESS', reason, changes: {} }, clock);
   await enqueue(tx, { type: 'CHECKOUT.' + status, aggregateId: row.id, payload: { checkoutId: row.id, userId: row.userId } }, clock);
 }
 export async function expireOwn(tx: Prisma.TransactionClient, userId: string, clock: Clock) {
