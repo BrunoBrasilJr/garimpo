@@ -9,7 +9,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | Ordem | TASK | Fase | Prioridade | Dependências | Estado |
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
-| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
+| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | IN_PROGRESS |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
@@ -159,7 +159,7 @@ Gates locais: prontidão, planejamento, decisões documentais, revisão, testes 
 
 #### Status
 
-DONE
+IN_PROGRESS
 
 #### Phase
 
@@ -212,6 +212,8 @@ Ampliação explícita autorizada pelo responsável em 2026-10-25, após propost
 
 Critério complementar autorizado para GATE-06: manter auditoria integral e sua saída real. O aviso remanescente de versão de node-forge só pode ser avaliado como mitigado com patch/hash exatos, regressão antes/depois, instalação limpa e gates afetados aprovados; não registrar npm audit falho como PASS, não aceitar avisos novos/não mitigados e não dispensar revisão/testes manuais. Não amplia funcionalidades, não desativa validação e não muda SDK/arquitetura. Escalonamento anterior preservado como histórico; retornar à execução autorizada da correção.
 
+Correção de segurança da retomada em 2026-11-01, sob instrução posterior explícita do responsável de seguir autonomamente sem novas permissões genéricas: PRIMARY adicionais limitados a patches/deepmerge+4.3.1.patch, patches/deepmerge+4.3.1.json e patches/node-forge+1.4.2.json, regressões em tests/bootstrap/security/** e evolução dos mesmos instalador/verificador de patch existentes. node_modules/deepmerge/index.js, dist/cjs.js e dist/umd.js são resultados derivados da aplicação do patch, nunca versionados. Decisão técnica do agente sob a delegação recebida, não atribuir ao responsável aprovação nominal dos novos hashes ou ao PDF requisitos de biblioteca. Substituir node-forge transitivo por release upstream 1.4.2, fixar minimatch 11.0.3/glob 14.0.3 e mitigar deepmerge 4.3.1 por duas guardas de chave __proto__ reproduzíveis; manter SDK 57, módulos comerciais e arquitetura. A nova mitigação exige reprodução antes/depois, hash, compatibilidade e instalação limpa; não autoriza aceitar aviso não mitigado nem ocultar auditoria. Arquivos legados node-forge 1.4.0 permanecem como histórico, não como exceção válida para novos achados.
+
 #### Incidental Changes Policy
 
 MINIMAL_DIRECTLY_CAUSED_CHANGES_ALLOWED
@@ -239,6 +241,8 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Iniciada em 2026-10-25 sob autorização contínua. DoR PASS: TASK-001 DONE, seis ADRs ACCEPTED e DOC-001/002 confirmados pelo responsável; parâmetros/plataformas necessários definidos. Baseline de software: inexistente, primeiro bootstrap. Plano PRIMARY: package.json/lock, tsconfig, API/web/mobile bootstrap, contracts, configuração de testes e docs/architecture/execution.md. Incidental previsto: .gitignore para excluir dependências/segredos/builds da estrutura Git (necessário, causal, mínimo, sem funcionalidade/negócio/arquitetura/contrato/segurança alterados; nenhum Forbidden). Git será inicializado nesta tarefa; branch real registrada após criação. Sem banco/migrations/contas/catálogo nesta tarefa. Gates e testes manuais ainda pendentes.
+
+Reabertura em 2026-11-01: auditoria nova do checkpoint detectou regressão externa de segurança na toolchain, baseline FAIL. Correção em fix/TASK-002-toolchain-security, base 9297f20 que preserva o checkpoint BLOCKED. TASK-001 continua DONE; código de negócio não foi alterado. Gate conhecido não aprovado: 23 pacotes afetados, relatório original copiado para test-results/toolchain-20261101/audit-before.json. Estado atual IN_PROGRESS da correção; conclusão histórica de 25/10 permanece registrada, mas não aprova o novo baseline. Nenhuma nova TASK foi criada para inflar contagem.
 
 
 Falha de validação em 2026-10-25: npm run verify PASS (build/tipos/lint e 1 teste real de socket), bundle Android PASS (580 módulos), página inicial renderizada no navegador. npm audit --audit-level=high FAIL, saída 1: cinco avisos altos transitivos do Expo, origens node-forge (GHSA-86w9-cpqp-85rv) e zod (GHSA-mrhx-c7xc-m3w5). Diagnóstico em andamento; não usar npm audit fix --force (sugere downgrade incompatível para Expo 44), não desabilitar auditoria. Gate de segurança falhou; revisão/manual/conclusão não aprovados. Preservar correção no escopo da configuração de dependências e repetir gates afetados. Evidência: test-results/bootstrap/agent-verification.log.

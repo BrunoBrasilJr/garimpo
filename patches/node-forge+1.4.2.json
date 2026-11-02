@@ -1,0 +1,10 @@
+{
+  "package": "node-forge",
+  "version": "1.4.2",
+  "file": "lib/rsa.js",
+  "originalSha256": "6632e195295ce76f6bb9131ee770dcd6cc1ee4ffac7906302208b00faf95a87f",
+  "patchedSha256": "6632e195295ce76f6bb9131ee770dcd6cc1ee4ffac7906302208b00faf95a87f",
+  "upstream": "https://github.com/digitalbazaar/forge/blob/main/CHANGELOG.md",
+  "integrity": "sha512-rRtAR5XLJ8gCKd9du4qrKAsgCG1ObGP4gLeNJMa4vYSeq4bmBMOJk5IHkrviBV0q7uoAJlVd8HEQYQSVUb4FGQ==",
+  "replacements": []
+}

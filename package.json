@@ -36,6 +36,10 @@
     "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run audit:toolchain"
   },
   "overrides": {
+    "node-forge": "1.4.2",
+    "glob": "14.0.3",
+    "minimatch": "11.0.3",
+    "deepmerge": "4.3.1",
     "@expo/cli": {
       "zod": "4.6.7"
     }

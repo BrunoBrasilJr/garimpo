@@ -43,8 +43,13 @@ test('rejects altered digest and malformed signature', () => {
   expect(accepts('malformed')).toBe(false);
 });
 
-test('installed dependency has the exact approved patch bytes', () => {
-  const manifest = JSON.parse(readFileSync(new URL('../../../patches/node-forge+1.4.0.json', import.meta.url), 'utf8'));
+test('corrected upstream PEM decoder preserves Buffer input used by signing tooling', () => {
+  expect(forge.pem.decode(Buffer.from(forge.pki.publicKeyToPem(keys.publicKey)))).toHaveLength(1);
+});
+
+test('installed upstream dependency has the exact reviewed corrected bytes', () => {
+  const manifest = JSON.parse(readFileSync(new URL('../../../patches/node-forge+1.4.2.json', import.meta.url), 'utf8'));
+  expect(require('node-forge/package.json').version).toBe(manifest.version);
   const source = readFileSync(require.resolve('node-forge/lib/rsa'));
   expect(createHash('sha256').update(source).digest('hex')).toBe(manifest.patchedSha256);
 });

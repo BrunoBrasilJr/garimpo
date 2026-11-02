@@ -1,5 +1,5 @@
-const approvedUrl = 'https://github.com/advisories/GHSA-86w9-cpqp-85rv';
-const knownPackages = new Set(['node-forge', '@expo/code-signing-certificates', '@expo/cli', 'expo']);
+const approvedUrl = 'https://github.com/advisories/GHSA-gcqx-w48m-w2h4';
+const knownPackages = new Set(['deepmerge', '@expo/config', '@expo/cli', '@expo/prebuild-config', '@expo/metro-config', '@expo/local-build-cache-provider', 'expo']);
 
 export function validateAuditReport(report) {
   if (report.error || !report.vulnerabilities || !report.metadata?.vulnerabilities) {
@@ -16,7 +16,7 @@ export function validateAuditReport(report) {
     const next = new Set(visiting).add(name);
     return entry.via.every(origin => typeof origin === 'string'
       ? approvedOrigin(origin, next)
-      : origin.name === 'node-forge' && origin.url === approvedUrl);
+      : origin.name === 'deepmerge' && origin.url === approvedUrl);
   }
   for (const name of Object.keys(vulnerabilities)) {
     if (!approvedOrigin(name)) throw new Error(`New or unmitigated advisory: ${name}.`);
