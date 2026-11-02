@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { resolve } from 'node:path';
 import { test as base, expect } from '../e2e/account/fixtures';
 import { seedCatalog } from '../e2e/catalog-web/seed';
 
@@ -27,9 +28,10 @@ test('ADMIN creates and edits a targeted coupon, preserves its code and enlarged
   await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await form.getByLabel('Código do cupom').focus(); await expect(form.getByLabel('Código do cupom')).toBeFocused();
+  await page.screenshot({ path: resolve(app.directory, 'pricing-narrow-enlarged.png'), fullPage: true });
   await page.getByRole('button', { name: 'Sair', exact: true }).click(); const customer = await app.customer(); await login(page, customer.input.email, customer.input.password);
   await expect(page.getByRole('link', { name: 'Descontos', exact: true })).toHaveCount(0);
-  await page.goto(app.origin + '/#/pricing-admin'); await expect(page.getByRole('form', { name: 'Configurar cupom' })).toHaveCount(0);
+  await page.goto(app.origin + '/#/pricing-admin'); await expect(page.getByRole('heading', { name: 'Acesso restrito', exact: true })).toBeVisible(); await expect(page.getByRole('form', { name: 'Configurar cupom' })).toHaveCount(0);
 });
 test('ADMIN promotions use human offer selection and public search displays the lowest overlapping price', async ({ page, app, data }) => {
   await login(page, app.credentials.adminEmail, app.credentials.adminPassword); await page.getByRole('link', { name: 'Descontos', exact: true }).click(); await page.getByRole('button', { name: 'Promoções', exact: true }).click();
