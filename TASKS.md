@@ -23,7 +23,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | DONE |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | DONE |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | DONE |
-| 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | IN_PROGRESS |
+| 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | DONE |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | BLOCKED |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | BLOCKED |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | BLOCKED |
@@ -2063,7 +2063,7 @@ Scope Validation: Allowed Changes PASS; Incidental Changes NONE; Forbidden Chang
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -2148,6 +2148,42 @@ Porta PendingOrders nega com 503 quando não pode comprovar contagem, jamais ass
 Gates esperados: build/tipos/lint, validação/prazos/quantidades/hash, APIs HTTPS/CSRF/propriedade/web+bearer/papéis, banco real com concorrência forçada entre clientes diferentes por último usado/novo/cupom e mesmo cliente para checkout único, rollback conjunto e falha de auditoria, replay/idempotência e expiração por outro processo. Regressões afetadas e segurança restrita antes de DONE. Não criar UI/cobrança/frete/pedido ou afirmar execução humana/nativa.
 
 Validação em andamento: fundação 131b94c build PASS. Em 0b45331 build/tipos PASS, lint FAIL por import json sem uso (IN_PROGRESS → FAILED); removido, FAILED → IN_PROGRESS. Em 58072c8 build/tipos/lint e 92 unitários PASS; integração 15/19 PASS, quatro casos com usado pararam corretamente na validação de publicação porque a fixture omitia particularidades obrigatórias (FAILED). Corrigir somente o dado sintético, sem relaxar regra/validação. Retorno à execução para nova rodada. Casos que já passaram incluem concorrência real por último novo/cupom, checkout único, expiração concorrente e CLI real em processo separado; ainda não declarar o gate inteiro aprovado. Logs locais first-check/source-check/integration-check em test-results/cart, schema task016_4807d6cc3ab44375a255b90f353157fa retido. Fixtures de contagem/estado consumido não equivalem a pedido ou pagamento implementado.
+
+#### TASK Execution Report — encerramento 2026-11-02
+
+TASK: TASK-016. Status: DONE. Branch real feature/TASK-016-carrinho-reservas, base 0f2c5a1. Commits 166db0b, 131b94c, 0b45331, 58072c8, 0517841, c3758f9, eddf248, 229ce59, b8ae628 e 27ba9b1; fechamento documental no log real. Após correções, IN_PROGRESS → IN_REVIEW → DONE.
+
+Primary Changes:
+
+- Schema/migration 202611020005_cart_checkout: Cart/CartItem sem prazo/reserva, Checkout/CheckoutItem, Reservation/CouponUsage, estados, FKs/indexes/checagens, um checkout ACTIVE por cliente, duração exata de 15 minutos e snapshots/histórico protegidos por trigger imutável. Sem Order/Payment antecipado.
+- modules/cart/** e contracts/src/cart/**: propriedade CUSTOMER, revisão e idempotência, mescla que soma novos até disponibilidade e avisa ajustes, usados sem duplicar, preço canônico/confirmável e indisponibilidade explícita. Alteração real encerra checkout anterior; nenhum saldo físico baixado para reservar.
+- modules/checkout/** e contracts/src/checkout/**: identidade coordenada sem mudar dados do usuário, locks ordenados, conjunto todos-ou-nenhum, múltiplas chaves de replay vinculadas ao mesmo recurso/prazo original, snapshots completos da edição/conservação/gênero principal/fotos imutáveis/promoção/cupom/rateio, endereço próprio/versionado sem prorrogar. Sem cotação, endpoint de frete ou pedido.
+- inventory/reservations.ts, pricing/usage.ts e jobs/reservations*: capacidade desconta só ACTIVE válido, limites reais RESERVED válido/CONSUMED sob lock e SERIALIZABLE, liberação idempotente e CLI real reiniciável; job automático auditado como sistema e falhas de configuração sem URL/stack sensível. Não há daemon/agendamento de produção instalado; prazo é revalidado no servidor independentemente do job/tela.
+- app.ts, tests/catalog/http.ts, docs/architecture/{api,parametros}.md, tests/cart/** e registro atual: composição PRIMARY previamente delimitada, wire/decisões e validação. Porta de pendentes ausente retorna 503, nunca zero; integração real 018/023. Estado CONSUMED em um teste é fixture de histórico, não produtor de pedido/pagamento no runtime.
+
+Incidental Changes:
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| packages/contracts/src/index.ts | Dois exports de tipos novos | Disponibilizar contratos do próprio incremento sem alterar runtime existente |
+| package.json | test:cart, reservations:expire e inclusão de test:cart em verify | Executar o módulo/job e seus gates; nenhuma dependência/lockfile alterada |
+| tests/core/run-integration.mjs | Seletor cart/prefixo isolado task016 | Reutilizar runner protegido e migrations reais; suites anteriores preservadas |
+
+Nove critérios PASS: extensão mínima, causal/necessária, sem função independente, nova regra de negócio/arquitetura, contrato quebrado, mudança incidental de segurança ou proibição. Autoridade/composição/contratos foram PRIMARY documentados antes da edição.
+
+Tests Executed: Linux nativo do mesmo Git, Node 24.22.1/npm 11.19.1/PostgreSQL 17, ambiente protegido e somente schemas novos garimpo_test. Em c3758f9, build/tipos/lint, 92 unitários e todas as 105 integrações anteriores PASS (core 9, contas 14, mensagens 16, catálogo 19, inventário 12, desejos 12, avaliações 11, descontos 12); o comando verify parou depois em um teste novo, não é apresentado como exit 0. Depois só dados/testes e código do próprio incremento (snapshots/CLI) mudaram, sem alterar módulos anteriores.
+
+Em 27ba9b1, rodada final completa dos gates afetados: build/tipos/lint PASS, 93 unitários PASS, test:cart 22/22 PASS e audit:toolchain exit 0. Logs locais test-results/cart/{verify,final-check,security-final,validated-final}.log preservados; final-check.sh foi executado com saída redirecionada para validated-final.log (nenhum script auxiliar é fonte rastreada). CLI real em outro processo libera estado persistido, reinício não duplica; dois workers sobrepostos também liberam uma vez. Duas conexões A/B e terceiro cliente observam esperas reais por último novo/usado/cupom e identidade do mesmo cliente, com snapshots de estatísticas renovados; sem mocks sequenciais para concorrência.
+
+API real prova HTTPS/origem/CSRF, web versus bearer sem ambiguidade, STAFF negado antes de corpo inválido, limite de JSON, propriedade, revisões, POST mobile/replay e GET web recuperando mesmo recurso/prazo. Banco prova rollback com falha real de auditoria, snapshots/prazo imutáveis, preservação dos valores da conta na coordenação, nenhuma baixa física na reserva, rateio exato e expiração tardia que não ocupa capacidade. Troca para cupom inválido mantém o hold anterior liberado; falha inesperada de armazenamento reverte o conjunto. Endereço foi testado como metadado interno; frete/API RF-011.03 permanecem 018.
+
+Falhas preservadas: após corrigir as quatro fixtures de usado, verify passou 21/22 novos cenários; propriedade recebia 409 porque o teste enviava a revisão de outro carrinho, antes de avaliar o ID alheio. IN_PROGRESS → FAILED; 229ce59 usa revisão válida da conta atacante e mantém exigência 404, sem relaxar autorização. FAILED → IN_PROGRESS; última rodada 22/22 PASS. CLI/configuração/auditoria sistêmica foram revisadas no próprio módulo e repetidos gates relevantes; 93 unitários incluem processo real com configuração ausente/URL inválida/protocolo não suportado, sem divulgar marcador sensível. Sem bypass TLS, redução de scrypt, relógio público ou validação desativada.
+
+Schemas anteriores do verify: task003_4b75c8888db2486ead88933e302d5c48, task004_66bb78ec1e414a84b55f481af8ee0d16, task005_35aa3a49864d490f84cfc7109c3acc97, task008_b60d4a97d2454209912925b4c70976d8, task009_db114c0f32d54d38aed66329caeb032e, task012_12829bd880414127b27dc970354f0464, task013_856de1ad52e042b3b21c3b112296ca9a, task014_d30a3e6433be48fb846340aceab853cf. Schema final task016_a569d4dc7bb74594a24f34f11370cfc1 e schemas task016 das tentativas/rodadas retidos e identificados nos logs, sem reset/drop/truncate da base original.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS na política restrita, hashes/regressões e negativas; npm audit bruto permanece FAIL/exit 1, sete low deepmerge, zero moderate/high/critical. Acceptance Criteria PASS no incremento, portas futuras negadas explicitamente; Regression Tests PASS nos 105 cenários anteriores e gates afetados. E2E visual/plataformas N/A nesta TASK exclusivamente backend, sem UI alterada; 22 E2E do checkpoint 015 preservados, não alegados como repetidos. TalkBack/dispositivos não executados, interfaces em 017 e aceitação integral em 033.
+
+Scope Validation: Allowed Changes PASS com precisões PRIMARY rastreáveis; Incidental Changes PASS conforme tabela; Forbidden Changes PASS; Scope Creep NONE. Definition of Done PASS. 16/37 DONE. Acumulado 242 casos distintos com evidências = 93 unitários + 127 integrações + 22 E2E herdados não afetados. Next Eligible TASK: TASK-017 candidata, dependência 016 concluída, própria DoR/Scope Guard antes de iniciar. Continuidade até 28/37 autorizada; ZIP/base original preservados e sem publicação/túnel/mensagem externos.
 
 ### TASK-017 Criar carrinho e reserva nas interfaces
 
