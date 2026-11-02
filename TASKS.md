@@ -15,7 +15,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
-| 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | IN_PROGRESS |
+| 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | BLOCKED |
@@ -1158,7 +1158,7 @@ Conferência final própria PASS: 37 tarefas, 79 dependências, grafo sem ciclos
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -1232,6 +1232,30 @@ Plano PRIMARY: módulo catalog/media, contratos src/catalog, onze modelos de cat
 Construção em andamento: tipos e lint de API/contratos passaram antes da adição dos novos testes. Sharp 0.35.5 fixado, quatro pacotes Linux acrescentados com scripts de instalação/verificação executados; lockfile adiciona somente suas dependências opcionais de plataforma, sem atualização das demais. O comando de diff da CLI Prisma retornou exit 0 sem materializar arquivo; nenhuma migration vazia foi aceita. SQL foi escrito/revisado explicitamente para os onze modelos, incluindo vocabulário, limites locais e FK diferível que exige gênero principal pertencente à edição. Implantação, testes de banco e prova de integridade ainda pendentes. Não registrar essa preparação como DONE ou PASS dos testes novos.
 
 Validação dirigida posterior em 2026-11-02: tipos completos PASS; primeira conferência de lint FAILED por import não usado em teste, corrigido, lint dirigido posterior PASS. Unitários novos PASS, 17 casos (12 mídia, cinco contratos). Integração/API PASS, 19 casos em task008_98e396745ba54b6688637569c0b7227c; três migrations aplicadas com sucesso, concorrência real comprovada por duas aplicações bloqueadas simultaneamente em pg_stat_activity antes da liberação. Sem resets da base original. Logs: test-results/catalog/code-first-check.log, unit-first-check.log e database-first-check.log. Aviso de depreciação do driver pg preservado na saída, sem upgrade oportunista ou supressão. Acrescentada validação de NUL/tamanho após normalização de nomes; essa última mudança e a regressão acumulada ainda exigem rodada integral. Status continua IN_PROGRESS, não DONE; nenhum aceite de interface antecipado.
+
+##### TASK Execution Report — fechamento em 2026-11-02
+
+TASK: TASK-008. Status: DONE. Branch: feature/TASK-008-catalogo-api. Commit de implementação: f64f5d1db7c9c18053e182feb0540655cccd7f50. Fechamento documental a conferir no log real. IN_PROGRESS → IN_REVIEW → DONE após a rodada integral abaixo; registros parciais anteriores permanecem históricos.
+
+Primary Changes: README.md somente RN-005/PD-006; docs/architecture/parametros.md somente vocabulários/limites técnicos; docs/architecture/api.md somente detalhamento de catálogo/mídia e leitura administrativa complementar API-017.17; apps/api/package.json e package-lock.json somente Sharp e dependências; apps/api/prisma/schema.prisma e migrations/202611010001_catalog/migration.sql somente os onze modelos de catálogo/mídia; apps/api/src/modules/catalog/{errors,router,service,validation,views}.ts; apps/api/src/modules/media/store.ts; packages/contracts/src/catalog/index.ts; tests/catalog/{README.md,catalog.integration.ts,http.ts,validation.test.ts,vitest.integration.config.ts}; tests/media/store.test.ts; TASKS.md. Classificação PRIMARY de todos esses arquivos validada no escopo delimitado.
+
+Incidental Changes:
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/api/src/app.ts | Import/registro mínimo do router e opções opcionais do catálogo | Liga o módulo; guardas/parsers próprios ignoram rotas alheias; autenticação existente preservada e exercitada na regressão |
+| packages/contracts/src/index.ts | Exports de tipos e vocabulário do catálogo | Necessário ao mesmo workspace de contratos, sem regra independente |
+| package.json | Comando test:catalog e inclusão em verify | Executa o gate obrigatório do módulo novo |
+| tests/core/run-integration.mjs | Inclui catalog e prefixo task008 | Reaproveita isolamento já existente sem modificar a restrição loopback/garimpo_test ou apagar schemas |
+| tests/vitest.config.ts | maxWorkers=2 | Contém memória da decodificação de imagens no computador de 8 GB; mantém asserções, limites e concorrência real dentro dos testes |
+
+Os cinco incidentais passaram nos nove critérios: indispensáveis, diretamente causados, mínimos, sem funcionalidade autônoma/regra de negócio/arquitetura/quebra de contrato/alteração da proteção de contas existente ou Forbidden Change. Orçamento limitado aos pontos de ligação/teste acima; não houve refatoração de contas/mensagens.
+
+Tests Executed: no checkout Linux isolado do commit f64f5d1, Node 24.22.1/npm 11.19.1/PostgreSQL 17, npm ci --no-audit --no-fund instalou 808 pacotes com preinstall/postinstall/hashes PASS; npm run verify PASS em build/tipos/lint, 62 unitários e 58 integrações reais (9 core, 14 contas, 16 mensagens, 19 catálogo). npm run test:account-ui PASS integral, sete casos Firefox/HTTPS; npm run bundle:android PASS, 586 módulos em 9,4 segundos. Total 127 casos distintos PASS, sem contar repetição de rodadas. Log test-results/catalog/native-full-verification.log e audit-after.json. Schemas: task003_6acb390cd39d4fb0b75ba97d0bbd15b6, task004_9516c8a4ca88494da2bd83fd1ab77f0c, task005_9b7fb0b90456446db8a0af9b2a05d712 e task008_af59a9d9afbd4af182b5ee16f9050ba9. Só foram migrados schemas separados de teste; nenhum dado original alterado.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS no critério restrito vigente, npm audit bruto FAIL/exit 1 com sete low somente da cadeia deepmerge e zero moderate/high/critical, hashes/regressões conferidos, nenhum advisory novo aceito; Acceptance Criteria PASS no recorte de API deste incremento; Regression Tests PASS. Warning pg preservado, trace aponta a execução interna de PgTransaction em @prisma/adapter-pg; versão 8.23.1 mantida, sem ocultação, falha observada ou alteração oportunista. Não há nova execução física Android, TalkBack, iOS ou inspeção humana atribuída a esta tarefa de API. Publicação/GUI pertencem aos incrementos seguintes; histórico comercial real será integrado nos checkpoints previstos, sem tomar a tabela de prova de FK como pedido implementado.
+
+Scope Validation: Allowed Changes PASS; Incidental Changes PASS, cinco arquivos acima; Forbidden Changes PASS; Scope Creep NONE. Definition of Done: PASS. Contagem 8/37 DONE. Next Eligible TASK: TASK-009, candidata com dependência satisfeita, ainda BLOCKED até sua própria DoR. Continuidade já autorizada.
 
 ### TASK-009 Administrar catálogo e estoque inicial
 
