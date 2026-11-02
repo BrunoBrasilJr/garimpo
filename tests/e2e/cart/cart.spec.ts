@@ -11,7 +11,7 @@ test('visitor persists locally, merges adjusted new and unique used items once, 
   await page.goto(app.origin + '/#/cart'); await expect(page.getByRole('article')).toHaveCount(2);
   await expect(page.getByRole('timer')).toHaveCount(0); await page.reload(); await expect(page.getByRole('article')).toHaveCount(2);
   let merges = 0; page.on('request', request => { if (request.method() === 'POST' && request.url().endsWith('/me/cart/merge')) merges++; });
-  await login(page, app.origin, scenario.customer.email, scenario.customer.password);
+  await login(page, app.origin, scenario.customer.input.email, scenario.customer.input.password);
   await expect(page.getByRole('region', { name: 'Mescla do carrinho' })).toContainText('mesclado');
   await page.goto(app.origin + '/#/cart'); await expect(page.getByRole('article')).toHaveCount(2);
   await expect(page.getByRole('article').filter({ hasText: 'Novo' })).toContainText('quantidade no carrinho: 3');
@@ -24,7 +24,7 @@ test('visitor persists locally, merges adjusted new and unique used items once, 
 });
 
 test('changed price requires fresh confirmation; web and native renderer recover the same original checkout deadline', async ({ page, app, scenario }) => {
-  await login(page, app.origin, scenario.customer.email, scenario.customer.password); await addNew(page, app.origin, scenario.data.main);
+  await login(page, app.origin, scenario.customer.input.email, scenario.customer.input.password); await addNew(page, app.origin, scenario.data.main);
   await page.goto(app.origin + '/#/cart'); const confirm = page.getByRole('checkbox', { name: 'Conferi os itens e os valores atuais' });
   const reserve = page.getByRole('button', { name: 'Reservar conjunto por 15 minutos', exact: true }); await expect(reserve).toBeDisabled(); await confirm.check();
   const admin = await session(app, app.credentials.adminEmail, app.credentials.adminPassword);
@@ -38,7 +38,7 @@ test('changed price requires fresh confirmation; web and native renderer recover
   const active = page.getByRole('region', { name: 'Finalização em andamento', exact: true }); await expect(active).toHaveAttribute('data-checkout-id', resource.id);
   await page.reload(); await expect(active).toHaveAttribute('data-checkout-id', resource.id); await expect(active.locator('time')).toHaveAttribute('datetime', resource.expiresAt);
   const mobile = await page.context().newPage(); await mobile.goto(app.origin + '/cart-mobile-preview.html');
-  await mobile.getByRole('textbox', { name: 'E-mail', exact: true }).fill(scenario.customer.email); await mobile.getByLabel('Senha', { exact: true }).fill(scenario.customer.password); await mobile.getByRole('button', { name: 'Entrar', exact: true }).click(); await expect(mobile.getByRole('button', { name: 'Sair', exact: true })).toBeVisible();
+  await mobile.getByRole('textbox', { name: 'E-mail', exact: true }).fill(scenario.customer.input.email); await mobile.getByLabel('Senha', { exact: true }).fill(scenario.customer.input.password); await mobile.getByRole('button', { name: 'Entrar', exact: true }).click(); await expect(mobile.getByRole('button', { name: 'Sair', exact: true })).toBeVisible();
   const resumed = mobile.waitForResponse(response => response.url().endsWith('/me/checkout') && response.status() === 200); await mobile.getByRole('button', { name: 'Carrinho', exact: true }).click();
   const other = await (await resumed).json() as CheckoutView; expect(other.id).toBe(resource.id); expect(other.expiresAt).toBe(resource.expiresAt); await expect(mobile.getByTestId('active-checkout')).toBeVisible();
   app.advance(16 * 60 * 1000); await page.getByRole('button', { name: 'Atualizar carrinho e finalização', exact: true }).click(); await expect(active).toHaveCount(0); await expect(confirm).not.toBeChecked();
@@ -53,7 +53,7 @@ test('lost successful merge response replays original durable command without do
       const result = await send(app, '/me/cart/merge', 'POST', original, forwarded(await request.allHeaders())); expect(result.status).toBe(200); await route.abort('failed');
     } else { expect(request.postData()).toBe(original); expect(request.headers()['idempotency-key']).toBe(originalKey); await route.continue(); }
   });
-  await login(page, app.origin, scenario.customer.email, scenario.customer.password); await expect(page.getByRole('button', { name: 'Tentar mesclar carrinho', exact: true })).toBeVisible();
+  await login(page, app.origin, scenario.customer.input.email, scenario.customer.input.password); await expect(page.getByRole('button', { name: 'Tentar mesclar carrinho', exact: true })).toBeVisible();
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!).pending.length, key)).toBe(1);
   await page.getByRole('button', { name: 'Tentar mesclar carrinho', exact: true }).click(); await expect(page.getByRole('region', { name: 'Mescla do carrinho' })).toContainText('mesclado');
   await page.goto(app.origin + '/#/cart'); await expect(page.getByRole('article')).toContainText('quantidade no carrinho: 2'); expect(attempts).toBe(2);
@@ -69,13 +69,13 @@ test('account change during merge cannot apply an old intent under the new cooki
     const old = await send(app, '/me/cart/merge', 'POST', body, headers); expect(old.status).toBe(401);
     await route.fulfill({ status: old.status, contentType: 'application/json', body: old.raw });
   });
-  await login(page, app.origin, scenario.customer.email, scenario.customer.password); await arrived;
+  await login(page, app.origin, scenario.customer.input.email, scenario.customer.input.password); await arrived;
   const other = await page.context().newPage(); await other.route('**/api/v1/me/cart/merge', route => route.abort('failed'));
   await other.goto(app.origin + '/#/account'); await other.getByRole('button', { name: 'Sair', exact: true }).click();
-  await login(other, app.origin, buyerB.email, buyerB.password);
+  await login(other, app.origin, buyerB.input.email, buyerB.input.password);
   const rejected = page.waitForResponse(response => response.url().endsWith('/me/cart/merge') && response.status() === 403); release();
-  expect((await (await rejected).json()).error.code).toBe('ACCOUNT_CONTEXT_CHANGED');
-  const independent = await session(app, buyerB.email, buyerB.password); expect((await independent.call<CartView>('/me/cart')).body.items).toEqual([]);
+  expect((await (await rejected).json()).code).toBe('ACCOUNT_CONTEXT_CHANGED');
+  const independent = await session(app, buyerB.input.email, buyerB.input.password); expect((await independent.call<CartView>('/me/cart')).body.items).toEqual([]);
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!).pending.length, key)).toBe(1); await other.close();
 });
 
@@ -84,7 +84,7 @@ test('native shared components persist guest cart in AsyncStorage, merge on bear
   await page.getByRole('radio', { name: /Selecionar oferta nova 1 por/ }).click(); await page.getByRole('button', { name: 'Adicionar ao carrinho', exact: true }).click();
   await expect(page.getByText('Adicionado ao carrinho. Adicionar não reserva estoque.', { exact: true })).toBeVisible(); await page.reload();
   await page.getByRole('button', { name: 'Carrinho', exact: true }).click(); await expect(page.getByRole('heading', { name: scenario.data.mainTitle, exact: true })).toBeVisible(); await expect(page.getByRole('timer')).toHaveCount(0);
-  await page.getByRole('textbox', { name: 'E-mail', exact: true }).fill(scenario.customer.email); await page.getByLabel('Senha', { exact: true }).fill(scenario.customer.password); await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+  await page.getByRole('textbox', { name: 'E-mail', exact: true }).fill(scenario.customer.input.email); await page.getByLabel('Senha', { exact: true }).fill(scenario.customer.input.password); await page.getByRole('button', { name: 'Entrar', exact: true }).click();
   await expect(page.getByText(/Carrinho deste aparelho mesclado à sua conta/)).toBeVisible();
   const reserve = page.getByRole('button', { name: 'Reservar conjunto por 15 minutos', exact: true }); await expect(reserve).toBeDisabled(); await page.getByRole('checkbox', { name: 'Conferi os itens e os valores atuais', exact: true }).click();
   await reserve.click(); await expect(page.getByTestId('active-checkout')).toBeVisible();
