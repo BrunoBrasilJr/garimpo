@@ -1,6 +1,7 @@
 import type { AccountView } from '@garimpo/contracts';
 export interface TokenStore { get(): Promise<string | null>; set(value: string): Promise<void>; clear(): Promise<void> }
-export class MobileError extends Error { constructor(readonly status: number, readonly fields: Record<string, string[]>, message: string) { super(message); } }
+export class MobileError extends Error { constructor(readonly status: number, readonly fields: Record<string, string[]>, message: string, readonly code = 'REQUEST_FAILED') { super(message); } }
+export interface CommandContext { idempotencyKey?: string; accountId?: string; signal?: AbortSignal }
 export const errorMessage = (cause: unknown) => cause instanceof MobileError ? cause.message : 'Não foi possível concluir. Confira sua conexão e tente novamente.';
 interface Session { accessToken: string; refreshToken: string; user: AccountView }
 export class MobileAccountClient {
@@ -15,15 +16,16 @@ export class MobileAccountClient {
     if (!canonical || Number(canonical[1] ?? 443) > 65535 || url.protocol !== 'https:' || url.origin !== origin) throw new Error('An exact HTTPS API origin is required.');
     this.base = origin + '/api/v1';
   }
-  private async send<T>(path: string, method: string, body: unknown, access = ''): Promise<T> {
+  private async send<T>(path: string, method: string, body: unknown, access = '', context?: CommandContext): Promise<T> {
     let response: Response;
     try {
-      response = await this.transport(this.base + path, { method, credentials: 'omit', headers: { 'X-Garimpo-Client': 'mobile',
-        ...(access ? { Authorization: `Bearer ${access}` } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
+      response = await this.transport(this.base + path, { method, credentials: 'omit', ...(context?.signal ? { signal: context.signal } : {}), headers: { 'X-Garimpo-Client': 'mobile',
+        ...(access ? { Authorization: `Bearer ${access}` } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        ...(context?.idempotencyKey ? { 'Idempotency-Key': context.idempotencyKey } : {}), ...(context?.accountId ? { 'X-Garimpo-Account': context.accountId } : {}) },
         ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
     } catch { throw new MobileError(0, {}, 'Não foi possível conectar. Confira sua conexão e tente novamente.'); }
     const value = response.status === 204 ? undefined : await response.json() as { message?: string; fieldErrors?: Record<string, string[]>; code?: string };
-    if (!response.ok) throw new MobileError(response.status, value?.fieldErrors ?? {}, value?.code === 'INVALID_ACCESS_LINK' ? 'Este código é inválido, expirou ou já foi usado. Solicite outro link.' : value?.message ?? 'Não foi possível concluir.');
+    if (!response.ok) throw new MobileError(response.status, value?.fieldErrors ?? {}, value?.code === 'INVALID_ACCESS_LINK' ? 'Este código é inválido, expirou ou já foi usado. Solicite outro link.' : value?.message ?? 'Não foi possível concluir.', value?.code ?? 'REQUEST_FAILED');
     return value as T;
   }
   private async keep(session: Session) {
@@ -55,14 +57,14 @@ export class MobileAccountClient {
     })().finally(() => { this.renewing = undefined; });
     return this.renewing;
   }
-  async request<T = Record<string, unknown>>(path: string, method = 'GET', body?: unknown, authenticated = true): Promise<T> {
+  async request<T = Record<string, unknown>>(path: string, method = 'GET', body?: unknown, authenticated = true, context?: CommandContext): Promise<T> {
     if (authenticated && this.ending) throw new MobileError(401, {}, 'Entre para continuar.');
     const sentAccess = this.access;
-    try { return await this.send<T>(path, method, body, authenticated ? sentAccess : ''); }
+    try { return await this.send<T>(path, method, body, authenticated ? sentAccess : '', context); }
     catch (cause) {
       if (!(cause instanceof MobileError) || cause.status !== 401 || !authenticated) throw cause;
       if (!this.access || this.access === sentAccess) await this.renew();
-      return this.send<T>(path, method, body, this.access);
+      return this.send<T>(path, method, body, this.access, context);
     }
   }
   async logout() {

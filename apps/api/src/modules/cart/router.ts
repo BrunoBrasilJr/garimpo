@@ -43,7 +43,7 @@ export function createCartRouter(options: CheckoutOptions = {}) {
     if (suppliedOrigin) { res.set('Access-Control-Allow-Origin', origin); res.set('Access-Control-Allow-Credentials', 'true'); res.vary('Origin'); }
     if (req.method === 'OPTIONS') {
       if (suppliedOrigin !== origin) throw new AccountError(403, 'ORIGIN_INVALID');
-      res.set('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS'); res.set('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-CSRF-Token,X-Garimpo-Client,Idempotency-Key'); res.sendStatus(204); return;
+      res.set('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS'); res.set('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-CSRF-Token,X-Garimpo-Client,Idempotency-Key,X-Garimpo-Account'); res.sendStatus(204); return;
     }
     if (req.get('x-garimpo-client') && !mobile(req)) throw new AccountError(422, 'INVALID_CLIENT');
     const values = cookies(req);
@@ -53,7 +53,9 @@ export function createCartRouter(options: CheckoutOptions = {}) {
       const proof = req.get('x-csrf-token') ?? ''; if (!proof || proof !== values.get('__Host-garimpo-csrf')) throw new AccountError(403, 'CSRF_INVALID');
       await service().csrf(access(req), proof);
     }
-    await service().authorize(service().db, access(req), true); next();
+    const { user } = await service().authorize(service().db, access(req), true), expected = req.get('x-garimpo-account');
+    if (expected && input.parse(input.id, expected) !== user.id) throw new CartError(403, 'ACCOUNT_CONTEXT_CHANGED', 'Sua conta mudou em outro acesso. Atualize a página ou entre novamente antes de alterar o carrinho.');
+    next();
   });
   router.use(express.json({ limit: '32kb', strict: true }));
   router.get('/me/cart', async (req, res) => { const value = input.parse(input.preview, req.query); res.json(await carts().read(access(req), value.couponCode)); });

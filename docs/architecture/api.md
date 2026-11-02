@@ -230,6 +230,14 @@ INSUFFICIENT_STOCK/COUPON_LIMIT_REACHED/PENDING_ORDER_LIMIT; 503
 PENDING_ORDERS_UNAVAILABLE. Quantidades/linhas/payload inválidos são 422.
 Frete/CEP/pedido/pagamento e endpoint RF-011.03 não são antecipados.
 
+Contexto de comando dos novos clientes (TASK-017): X-Garimpo-Account opcional
+deve ser o UUID da própria conta autenticada. Divergência retorna 403
+ACCOUNT_CONTEXT_CHANGED antes de interpretar o corpo. Não autentica nem concede
+papel/propriedade; apenas vincula a intenção anterior ao refresh/troca de conta.
+O carrinho envia esse contexto em leituras/mutações e preserva a mesma chave e
+corpo em repetição. Mescla local só é consumida após sucesso real; erro de rede
+retém intenção para replay, erro confirmado de revisão exige nova conferência.
+
 ## RF-011 Cotar e criar pedido
 
 **Atores:** Visitante para frete; cliente para pedido. **Pré-condição:** Checkout válido, e-mail confirmado e endereço atendido para pedido.

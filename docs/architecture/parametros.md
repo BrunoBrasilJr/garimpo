@@ -1,5 +1,34 @@
 # Parâmetros e decisões pendentes
 
+## Carrinho nos clientes — TASK-017, 2026-11-02
+
+Protocolo local schema 1 em garimpo.guestcart.v1 contém somente IDs de edição/
+oferta/entrada, unidades locais, revisão e intenções de mescla por cartId.
+Unidades locais recebem índices monotônicos para reconhecer quais já foram
+mescladas, preservando adições posteriores mesmo com respostas fora de ordem.
+Intenção mantém corpo/version/key originais; resposta perdida repete a mesma
+operação e somente confirmação do servidor consome as unidades correspondentes.
+Tags locais são marcadores não secretos de unicidade, nunca credenciais ou hold.
+Dados corrompidos/armazenamento indisponível geram erro e opção de limpeza
+explícita; não fingir persistência. Limites locais: 100 linhas/1000 unidades,
+até 20 intenções e 256KiB de JSON, parâmetros de recurso, sem atribuir ao PDF.
+
+Web usa localStorage e coordenação navigator.locks quando disponível; app usa
+AsyncStorage 2.2.0, versão indicada pelo Expo 57.0.31 bundledNativeModules e
+metadados do pacote conferidos no npm em 2026-11-02. Token/senha/e-mail não entram
+nesse armazenamento; SecureStore existente não é alterado. Administração continua
+somente web e conta interna não usa carrinho de compra.
+
+Comandos do novo carrinho enviam X-Garimpo-Account com o ID da conta que iniciou
+a ação e mantêm esse contexto/Idempotency-Key no refresh/retry. Guarda opcional
+do servidor nega divergência, sem conceder autoridade nem substituir token/CSRF.
+Isso protege troca de conta durante uma requisição pendente. Chamadas anteriores
+permanecem compatíveis; nenhuma chave HTTP/env habilita fixture de pedidos.
+
+Timer é um só por checkout, derivado de expiresAt e serverTime; é informativo,
+o servidor decide validade. Sem POST repetitivo para renovar prazo, reserva local,
+pagamento/frete/pedido antecipado ou alegação de execução nativa/leitor.
+
 ## Carrinho e reserva — TASK-016, 2026-11-02
 
 Sob delegação operacional já registrada: até 100 linhas e 1000 unidades por

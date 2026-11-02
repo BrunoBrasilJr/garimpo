@@ -14,8 +14,8 @@ import { AccessMessages } from '../../../apps/api/src/modules/messaging/service.
 import { consumeRegistration, deliverNext } from '../../../apps/api/src/modules/messaging/worker.ts';
 import { fixtureClock } from './clock.mjs';
 
-/** @param {{ realtime?: boolean, configureWeb?: (app: import('express').Express) => void, reviewPurchases?: import('../../../apps/api/src/modules/reviews/purchases.ts').ReviewPurchases }} [options] */
-export async function startHarness({ realtime = false, configureWeb, reviewPurchases } = {}) {
+/** @param {{ realtime?: boolean, configureWeb?: (app: import('express').Express) => void, reviewPurchases?: import('../../../apps/api/src/modules/reviews/purchases.ts').ReviewPurchases, pendingOrders?: import('../../../apps/api/src/modules/checkout/pending-orders.ts').PendingOrders }} [options] */
+export async function startHarness({ realtime = false, configureWeb, reviewPurchases, pendingOrders } = {}) {
   const started = Date.now();
   const stage = name => console.log(`UI fixture ${name}: ${Date.now() - started}ms`);
   const value = process.env.TEST_DATABASE_URL;
@@ -63,7 +63,7 @@ export async function startHarness({ realtime = false, configureWeb, reviewPurch
   const address = server.address(); if (!address || typeof address === 'string') throw new Error('TCP listener required.');
   const origin = `https://${publicHost}:${address.port}`;
   const config = { db, clock, webOrigin: origin };
-  web.use(createApp(config, { ...config, mode: 'local-test', encryptionKey, technicalSecret }, { ...config, mediaRoot: resolve(directory, 'public-products') }, { ...config, ...(reviewPurchases ? { purchases: reviewPurchases } : {}) }));
+  web.use(createApp(config, { ...config, mode: 'local-test', encryptionKey, technicalSecret }, { ...config, mediaRoot: resolve(directory, 'public-products') }, { ...config, ...(reviewPurchases ? { purchases: reviewPurchases } : {}) }, { ...config, ...(pendingOrders ? { pendingOrders } : {}) }));
   configureWeb?.(web);
   web.use((request, response, next) => {
     response.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; media-src 'self' https:; base-uri 'none'; frame-ancestors 'none'");

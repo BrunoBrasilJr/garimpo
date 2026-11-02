@@ -14,3 +14,5 @@ export type { PublicReview, PrivateReview, ReviewPage, PublicReviewPage, ReviewD
 export type { DiscountType, PricingTarget, NamedPricingTarget, DiscountView, PromotionView, CouponView, PricingPage, PricedUnit, PriceQuote } from './pricing/index.js';
 export type { CartLine, CartPricing, CartView, CartChange } from './cart/index.js';
 export type { CheckoutProduct, CheckoutSnapshot, CheckoutView } from './checkout/index.js';
+export { GuestCartStore, GuestDataError, decodeGuest, guestTag } from './cart/guest.js';
+export type { GuestLine, GuestMergeIntent, GuestCartState, GuestStorage, GuestExclusive } from './cart/guest.js';

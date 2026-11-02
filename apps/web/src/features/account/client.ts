@@ -25,18 +25,20 @@ async function renew(previous: string) {
   }
   return renewing;
 }
-export async function request<T = Record<string, unknown>>(path: string, method = 'GET', body?: unknown, authenticated = true, signal?: AbortSignal): Promise<T> {
+export interface CommandContext { idempotencyKey?: string; accountId?: string }
+export async function request<T = Record<string, unknown>>(path: string, method = 'GET', body?: unknown, authenticated = true, signal?: AbortSignal, context?: CommandContext): Promise<T> {
   if ((path === '/auth/login' || path === '/auth/logout') && navigator.locks) {
-    return navigator.locks.request('garimpo-session-renewal', () => perform<T>(path, method, body, authenticated, signal));
+    return navigator.locks.request('garimpo-session-renewal', () => perform<T>(path, method, body, authenticated, signal, context));
   }
-  return perform<T>(path, method, body, authenticated, signal);
+  return perform<T>(path, method, body, authenticated, signal, context);
 }
-async function perform<T>(path: string, method: string, body: unknown, authenticated: boolean, signal?: AbortSignal): Promise<T> {
+async function perform<T>(path: string, method: string, body: unknown, authenticated: boolean, signal?: AbortSignal, context?: CommandContext): Promise<T> {
   if (location.protocol !== 'https:') throw new ClientError(0, 'HTTPS_REQUIRED', 'Abra a conexão segura do Garimpo para acessar sua conta.');
   const proof = csrf();
   const execute = () => fetch('/api/v1' + path, { method, credentials: 'include', cache: 'no-store',
     ...(signal ? { signal } : {}), headers: { ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
-      ...(method !== 'GET' && csrf() ? { 'X-CSRF-Token': csrf() } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+      ...(method !== 'GET' && csrf() ? { 'X-CSRF-Token': csrf() } : {}),
+      ...(context?.idempotencyKey ? { 'Idempotency-Key': context.idempotencyKey } : {}), ...(context?.accountId ? { 'X-Garimpo-Account': context.accountId } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   let response: Response;
   try {
     response = await execute();
