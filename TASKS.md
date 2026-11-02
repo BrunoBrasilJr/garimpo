@@ -17,7 +17,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
-| 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | IN_PROGRESS |
+| 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | BLOCKED |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | BLOCKED |
@@ -1376,7 +1376,7 @@ Allowed Changes PASS, incluindo precisão PRIMARY registrada antes da edição; 
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -1446,6 +1446,37 @@ Não executada. Estado inicial preservado; a conciliação documental não é ex
 PRIMARY: busca/filtros combinados, paginação/URL, detalhe agrupando novos/usados, metadados desconhecidos explícitos, fotos e áudio opcional por faixa em apps/web/src/features/catalog/**; E2E com navegador/API/banco reais em tests/e2e/catalog-web/**; registro em TASKS. Incidental previsto: somente registro mínimo das rotas públicas e navegação em App.tsx/route.ts, sem modificar autenticação; comandos/configuração se estritamente necessários para rodar a suíte. Os nove critérios se aplicam; sem migrations/dependências/regras comerciais/backend novo, carrinho/reserva/desejos/avaliações permanecem nas tarefas correspondentes. Nenhum resultado de teste novo inferido antecipadamente.
 
 Precisão PRIMARY sob a delegação técnica explícita do responsável: tests/e2e/account/harness.mjs, exclusivamente a diretiva media-src do servidor isolado, deve permitir self e HTTPS para reproduzir o link externo já exigido por RN-026. O default-src self herdado impediria esse caso; habilitar a capacidade aprovada não altera scripts, autenticação, TLS, cookies ou API. Trata-se de configuração de segurança ligada à funcionalidade, portanto registrada como PRIMARY, não disfarçada de incidental. Não haverá proxy/upload de áudio pela aplicação. Teste com segundo servidor HTTPS de áudio sintético somente loopback, outro host/origem e certificado da CA isolada já confiada, seguido de falha real do recurso. Três E2E públicos e build/typecheck/lint já PASS em 3a9d68c; prova positiva de áudio externo ainda pendente, sem alegação de aceitação antecipada dessa precisão.
+
+#### TASK Execution Report
+
+TASK: TASK-010. Status: DONE (IN_PROGRESS → IN_REVIEW → DONE após revisão). Branch real: feature/TASK-010-catalogo-web. Commits reais: 3a9d68c, 87e3ae4, 00a33a4; fechamento documental posterior próprio. Base 764b94b.
+
+##### Primary Changes
+
+Classificação PRIMARY: TASKS.md; apps/web/src/features/catalog/{Catalog.tsx,Edition.tsx,Filters.tsx,api.ts,catalog.css}; tests/e2e/catalog-web/{catalog.spec.ts,seed.ts,audio.ts,playwright.config.ts,public-client.test.ts}; tests/e2e/account/harness.mjs somente a diretiva de mídia explicitada previamente. Catálogo acessível sem autenticação e sem encaminhar cookies nas leituras públicas; filtros combinados/paginados preservados na URL e no retorno do detalhe, década do ano da edição, valores em centavos exatos. Grupos de novos e usados individuais com preço/conservações/particularidades/fotos próprias, seleção local explícita sem reserva e esgotado não selecionável. Anos/país/gramatura/catálogo desconhecidos exibidos sem inventar valores. Áudio opcional por faixa com controle do navegador e falha isolada; aplicação não recebe/armazena áudio. Erros, carregamento, lista vazia, teclado/foco, fotos ampliáveis e texto a 200% em largura estreita. Revisão React: carregamento sob demanda, requisições independentes sem cascata, cancelamento de respostas antigas, dados derivados sem duplicação de estado e formulários rotulados.
+
+##### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/web/src/navigation/App.tsx | registro lazy público, link de exploração/entrada pela marca e texto mínimo de acesso | alcançar o recurso novo sem esperar autenticação; regras de login/equipe preservadas |
+| apps/web/src/navigation/route.ts | reconhecer catalog/edition e query pública opcional | navegação/retorno de filtros sem alterar tokens/rotas privadas existentes |
+
+Os dois arquivos satisfazem os nove critérios: necessários, diretamente causados, mínimos, sem função independente/regra nova/arquitetura/quebra de contrato ou comportamento de autenticação/proteção de dados, nem proibição. A configuração de mídia é PRIMARY declarado e não incidental. Sem dependências, backend, migrations ou APIs adicionais.
+
+##### Tests Executed
+
+Ambiente: clone nativo Ubuntu WSL2, Node 24.22.1/npm 11.19.1/PostgreSQL 17, Firefox real com CA isolada confiada e ignoreHTTPSErrors=false. 3a9d68c: npm run build, npm run typecheck e npm run lint PASS; playwright --config tests/e2e/catalog-web/playwright.config.ts, 3 E2E públicos PASS; npm run test:account-ui, 7 PASS; suíte tests/inventory/playwright.config.ts, 2 PASS. 87e3ae4: typecheck/lint PASS; caso de detalhe repetido com áudio HTTPS em outro host/origem e certificado confiado PASS: navegador reconheceu duração real de 1 segundo do WAV sintético servido somente pelo provedor de teste; depois 503 real do mesmo recurso exibiu erro sem impedir catálogo. Nenhum som audível/dispositivo físico inferido. Sete E2E de contas/equipe repetidos pelo ajuste da política de mídia, todos PASS. 00a33a4 acrescentou somente testes: tsc de testes/lint dirigido e npm test PASS, 68 unitários em 15 arquivos, incluindo centavos precisos e exclusão de tokens/parâmetros privados da URL enviada ao catálogo.
+
+Foram comprovados visitante e cliente, busca por artista exclusivo da faixa, filtros que não combinam preço de um usado com conservação de outro, década 1970 excluindo reedição 2025 e ano desconhecido mesmo com original 1975; publicação oculta, detalhe sem ID seguro, áudio ausente/falho, foto própria e usado esgotado desabilitado; cookies omitidos em consulta pública mesmo autenticado; paginação real de dados do banco, voltar/histórico, foco/teclado e ausência de rolagem horizontal a 390 px/200%. Todos os dados são sintéticos, preparados pelas APIs reais autorizadas; aplicação/base original não restauradas/resetadas. Provedor de áudio encerrado no finally. Inspeção visual do screenshot estreito realizada. Logs locais test-results/catalog-web/{first-verification,external-audio-check,unit-check}.log e public-narrow.png. Sem execução física de Android/iOS/TalkBack ou validação Chrome/Edge alegada.
+
+##### Quality Gates
+
+Build PASS; Lint PASS; Unit Tests PASS (68); Integration Tests PASS (composição navegador/API/PostgreSQL real; 70 integrações backend acumuladas válidas da TASK-009, sem alteração desses módulos nesta tarefa); API Tests PASS via E2E reais; Security PASS (HTTPS/CA, política de mídia explicitada, leitura pública sem cookie, fronteira de query/tokens, regressão de autenticação). Dependências/lockfile/patches inalterados: evidência de auditoria da TASK-009 permanece aplicável, bruta FAIL com 7 low de deepmerge e nenhuma moderate/high/critical, mitigação específica testada, sem alegação de auditoria limpa. Acceptance Criteria PASS; Regression Tests PASS (contas/equipe/estoque e unitários existentes). Gates 01–08 aplicáveis satisfeitos.
+
+##### Scope Validation e Definition of Done
+
+Allowed Changes PASS com precisão PRIMARY anterior à edição; Incidental Changes PASS (dois arquivos); Forbidden Changes PASS; Scope Creep NONE. IDs preservados, nenhuma compra/reserva/lista de desejos/avaliação antecipada. Definition of Done PASS. Total acumulado 150 casos distintos PASS = 68 unitários + 70 integrações + 12 E2E, sem duplicar repetições. Contagem 10/37 DONE. Next Eligible TASK: TASK-011, candidata com TASK-008 satisfeita; exige a própria DoR, sem saltar checkpoint. Continuidade explicitamente autorizada.
 
 ### TASK-011 Criar catálogo público no aplicativo
 
