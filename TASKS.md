@@ -2189,7 +2189,7 @@ Scope Validation: Allowed Changes PASS com precisões PRIMARY rastreáveis; Inci
 
 #### Status
 
-IN_PROGRESS
+IN_REVIEW
 
 #### Phase
 
