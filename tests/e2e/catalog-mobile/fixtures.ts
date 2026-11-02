@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test as base, expect } from '../account/fixtures';
 import { startHarness } from '../account/harness.mjs';
 
-export const test = base.extend<{}, { app: Awaited<ReturnType<typeof startHarness>> }>({
+export const test = base.extend<object, { app: Awaited<ReturnType<typeof startHarness>> }>({
   app: [async ({ browserName }, use) => {
     void browserName;
     const template = readFileSync(new URL('./preview.html', import.meta.url), 'utf8');
