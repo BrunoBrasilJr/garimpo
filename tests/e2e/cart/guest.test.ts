@@ -47,5 +47,6 @@ test('failed local persistence prevents a new unrepeatable intent and failed ack
 });
 test('corrupt unit lists and duplicated intents are rejected, and explicit reset recovers without inventing server state', async () => {
   const f = fixture(); await f.store.add(offer, edition, 1); const state = await f.store.read(); state.items[0]!.units = [0, 0]; f.corrupt(JSON.stringify(state)); await expect(f.store.read()).rejects.toBeInstanceOf(GuestDataError);
+  await f.store.reset(); await f.store.add(offer, edition, 1); const intent = await f.store.beginMerge(cartA, 1), duplicated = await f.store.read(); duplicated.pending.push(intent); f.corrupt(JSON.stringify(duplicated)); await expect(f.store.read()).rejects.toBeInstanceOf(GuestDataError);
   await f.store.reset(); const empty = await f.store.read(); expect(empty.items).toEqual([]); expect(empty.pending).toEqual([]); expect(empty.schema).toBe(1);
 });
