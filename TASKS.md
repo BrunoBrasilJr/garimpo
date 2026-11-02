@@ -24,7 +24,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | DONE |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | DONE |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | DONE |
-| 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | IN_REVIEW |
+| 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | DONE |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | BLOCKED |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | BLOCKED |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | BLOCKED |
@@ -2189,7 +2189,7 @@ Scope Validation: Allowed Changes PASS com precisões PRIMARY rastreáveis; Inci
 
 #### Status
 
-IN_REVIEW
+DONE
 
 #### Phase
 
@@ -2270,6 +2270,33 @@ Incidental previsto: exports/registro mínimos diretamente causados, sujeitos ao
 #### Validação em andamento — 2026-11-02
 
 Implementação e fixtures até 3f3597f: protocolo local versionado/mescla durável, interfaces web/native, contexto de conta restritivo e seis cenários de aceitação HTTPS com banco isolado. Nenhum resultado E2E aprovado antecipadamente. Primeira instalação limpa em 7dd5f67 passou, mas tipos falharam no wrapper genérico de navigator.locks; corrigido em 4e329ef. Gates em 66299c4 passaram com 103 unitários. O novo gate de prontidão após mescla revelou callback de acesso também anulável: f78f180 falhou typecheck, corrigido em 3f3597f. Histórico IN_PROGRESS → FAILED → IN_PROGRESS, sem remover testes/validações. Build, tipos, lint e 103 unitários novamente PASS em test-results/cart-ui/acceptance-check2.log; E2E, exportações e regressões finais ainda pendentes. Log da primeira tentativa preservado em acceptance-check.log. Nenhum DONE nem percentual adicional por implementação não validada.
+
+#### TASK Execution Report — 2026-11-02
+
+TASK: TASK-017. Status: DONE. Branch: feature/TASK-017-carrinho-interfaces. Commits reais: 9df58a1, 411b96a, 7dd5f67, 4e329ef, 61ebc23, 66299c4, 359049f, f78f180, 4654b58, 3f3597f, 7b8c118, e398d27, 601524a e 2037c04; fechamento neste registro. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE; falhas e correções preservadas acima, sem aprovação antecipada.
+
+Primary Changes: 40 arquivos PRIMARY. apps/web/src/features/cart/** e apps/mobile/src/features/cart/** entregam adição da oferta escolhida, carrinho visitante persistente, edição/remoção/limpeza, mescla avisada ao login, avisos de ajuste do servidor, cupom, confirmação vinculada à revisão de preços e reserva/retomada/encerramento do mesmo checkout. Timer único deriva de expiresAt/serverTime e não renova prazo. Protocolo compartilhado packages/contracts/src/cart/guest.ts conserva a intenção original antes do HTTP, repete chave/corpo após resposta perdida e confirma somente as unidades enviadas; novas adições e intenções de outra conta são preservadas. Corrupção/falha de armazenamento é visível, sem limpeza silenciosa. Sem credenciais nos dados de visitante.
+
+Demais PRIMARY, explicitamente delimitados antes da edição: navigation/App e route web, navigation/App mobile, Catalog/Edition públicos dos dois clientes (navegação, seleção e isolamento por conta); account/client dos dois clientes (contexto opcional preservado no refresh, abort e código de erro mobile); api/modules/cart/router.ts (guarda restritiva opcional X-Garimpo-Account antes do corpo e preflight); apps/mobile/package.json e package-lock.json (AsyncStorage 2.2.0 compatível com o SDK existente); docs/architecture/api.md e parametros.md (wire/protocolo); tests/e2e/account/harness.mjs (injeção explícita da porta por código de fixture); tests/e2e/cart/** (10 unitários novos, 7 E2E, preview e reprodução); TASKS.md (DoR, estados e evidência). Não alterar autenticação/papéis existentes, migrations, pedidos, frete ou pagamento.
+
+Incidental Changes:
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| packages/contracts/src/index.ts | Exportar somente o protocolo/tipos de visitante | Export necessário aos dois clientes, consequência direta do módulo novo; mudança mínima/aditiva, sem funcionalidade independente, regra de negócio, arquitetura, quebra de contrato, autoridade ou proteção de dados. Nenhuma proibição e orçamento limitado a este arquivo; nove critérios PASS. |
+
+Tests Executed: Ubuntu WSL/Node 24.22.1/npm 11.19.1/PostgreSQL 17, Firefox com CA isolada confiada, sem bypass TLS. Instalação limpa npm ci --no-audit --no-fund em clean-check.log PASS, patches reproduzíveis conferidos; primeiras falhas de tipos corrigidas. apps/mobile SDK 57.0.31 indica AsyncStorage 2.2.0 no próprio bundledNativeModules; metadados npm conferidos. Três diretórios novos de dependência também copiados da instalação nativa validada para node_modules ignorado do checkout Windows, após conferir versões do lock e ausência no destino; isso não é uma segunda instalação limpa.
+
+- test-results/cart-ui/acceptance-check2.log, código 3f3597f, exit 0: npm run build, typecheck, lint, npm test PASS (103 casos/22 arquivos), preview RNW e seis E2E reais PASS. Visitante persiste em reload; mescla ajusta 4 novos para saldo 3 e mantém usado único; reload não remescla. Preço alterado exige nova confirmação. Web e cliente bearer recuperam exatamente o mesmo id/expiresAt, incluindo expiração após avanço controlado. Resposta perdida depois do commit repete o corpo/chave e mantém quantidade 2, sem dobrar. Troca real de cookie/conta entre envio e retry retorna 403 ACCOUNT_CONTEXT_CHANGED e mantém nova conta vazia. Native compartilhado usa AsyncStorage web e confirmação explícita. Padrão real sem contagem de pendentes retorna 503 sem fingir reserva.
+- test-results/cart-ui/regression-check.log, código 7b8c118, exit 0: typecheck/lint PASS; sétimo E2E de troca de cupom/edição/limpeza PASS; npm run test:cart PASS, 22 integrações/API em schema novo task016_09f65997bd434cae854026dececaf0ee. Concorrência e processo real de expiração continuam aprovados, sem reset/drop/truncate.
+- Mesmo log: política npm run audit:toolchain PASS com hashes/classificação/regressões; npm audit bruto continua FAIL, exit 1, sete achados low de deepmerge e nenhum moderate/high/critical. Mitigação existente foi preservada, sem declarar auditoria limpa nem esconder aviso.
+- Mesmo log: exportações Android 621 módulos e iOS 623 módulos PASS; previews RNW/Vite de regressão PASS. 22 E2E herdados repetidos PASS: contas/equipe 7, catálogo/estoque administrativo 2, catálogo web 3, catálogo mobile 3, desejos/alertas 2, avaliações 3, descontos 2. Não houve falha nessa execução final.
+- Layout web 390px com fonte 200%, foco de teclado e ausência de rolagem horizontal PASS; imagens cart-narrow-enlarged.png e native-cart-narrow.png copiadas para test-results/cart-ui e inspecionadas. Native RNW teve viewport estreito; não alegar escala nativa, TalkBack, VoiceOver, SecureStore no aparelho ou teste Android/iOS físico. Exports não são APK/IPA.
+- git diff --check PASS. Verificador documental confirmou 37 IDs, 79 dependências, grafo acíclico e índice/seções coerentes; discrepância transitória de estado com CRLF corrigida em 601524a. Resultados finais não presumem pedidos reais: contagem KNOWN 0 existe somente nas seis fixtures configuradas, e o sétimo cenário independente comprova o padrão UNAVAILABLE. Adaptador de pedidos permanece 018/023; checkpoint de fase exige integração posterior.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests PASS (103); Integration Tests PASS (22 pertinentes, com evidências acumuladas das dependências); API Tests PASS; Security PASS no gate de política/mitigações e isolamento por conta, auditoria bruta FAIL explicitamente preservada; Acceptance Criteria PASS no incremento; Regression Tests PASS (22 E2E anteriores e APIs de carrinho). Execução física/leitor: NÃO EXECUTADA, sem alegação de aceite. Nenhum gate obrigatório do incremento pendente.
+
+Scope Validation: Allowed Changes PASS; Incidental Changes PASS (um arquivo export); Forbidden Changes PASS; Scope Creep NONE. Definition of Done PASS. 17/37 DONE; acumulado 259 casos distintos com evidências = 103 unitários + 127 integrações + 29 E2E. Next Eligible TASK: TASK-018 candidata, dependências 016/014 DONE, própria DoR e Scope Guard antes de iniciar. Autorização de continuidade até 28/37 permanece vigente. ZIP e dados originais preservados; nenhum novo túnel, implantação ou mensagem externa.
 
 ### TASK-018 Implementar frete, cotação e pedidos
 
