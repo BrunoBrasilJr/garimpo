@@ -18,7 +18,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
-| 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | IN_PROGRESS |
+| 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | BLOCKED |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | BLOCKED |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | BLOCKED |
@@ -1482,7 +1482,7 @@ Allowed Changes PASS com precisão PRIMARY anterior à edição; Incidental Chan
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -1554,6 +1554,44 @@ PRIMARY: apps/mobile/src/features/catalog/** e tests/e2e/catalog-mobile/**. Prec
 Instalação inicial: expo-audio 57.0.5 instalado no clone nativo; tentativa isolada de react-native-web encontrou ERESOLVE porque o resolvedor escolheu react-dom 19.3.1 incompatível com React 19.2.3 ratificado. IN_PROGRESS → FAILED → IN_PROGRESS após correção estrita no escopo: fixar o adaptador de teste com react-dom 19.2.3, já usado pela web, sem force/legacy-peer-deps/atualização do SDK. Instalados 20 pacotes adicionais ao total físico anterior (áudio e adaptador/transitivos), somente package.json mobile e lockfile modificados pelo npm. Arquivos copiados de volta à raiz canônica e diff conferido. Auditoria npm mantém 7 low conhecidos, sem novos achados relatados; bytes oficiais/mitigados conferidos pelo apply-toolchain-patch. Auditoria estrita e compatibilidade ainda serão executadas como gates. Log local test-results/catalog-mobile/dependency-install.log preserva a tentativa recusada.
 
 Validação intermediária: typecheck/lint/audit:toolchain PASS em 5052e97; bundle do mesmo módulo por Expo/Metro para adaptador web gerado (239 módulos), sem habilitar web como plataforma entregue. 84a3313: typecheck/lint e 72 unitários PASS. E2E identificou CSS bloqueado pela CSP do harness (cor preta em vez da cor nativa esperada), sem remover a asserção. IN_PROGRESS → FAILED → IN_PROGRESS para ajuste do ambiente. Precisão PRIMARY delegada antes da edição: tests/e2e/account/harness.mjs somente um configurador opcional de rotas de teste; tests/e2e/catalog-mobile configura exclusivamente a página de preview com nonce aleatório em estilos autorizados, sem unsafe-inline/relaxamento global. Servidor/CA/origem/API/autenticação permanecem reais e inalterados. O CSSStyleSheet do adaptador reutiliza o elemento react-native-stylesheet previamente autorizado; fonte instalada conferida. Sem inferir leitor/dispositivo real. Configuração npm da pasta principal também atualizada com preinstall/postinstall normais e bytes de patch conferidos; lockfile permanece igual ao commit canônico.
+
+#### TASK Execution Report
+
+TASK: TASK-011. Status: DONE (IN_PROGRESS → IN_REVIEW → DONE após correções e revisão final). Branch real: feature/TASK-011-catalogo-mobile. Base estável 49adf7c. Commits reais: d40d0c2, 5052e97, 84a3313, 9eff9ed, 1641827, 9f2461a, 1a1bd81, 220e2a0; fechamento documental posterior próprio. Retomada explicitamente solicitada pelo responsável em 2026-11-02, preservando a continuidade anteriormente autorizada.
+
+##### Primary Changes
+
+Classificação PRIMARY: TASKS.md; apps/mobile/src/features/catalog/{Catalog.tsx,Edition.tsx,Filters.tsx,Controls.tsx,Audio.tsx,client.ts,styles.ts}; apps/mobile/{package.json,app.json} e package-lock.json somente áudio/adaptador compatíveis e configuração declarada; tests/e2e/catalog-mobile/{catalog.spec.ts,client.test.ts,entry.tsx,fixtures.ts,playwright.config.ts,preview.html,check-native-config.mjs,README.md}; tests/e2e/account/harness.mjs somente o configurador opcional já explicitado antes da edição.
+
+Busca pública, filtros combinados por artista de edição/faixa, gênero, década da edição, preço, conservação e disponibilidade; paginação e retorno ao resultado preservados. Detalhe agrupa novos/usados individuais com preço, foto própria, particularidades e conservações separadas. Metadados ausentes continuam explícitos; seleção não reserva e esgotado não pode ser selecionado. Cliente HTTPS exato, sem cookies/tokens nas leituras públicas, parâmetros permitidos explícitos e caminhos de mídia pública restritos. Estados de carregamento/erro/lista vazia e cancelamento de respostas antigas. Componentes têm rótulos, papéis, estados acessíveis e allowFontScaling; opções pesquisáveis em modal, sem administração mobile. Prévia opcional por faixa usando expo-audio 57.0.5, controles explícitos, liberação ao desmontar, pausa ao sair do primeiro plano e falha isolada. SDK 57 mantido, microfone/gravação/background desabilitados.
+
+Revisão React aplicada: efeitos com limpeza, requisições independentes em paralelo, dados derivados sem estado duplicado, seleção por identificadores e player montado somente por ação explícita. Adaptador web é de teste, sem adicionar web às plataformas entregues. CSP com nonce aleatório somente no preview; sem unsafe-inline global, bypass de TLS ou mudança de autenticação.
+
+##### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/mobile/src/navigation/App.tsx | registro da tela pública catalog e link Explorar discos, com origem configurada | entrada mínima para alcançar o catálogo sem depender da restauração de sessão; fluxo de contas preservado |
+
+A alteração satisfaz os nove critérios: necessária, causal, mínima, sem função independente, regra de negócio, mudança arquitetural, quebra de contrato, alteração de autenticação/proteção de dados ou Forbidden Change. Dependências/permissões/CSP são PRIMARY previamente registrados, não incidentais.
+
+##### Tests Executed
+
+Ubuntu WSL2, Node 24.22.1/npm 11.19.1/PostgreSQL 17, clone nativo de validação com HEAD 1a1bd81 conferido. O commit posterior 220e2a0 acrescenta somente instruções reproduzíveis. npm ci com scripts normais PASS (828 pacotes instalados); guards de versão e hashes oficiais/mitigados executados. npm run build, npm run typecheck, npm run lint e npm test PASS: 73 unitários, 16 arquivos. npm run audit:toolchain PASS na política estrita vigente; auditoria bruta permanece FAIL/exit 1, sete low conhecidos de deepmerge, zero moderate/high/critical, sem novos achados ou alegação de auditoria limpa. Regressões de prototype pollution/assinaturas/schema/compatibilidade PASS.
+
+check-native-config.mjs PASS na configuração efetiva Android e iOS: SDK 57, sem microfone/serviço de áudio background/UIBackgroundModes audio. Expo export Android PASS (603 módulos), iOS PASS (605); bundles JavaScript/Hermes, não APK/IPA. Expo export:embed do preview compartilhado PASS (239 módulos). Playwright catalog-mobile 3/3 PASS, catalog-web 3/3 PASS, account 7/7 PASS e inventory 2/2 PASS. Firefox real com CA isolada confiada, ignoreHTTPSErrors=false; APIs, PostgreSQL e provedor HTTPS de áudio sintético reais. Semântica, filtros que devem corresponder à mesma oferta, décadas, vazio, usados esgotados, áudio carregado/falho, retorno/paginação e largura 390 px com ampliação simulada conferidos. Screenshot narrow-large-text.png inspecionado visualmente. Provedor e harness encerrados pelos testes; schemas de garimpo_test preservados, sem reset/drop/truncate da base original.
+
+Falhas intermediárias preservadas: transporte fetch sem receiver global no adaptador (corrigido com bind e regressão própria); tipo de fixture rejeitado pelo lint (corrigido sem relaxar regra); seletor ambíguo durante fechamento de modal (agora limitado ao diálogo correto e aguardando fechamento). Retomada inicial resume-check.log teve tipos/lint/73 unitários PASS, mas E2E falhou por PostgreSQL desligado após a pausa; cluster existente reconhecido e iniciado em loopback, sem recriar bases/senhas/dados. IN_PROGRESS → FAILED → IN_PROGRESS para cada correção/retomada; nenhuma execução falha contada como PASS. Reexecução completa posterior clean-validation.log terminou exit 0, todas as suítes acima PASS.
+
+Evidências locais: test-results/catalog-mobile/{dependency-install,first-check-02,component-check,component-check-02,component-check-03,resume-check,clean-validation}.log e narrow-large-text.png. Nenhum Android/iOS físico, fonte ampliada pelo sistema, TalkBack/VoiceOver ou som audível alegado; a recusa de TalkBack do responsável continua respeitada. Estas verificações nativas/humanas permanecem explícitas para aceitação integral TASK-033, sem substituir resultados pelos do adaptador. O suporte de semântica/ampliação está implementado e validado no recorte de componentes desta TASK.
+
+##### Quality Gates
+
+Build PASS (web/API/contratos, tipos e exports Android/iOS); Lint PASS; Unit Tests PASS (73); Integration Tests PASS (composição real componente/API/PostgreSQL, 70 integrações backend acumuladas da TASK-009 ainda aplicáveis, sem edição de backend/schema nesta TASK); API Tests PASS via composição E2E; Security PASS no escopo e política restrita vigente, auditoria bruta FAIL explicitada; Acceptance Criteria PASS no incremento de componentes, com limitações nativas acima; Regression Tests PASS (15 E2E e unitários). Sem regressão conhecida. Gates 01–08 aplicáveis satisfeitos.
+
+##### Scope Validation e Definition of Done
+
+Allowed Changes PASS com precisões PRIMARY registradas antes da edição; Incidental Changes PASS (único arquivo da tabela); Forbidden Changes PASS; Scope Creep NONE. Sem migrations/backend/administrador mobile/carrinho/reserva ou nova integração de produção; ZIP alheio preservado. Definition of Done PASS. Total acumulado 158 casos distintos PASS = 73 unitários + 70 integrações + 15 E2E, sem contar repetições. Contagem 11/37 DONE. Next Eligible TASK: TASK-012, candidata com dependências TASK-008/009/010/011 concluídas; permanece BLOCKED até sua própria DoR, contratos/Scope Guard/ADRs revalidados. Continuidade autorizada, sem saltar o checkpoint de fase.
 
 ### TASK-012 Implementar desejos e alertas de disponibilidade
 
