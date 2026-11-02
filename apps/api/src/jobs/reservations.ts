@@ -10,7 +10,7 @@ export async function expireReservations(db: Database, clock: Clock = systemCloc
   const candidates = await db.checkout.findMany({ where: { status: 'ACTIVE', expiresAt: { lte: clock.now() } }, orderBy: [{ expiresAt: 'asc' }, { id: 'asc' }], take: limit, select: { id: true, userId: true } });
   let closed = 0;
   for (const candidate of candidates) closed += await serializable(db, async tx => {
-    await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${candidate.userId}::uuid FOR UPDATE`;
+    await tx.$queryRaw`UPDATE "User" SET "updatedAt" = "updatedAt" WHERE id = ${candidate.userId}::uuid RETURNING id`;
     const row = await tx.checkout.findUniqueOrThrow({ where: { id: candidate.id }, include: checkoutInclude });
     if (row.status !== 'ACTIVE' || row.expiresAt > clock.now()) return 0;
     await lockOffers(tx, row.items.map(item => item.offerId)); await lockCoupons(tx, [row.couponUsage?.couponId]);

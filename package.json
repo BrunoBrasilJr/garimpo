@@ -29,6 +29,8 @@
     "test:engagement": "node tests/core/run-integration.mjs engagement",
     "test:reviews": "node tests/core/run-integration.mjs reviews",
     "test:pricing": "node tests/core/run-integration.mjs pricing",
+    "test:cart": "node tests/core/run-integration.mjs cart",
+    "reservations:expire": "node --experimental-strip-types apps/api/src/jobs/reservations-cli.ts",
     "test:account-ui": "playwright test --config tests/e2e/account/playwright.config.ts",
     "messages:work": "node --experimental-strip-types apps/api/src/modules/messaging/run-worker.ts",
     "bootstrap:admin": "node --experimental-strip-types scripts/bootstrap-admin.mjs",
@@ -38,7 +40,7 @@
     "test": "vitest run --config tests/vitest.config.ts",
     "bundle:android": "npm run bundle:android --workspace @garimpo/mobile",
     "audit:toolchain": "node tests/bootstrap/security/check-audit.mjs",
-    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run test:catalog && npm run test:inventory && npm run test:engagement && npm run test:reviews && npm run test:pricing && npm run audit:toolchain"
+    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run test:catalog && npm run test:inventory && npm run test:engagement && npm run test:reviews && npm run test:pricing && npm run test:cart && npm run audit:toolchain"
   },
   "overrides": {
     "node-forge": "1.4.2",

@@ -8,7 +8,9 @@ export const checkoutInclude = { items: { orderBy: { offerId: 'asc' } }, couponU
 export type CheckoutRecord = Prisma.CheckoutGetPayload<{ include: typeof checkoutInclude }>;
 export async function lockCustomer(accounts: Accounts, tx: Prisma.TransactionClient, access: string) {
   const first = await accounts.authorize(tx, access, true);
-  await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${first.user.id}::uuid FOR UPDATE`;
+  // Force a stale SERIALIZABLE waiter to retry before reading the unique checkout aggregate.
+  // Values (including the user's timestamp) stay unchanged; the tuple is our coordination point.
+  await tx.$queryRaw`UPDATE "User" SET "updatedAt" = "updatedAt" WHERE id = ${first.user.id}::uuid RETURNING id`;
   return (await accounts.authorize(tx, access, true)).user;
 }
 export async function lockCoupons(tx: Prisma.TransactionClient, ids: (string | undefined | null)[]) {

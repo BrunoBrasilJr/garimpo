@@ -20,6 +20,13 @@ reservar desconta reservas ACTIVE ainda válidas. Jobs e comandos liberam os
 mesmos registros uma vez. Cupom conta RESERVED ainda válido e CONSUMED; liberação
 não cria nova utilização. Pedido/consumo definitivo continuam 018/019.
 
+A coordenação da identidade faz uma escrita MVCC sem mudança de valor em
+User.updatedAt, antes de ler o agregado. Apenas SELECT FOR UPDATE não atualiza o
+snapshot SERIALIZABLE de quem já esperava: a escrita força reinício de uma
+transação com visão anterior, antes de disputar a chave única de checkout.
+Não modifica timestamp, credencial, papel ou dado do cliente; comandos e job
+usam a mesma ordem. Concorrência real deve comprovar a retomada correta.
+
 Porta de pedidos pendentes retorna KNOWN/count ou UNAVAILABLE; ausente nega
 nova reserva com 503, não assume zero. Apenas testes podem injetar cenário
 conhecido até o adaptador real de 018/023. Endereço próprio pode atualizar

@@ -9,7 +9,7 @@ import { activePromotions } from '../pricing/service.ts';
 import { promoted } from '../pricing/calculate.ts';
 import { lockOffers, reservedQuantities } from '../inventory/reservations.ts';
 import { activeCheckout, closeCheckout, expireOwn, lockCoupons, lockCustomer } from '../checkout/lifecycle.ts';
-import { cartInclude, captureQuote, physicalLines, json } from './quote.ts';
+import { cartInclude, captureQuote, physicalLines } from './quote.ts';
 import { CartError, missing, staleCart } from './errors.ts';
 import { quantities } from './rules.ts';
 
