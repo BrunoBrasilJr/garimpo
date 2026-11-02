@@ -21,7 +21,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | DONE |
-| 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | IN_PROGRESS |
+| 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | DONE |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | BLOCKED |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | BLOCKED |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | BLOCKED |
@@ -1858,7 +1858,7 @@ Allowed Changes PASS com precisões PRIMARY rastreáveis; Incidental Changes PAS
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -1937,6 +1937,42 @@ Incidental previsto: exports, comandos/runner de teste, relação de router/fixt
 Precisão PRIMARY do registro antes da edição: reutilizar catalog/router.ts, já responsável pela fronteira web da equipe e pelo módulo inventory, para incluir somente /admin/coupons e /admin/promotions, uma guarda ADMIN antes do parser e registro de pricing/router.ts. Assim preservam-se os mesmos HTTPS/origem/cookie/CSRF e a revalidação transacional própria; app.ts não precisa de alteração nem novo pool/router de autenticação duplicado. A expansão de caminhos/autoridade é PRIMARY explícita sob delegação, não incidental. OPERATOR é negado antes de interpretar o corpo desses endpoints, inclusive se inválido.
 
 Validação em andamento, sem DoD antecipada: IN_PROGRESS → FAILED no primeiro typecheck (TS2379, propriedade opcional active incompatível com exactOptionalPropertyTypes). Corrigido apenas o tipo de entrada de period(), sem desativar flags; FAILED → IN_PROGRESS, build/typecheck/lint PASS em 2543b33. Em 2c7179a: 88 unitários PASS, integração de descontos 11/12 PASS; FAILED por ausência de evidência de sobreposição no observador pg_stat_activity. O observador mantinha BEGIN para segurar a linha e precisava renovar o snapshot de estatísticas a cada consulta. Correção de teste 754165c adiciona pg_stat_clear_snapshot e exige dois application_name distintos ativos aguardando lock; não substitui concorrência por mock nem relaxa o resultado esperado. FAILED → IN_PROGRESS para repetir os gates relevantes. Logs locais ignorados first-check.log, second-check.log, integration-check.log e targeted.log em test-results/pricing; schemas garimpo_test retidos, base original intacta.
+
+#### TASK Execution Report — encerramento 2026-11-02
+
+TASK: TASK-014. Status: DONE. Branch real: feature/TASK-014-cupons-promocoes. Base 63d0dc9; commits edc056e, 956e7fe, c0cf1c9, 2543b33, 2c7179a, 1cbff33, 754165c, 3741884, 6f4dd97 e b0f8c69. Fechamento documental no log real, sem antecipar hash. Após correções e revisão: IN_PROGRESS → IN_REVIEW → DONE.
+
+Primary Changes:
+
+- Prisma schema e migration 202611020004_pricing: Coupon/CouponTarget/Promotion/PromotionOffer, alvos exclusivos, unicidade, FKs/indexes, checagens monetárias/período/limites/versão; relações inversas apenas pertinentes.
+- modules/pricing/**, contracts/src/pricing/**: configuração ADMIN, validação estrita, código normalizado/imutável, seleção por nomes, atualização versionada com lock, auditoria atômica e cálculo exato BigInt/rateio determinístico. Ledger explicitamente ausente até 016/018; nenhuma reserva, pedido ou consumo simulado no runtime.
+- catalog/{router,service,public-pricing}.ts: guarda ADMIN anterior ao parser nos caminhos novos e promoção efetiva em detalhe/filtros públicos, paginação SQL com valores vinculados e combinação na mesma oferta; preço-base administrativo preservado.
+- admin/pricing/{Pricing.tsx,Picker.tsx,pricing.css}: cadastros, filtros/paginação, edição, alvos humanos, permissões, erros e ampliação. Sem digitação de UUID, contador de uso fictício ou administração mobile.
+- docs/architecture/{parametros,api}.md, tests/pricing/** e este registro: contratos, decisões delegadas e testes de cálculo/API/SQL/concorrência/rollback/UI.
+
+Incidental Changes:
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| apps/web/src/navigation/App.tsx | Import lazy, link e composição ADMIN do painel | Registro mínimo da tela nova; autorização permanece revalidada no backend PRIMARY, sem nova política incidental |
+| apps/web/src/navigation/route.ts | Reconhecer pricing-admin | Necessário para alcançar a tela nova, sem alterar rotas existentes |
+| packages/contracts/src/index.ts | Exportar somente os novos tipos | Disponibilizar o contrato do próprio módulo, sem quebrar existentes |
+| package.json | Comando test:pricing e sua inclusão em verify | Tornar executável o gate específico; nenhuma dependência/lockfile alterados |
+| tests/core/run-integration.mjs | Seletor pricing e prefixo isolado task014 | Reutilizar runner/migrations/proteção garimpo_test sem modificar suites anteriores |
+
+Todos passam nos nove critérios: necessidade/causalidade direta, mínima extensão, sem funcionalidade independente, regra comercial, arquitetura, contrato incompatível ou mudança de proteção; nada em Forbidden Changes. Mudanças de autoridade/preço foram PRIMARY expressamente registradas antes da edição, não classificadas como incidentais.
+
+Tests Executed: checkout Linux nativo do mesmo Git, Node 24.22.1/npm 11.19.1/PostgreSQL 17, ambiente protegido, somente schemas novos em garimpo_test. Em 2c7179a: build/typecheck/lint e npm test PASS (88 casos, incluindo fonte Node strip-only e API compilada reais, hashes/assinaturas/protótipo/schema). Em 754165c: build/typecheck/lint PASS; test:pricing 12/12 e test:catalog 19/19 PASS. Nenhuma produção mudou depois disso; b0f8c69 só corrige sincronização do teste, tipos dos testes e lint também PASS.
+
+Em b0f8c69: UI pricing 2/2 PASS com Firefox/HTTPS confiável/API/DB reais; inventário 12/12, engagement 12/12, reviews 11/11 PASS; catálogo web 3/3, catálogo mobile compartilhado RNW 3/3, engagement 2/2 e reviews 3/3 PASS. UI prova edição/recarregamento, alvos por nomes, limites configurados, código preservado, cliente sem painel e promoção percentual/fixa sobreposta com preço público R$ 49,90 e filtros coerentes. RNW não é execução Android/iOS nem leitor de tela. Novos workflows limitados a 180s para preparo/caso e 10s por expectativa; limites anteriores preservados, sem alegar SLA. Captura pricing-narrow-enlarged.png inspecionada: 390px, texto 200%, foco visível, controles acessíveis e sem transbordamento externo; nomes longos quebram linha. TalkBack recusado, NÃO EXECUTADO; aceitação integral permanece TASK-033.
+
+Schemas retidos: task014_51715fc8d4ec418399a80f2cc291936d, task008_d2806a2573cc463795a481c449ffdc5e, task009_99777099d9b84f7bb19caf517ad4ceaa, task012_4dd36eb450c14b1290a07ee474e334f0 e task013_d062c47ad15547c4a9967b88367051d8. Logs locais ignorados: test-results/pricing/{integration-check,targeted,browser-retest,regression,mobile-preview-retest}.log. Credenciais, perfis, certificados e caixa de mensagens não publicados.
+
+Falhas preservadas além das anteriores: primeiro E2E pricing 1/2 PASS; navegação pública antecipava o término do logout e era sobrescrita pelo redirecionamento correto para login. Captura confirmou a tela; b0f8c69 aguarda o formulário de login antes de navegar, sem mudar runtime/timeout; repetição integral 2/2 PASS. Na regressão RNW, build web havia removido os três bundles de preview ignorados; uma falha, um timeout e terceiro caso interrompido pelo agente via SIGINT no próprio runner, evitando repetir a mesma preparação inválida. Diretório conferido sem bundles; regenerados com expo export:embed e repetidos os três casos mais engagement/reviews, todos PASS. Sem alteração do aplicativo, mock de API, bypass TLS ou teste removido. Estes erros de preparação não recebem PASS nem são apagados.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS pela política restrita/hash/regressões e negativas ADMIN/OPERATOR/CUSTOMER/CSRF/origem/HTTPS/mobile; npm audit bruto continua FAIL/exit 1, sete low deepmerge, zero moderate/high/critical, aviso preservado. Acceptance Criteria PASS no incremento, ledger futuro explicitamente separado; Regression Tests PASS nos módulos afetados. Sem nova dependência ou implantação/túnel público.
+
+Scope Validation: Allowed Changes PASS com precisões PRIMARY anteriores ao código; Incidental Changes PASS conforme tabela; Forbidden Changes PASS; Scope Creep NONE. Definition of Done PASS. Contagem 14/37 DONE. Acumulado 215 casos distintos aprovados = 88 unitários + 105 integrações + 22 E2E (inclui gates anteriores não afetados, sem contar repetições); checkpoint seguinte executará os gates acumulados da fase. Next Eligible TASK: TASK-015 candidata, dependências 009–014 DONE; própria DoR e escopo documental antes de iniciar. Continuidade autorizada até 28/37; ZIP alheio e base original preservados.
 
 ### TASK-015 Checkpoint PHASE-02
 
