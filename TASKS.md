@@ -23,7 +23,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | DONE |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | DONE |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | DONE |
-| 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | BLOCKED |
+| 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | IN_PROGRESS |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | BLOCKED |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | BLOCKED |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | BLOCKED |
@@ -2063,7 +2063,7 @@ Scope Validation: Allowed Changes PASS; Incidental Changes NONE; Forbidden Chang
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2134,6 +2134,18 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR
+
+2026-11-02, branch real feature/TASK-016-carrinho-reservas, base 0f2c5a1. Dependências 015/014 DONE com 215 casos/gates acumulados atuais PASS; checkpoint PHASE-02 concluído e enviado ao GitHub. ADR-003/004 ACCEPTED. AGENTS/conciliação, README/regras/pendências, índice/TASK/dependências/Scope Guard, ADRs/API/modelo/testes, contas/pricing/estoque/transações/idempotência e suítes relevantes relidos. DoR PASS; BLOCKED → READY → IN_PROGRESS. Continuidade até 28/37 autorizada, sem novas permissões rotineiras.
+
+PRIMARY nos módulos cart/checkout/inventory (reservas)/pricing (uso temporário)/jobs/reservations, schema somente Cart/CartItem/Checkout/CheckoutItem/Reservation/CouponUsage e relações inversas, contracts/src/{cart,checkout} e testes próprios. Precisões PRIMARY sob delegação antes da edição: docs/architecture/{api,parametros}.md somente wire/limites/coordenação deste incremento; app.ts somente composição explícita do novo router CUSTOMER e sua opção de porta; tests/catalog/http.ts somente opção de composição para testar endpoints reais. Mudança da fronteira de autorização é PRIMARY, não incidental. Não alterar autenticação existente, requisitos, pedidos, pagamentos ou clientes web/mobile nesta tarefa. Exports, comandos/runner de testes são incidentais mínimos sujeitos aos nove critérios.
+
+Decisões técnicas documentadas antes do código: SERIALIZABLE com três tentativas existentes, identidade do cliente primeiro e locks de edições/ofertas/cupom ordenados; carrinho versionado sem reserva, mescla idempotente soma novos até disponibilidade e sinaliza ajustes/indisponíveis, usados únicos. Prévia de preço com revisão criptográfica dos dados canônicos e confirmação explícita antes da reserva. Checkout único/imutável por 15 minutos, snapshots/alocação estáveis; retomada não prorroga. Alterar itens/cupom encerra reserva anterior; se nova validação comercial falha, liberação anterior deve permanecer concluída. Sem baixa de saldo físico na reserva. Expiração revalidada nos comandos e job persistente, mesmo com job atrasado. Cupom bloqueado na linha e contagem real de RESERVED não vencidos/CONSUMED, sem uso definitivo antes de 018.
+
+Porta PendingOrders nega com 503 quando não pode comprovar contagem, jamais assume zero; fixtures somente por injeção de código de testes, sem payload/env seletor. Adaptador real em 018/023, sem tabela Order antecipada. Vínculos do painel/alertas e disponibilidade comercial completa continuam 023; não substituir UNAVAILABLE por saldo livre fictício. Metadado de endereço próprio pode mudar sem tocar prazo/preços; cotação/frete e endpoint completo RF-011.03 ficam em 018. Recursos de operação sob delegação, não regras atribuídas ao PDF: até 100 linhas/1000 unidades por carrinho/comando e JSON 32KiB para limitar materialização de snapshots; valores unitários continuam Int32/centavos e somas exatas seguras em JSON. Limites podem ser revisitados com PD-007, sem afirmar SLA.
+
+Gates esperados: build/tipos/lint, validação/prazos/quantidades/hash, APIs HTTPS/CSRF/propriedade/web+bearer/papéis, banco real com concorrência forçada entre clientes diferentes por último usado/novo/cupom e mesmo cliente para checkout único, rollback conjunto e falha de auditoria, replay/idempotência e expiração por outro processo. Regressões afetadas e segurança restrita antes de DONE. Não criar UI/cobrança/frete/pedido ou afirmar execução humana/nativa.
 
 ### TASK-017 Criar carrinho e reserva nas interfaces
 

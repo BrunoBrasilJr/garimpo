@@ -1,5 +1,31 @@
 # Parâmetros e decisões pendentes
 
+## Carrinho e reserva — TASK-016, 2026-11-02
+
+Sob delegação operacional já registrada: até 100 linhas e 1000 unidades por
+carrinho/comando, JSON 32KiB, para limitar materialização de snapshots; não são
+regras do PDF nem metas de desempenho. Preços unitários são centavos Int32;
+somas e rateio exatos preservam números seguros de JavaScript. Identidades de
+unidade derivadas de linha/índice são estáveis e congeladas com o checkout.
+
+Revisão de preço é SHA-256 de dados canônicos do carrinho/preços/promoções/cupom,
+recalculada pelo servidor. Confirmar revisão não dispensa nova conferência de
+saldo, prazo, conta, limites e cupom dentro da transação. Idempotência usa chave
+do cliente e hash do payload por ator; repetir checkout recupera o mesmo recurso,
+sem prolongar a validade. Cart/Checkout têm versões independentes.
+
+Coordenação SERIALIZABLE existente: identidade do cliente, agregado e edições/
+ofertas ordenadas, depois cupom. Reserva não reduz físico; disponibilidade para
+reservar desconta reservas ACTIVE ainda válidas. Jobs e comandos liberam os
+mesmos registros uma vez. Cupom conta RESERVED ainda válido e CONSUMED; liberação
+não cria nova utilização. Pedido/consumo definitivo continuam 018/019.
+
+Porta de pedidos pendentes retorna KNOWN/count ou UNAVAILABLE; ausente nega
+nova reserva com 503, não assume zero. Apenas testes podem injetar cenário
+conhecido até o adaptador real de 018/023. Endereço próprio pode atualizar
+metadado/version sem alterar preços/prazo; frete não é cotado nesta tarefa.
+Contratos e semântica de snapshots permanecem ADR-003/004.
+
 ## Parâmetros de descontos — TASK-014, 2026-11-02
 
 Decisão técnica do agente sob a delegação explícita de execução contínua, sem
