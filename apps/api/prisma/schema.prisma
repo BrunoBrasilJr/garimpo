@@ -26,6 +26,7 @@ model Genre {
   name            String         @unique @db.VarChar(200)
   editions        EditionGenre[]
   principalOf     Edition[]
+  couponTargets   CouponTarget[]
 }
 
 model Label {
@@ -60,6 +61,7 @@ model Edition {
   wishes               WishlistEntry[]
   availabilityAlerts   AvailabilityAlert[]
   reviews              Review[]
+  couponTargets        CouponTarget[]
 
   @@index([labelId])
   @@index([primaryGenreId])
@@ -136,6 +138,8 @@ model Offer {
   updatedAt    DateTime        @updatedAt @db.Timestamptz(3)
   images       ProductImage[]
   movements    StockMovement[]
+  promotions   PromotionOffer[]
+  couponTargets CouponTarget[]
 
   @@index([editionId, kind, active])
   @@index([active, priceCents])
@@ -391,6 +395,72 @@ model AvailabilityAlert {
 enum ReviewVisibility {
   PUBLIC
   HIDDEN
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+model Promotion {
+  id String @id @default(uuid()) @db.Uuid
+  name String @db.VarChar(200)
+  type DiscountType
+  amount Int
+  startsAt DateTime @db.Timestamptz(3)
+  endsAt DateTime @db.Timestamptz(3)
+  active Boolean @default(true)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  offers PromotionOffer[]
+  @@index([active, startsAt, endsAt])
+}
+
+model PromotionOffer {
+  promotionId String @db.Uuid
+  promotion Promotion @relation(fields: [promotionId], references: [id], onDelete: Restrict)
+  offerId String @db.Uuid
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  @@id([promotionId, offerId])
+  @@index([offerId])
+}
+
+model Coupon {
+  id String @id @default(uuid()) @db.Uuid
+  code String @unique @db.VarChar(40)
+  type DiscountType
+  amount Int
+  minimumEligibleCents Int @default(0)
+  allowPromotional Boolean @default(false)
+  totalLimit Int?
+  perUserLimit Int?
+  startsAt DateTime @db.Timestamptz(3)
+  endsAt DateTime @db.Timestamptz(3)
+  active Boolean @default(true)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  targets CouponTarget[]
+  @@index([active, startsAt, endsAt])
+}
+
+model CouponTarget {
+  id String @id @default(uuid()) @db.Uuid
+  couponId String @db.Uuid
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Restrict)
+  offerId String? @db.Uuid
+  offer Offer? @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  editionId String? @db.Uuid
+  edition Edition? @relation(fields: [editionId], references: [id], onDelete: Restrict)
+  genreId String? @db.Uuid
+  genre Genre? @relation(fields: [genreId], references: [id], onDelete: Restrict)
+  @@unique([couponId, offerId])
+  @@unique([couponId, editionId])
+  @@unique([couponId, genreId])
+  @@index([offerId])
+  @@index([editionId])
+  @@index([genreId])
 }
 
 model Review {

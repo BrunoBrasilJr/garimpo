@@ -16,6 +16,7 @@ import { recordOpening } from '../inventory/ledger.ts';
 import { requireUnbound, unavailableCommercialBindings } from './lifecycle.ts';
 import type { CommercialBindings } from './lifecycle.ts';
 import { availability, availabilityReturned } from '../engagement/availability.ts';
+import { publicPricedCatalog, publicPricedEdition } from './public-pricing.ts';
 
 type Tx = Prisma.TransactionClient;
 const includeOffer = { images: { orderBy: [{ position: 'asc' }, { id: 'asc' }] } } satisfies Prisma.OfferInclude;
@@ -245,6 +246,10 @@ export class Catalog {
   }
 
   async detail(id: string, access?: string) {
+    if (access === undefined) return serializable(this.db, async tx => {
+      const edition = await tx.edition.findFirst({ where: { id, active: true }, include: editionInclude }); if (!edition) throw missing();
+      return publicPricedEdition(tx, edition, this.clock.now());
+    });
     if (access !== undefined) await this.staff(this.db, access);
     const edition = await this.db.edition.findFirst({ where: { id, ...(access === undefined ? { active: true } : {}) }, include: editionInclude });
     if (!edition) throw missing();
@@ -254,6 +259,7 @@ export class Catalog {
     const administrative = access !== undefined;
     if (!administrative && query.active !== undefined) throw new CatalogError(422, 'INVALID_INPUT', 'O filtro de inativos é administrativo.');
     return serializable(this.db, async tx => {
+      if (!administrative) return publicPricedCatalog(tx, query, this.clock.now());
       if (administrative) await this.staff(tx, access);
       const offer: Prisma.OfferWhereInput = { ...(administrative ? {} : { active: true }),
         ...(query.minPrice !== undefined || query.maxPrice !== undefined ? { priceCents: { ...(query.minPrice === undefined ? {} : { gte: query.minPrice }), ...(query.maxPrice === undefined ? {} : { lte: query.maxPrice }) } } : {}),
