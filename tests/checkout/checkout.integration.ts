@@ -145,3 +145,56 @@ test('audit failure rolls back order, charge, unit materialization, transfer, co
   expect((await f.carts.read(buyer.accessToken)).items).toHaveLength(1); expect(await f.db.idempotencyRecord.count({ where: { actorScope: buyer.user.id, operation: 'ORDER.CREATE', key: ready.key } })).toBe(0);
   expect((await f.orders.create(buyer.accessToken, ready.body, ready.key)).status).toBe('PENDING');
 });
+
+async function waiting(expected: number) {
+  for (let index = 0; index < 250; index++) {
+    await f.control.query('SELECT pg_stat_clear_snapshot()');
+    const result = await f.control.query("SELECT count(DISTINCT application_name)::int AS n FROM pg_stat_activity WHERE application_name IN ('TASK018_A','TASK018_B') AND state='active' AND wait_event_type='Lock'");
+    if (result.rows[0].n === expected) return true; await new Promise(resolve => setTimeout(resolve, 20));
+  } return false;
+}
+async function overlap<T, U>(table: 'User' | 'Offer' | 'FreightRate', id: string, one: () => Promise<T>, two: () => Promise<U>) {
+  await f.control.query('BEGIN'); await f.control.query(`SELECT id FROM "${table}" WHERE id=$1 FOR UPDATE`, [id]); const results = Promise.allSettled([one(), two()]); let observed = false;
+  try { observed = await waiting(2); } finally { await f.control.query('ROLLBACK'); }
+  const settled = await results; expect(observed, 'Both independent DB sessions must actually wait before release.').toBe(true); return settled;
+}
+
+test('two independent sessions replaying the same order key commit one order, charge, unit and receipt', async () => {
+  const ready = await f.ready(buyer), result = await overlap('User', buyer.user.id, () => f.orders.create(buyer.accessToken, ready.body, ready.key), () => f.secondOrders.create(buyer.accessToken, ready.body, ready.key));
+  expect(result.every(value => value.status === 'fulfilled')).toBe(true); const ids = result.map(value => value.status === 'fulfilled' ? value.value.id : 'failed'); expect(new Set(ids).size).toBe(1);
+  expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(1); expect(await f.db.paymentCharge.count({ where: { orderId: ids[0] } })).toBe(1); expect(await f.db.idempotencyRecord.count({ where: { actorScope: buyer.user.id, operation: 'ORDER.CREATE', key: ready.key } })).toBe(1);
+  expect(await f.db.auditLog.count({ where: { targetId: ids[0], action: 'ORDER.CREATED' } })).toBe(1); expect(await f.db.domainEvent.count({ where: { aggregateId: ids[0], type: 'ORDER.CREATED' } })).toBe(1);
+});
+
+test('reservation-to-order transfer never exposes the same unique used copy to another concurrent checkout', async () => {
+  const used = await f.offer('USED'), other = await f.customer(), preview = await f.draft(other, used.id), ready = await f.ready(buyer, { offer: used });
+  const second = new Checkouts(f.secondAccounts, orderPendingCount(f.clock));
+  const result = await overlap('Offer', used.id, () => f.orders.create(buyer.accessToken, ready.body, ready.key), () => second.reserve(other.accessToken, preview, randomUUID()));
+  expect(result[0]!.status).toBe('fulfilled'); expect(result[1]).toMatchObject({ status: 'rejected', reason: { code: 'INSUFFICIENT_STOCK' } });
+  expect((await f.db.offer.findUniqueOrThrow({ where: { id: used.id } })).stockOnHand).toBe(1); expect(await f.db.reservation.count({ where: { offerId: used.id, status: 'ACTIVE' } })).toBe(1);
+});
+
+test('concurrent overlapping postal ranges are rejected by the database rather than passing two independent prechecks', async () => {
+  const common = { served: true, amountCents: 1500, deliveryDays: 5 }, one = { ...common, region: 'Disputa sintética A', ranges: [{ startZip: '30000000', endZip: '30999999' }] }, two = { ...common, region: 'Disputa sintética B', ranges: [{ startZip: '30500000', endZip: '31500000' }] };
+  await f.control.query('BEGIN'); await f.control.query('LOCK TABLE "CepRange" IN SHARE MODE'); const results = Promise.allSettled([f.freight.create(f.admin.accessToken, one), f.secondFreight.create(f.admin.accessToken, two)]); let observed = false;
+  try { observed = await waiting(2); } finally { await f.control.query('ROLLBACK'); }
+  const settled = await results; expect(observed).toBe(true); expect(settled.filter(value => value.status === 'fulfilled')).toHaveLength(1); expect(settled.find(value => value.status === 'rejected')).toMatchObject({ reason: { status: 409, code: 'FREIGHT_RANGE_CONFLICT' } });
+});
+
+test('concurrent edits of the same freight version have one winner and one explicit version conflict', async () => {
+  const area = await f.rate(), result = await overlap('FreightRate', area.id, () => f.freight.update(f.admin.accessToken, area.id, { version: area.version, amountCents: 1600 }), () => f.secondFreight.update(f.admin.accessToken, area.id, { version: area.version, amountCents: 1700 }));
+  expect(result.filter(value => value.status === 'fulfilled')).toHaveLength(1); expect(result.find(value => value.status === 'rejected')).toMatchObject({ reason: { code: 'FREIGHT_VERSION_CONFLICT' } });
+  expect(await f.db.auditLog.count({ where: { targetId: area.id, action: 'FREIGHT.UPDATED' } })).toBe(1);
+});
+
+test('waiting for freight lock cannot authorize an order after the checkout deadline has passed', async () => {
+  const ready = await f.ready(buyer); await f.control.query('BEGIN'); await f.control.query('SELECT id FROM "FreightRate" WHERE id=$1 FOR UPDATE', [ready.rate.id]); const result = f.orders.create(buyer.accessToken, ready.body, ready.key).catch(cause => cause); let observed = false;
+  try { observed = await waiting(1); f.advance(Date.parse(ready.checkout.expiresAt) - f.clock.now().getTime()); } finally { await f.control.query('ROLLBACK'); }
+  expect(observed).toBe(true); expect(await result).toMatchObject({ code: 'CHECKOUT_EXPIRED' }); expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0); expect((await f.db.checkout.findUniqueOrThrow({ where: { id: ready.checkout.id } })).status).toBe('EXPIRED');
+});
+
+test('persisted blocked customer state is revalidated before any order or transfer is committed', async () => {
+  const ready = await f.ready(buyer); await f.db.user.update({ where: { id: buyer.user.id }, data: { blockedAt: f.clock.now() } });
+  await expect(f.orders.create(buyer.accessToken, ready.body, ready.key)).rejects.toMatchObject({ code: 'ACCOUNT_UNAVAILABLE' }); expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0); expect((await f.db.reservation.findFirstOrThrow({ where: { checkoutItem: { checkoutId: ready.checkout.id } } })).orderItemId).toBeNull();
+  // Administrative cancellation of existing holds belongs to TASK-022; no fake cancellation is asserted.
+});
