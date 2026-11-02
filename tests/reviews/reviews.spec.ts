@@ -16,11 +16,12 @@ test('web composer publishes and edits verified-purchase reviews while public re
   purchases.set({ userId: customer.user.id, editionId: data.main, orderId });
   await login(page, app.origin, customer.input.email, customer.input.password); await page.goto(preview(app.origin, data.main, orderId));
   const comment = '<img src=x onerror="window.__reviewUnsafe=true"> disco conforme anunciado';
+  const published = page.getByRole('article').filter({ has: page.getByRole('heading', { name: /^Titular · \d de 5$/ }) });
   const create = page.getByRole('form', { name: 'Avaliar esta compra', exact: true }); await create.getByLabel('Nota', { exact: true }).selectOption('5'); await create.getByLabel('Comentário', { exact: true }).fill(comment); await create.getByRole('button', { name: 'Publicar avaliação', exact: true }).click();
-  await expect(page.getByText(comment, { exact: true })).toBeVisible(); expect(await page.locator('img[src="x"]').count()).toBe(0);
+  await expect(published.getByText(comment, { exact: true })).toBeVisible(); expect(await page.locator('img[src="x"]').count()).toBe(0);
   expect(await page.evaluate(() => '__reviewUnsafe' in window)).toBe(false);
   const edit = page.getByRole('form', { name: 'Editar sua avaliação', exact: true }); await edit.getByLabel('Nota', { exact: true }).selectOption('4'); await edit.getByLabel('Comentário', { exact: true }).fill('Revisão pública imediata do cliente.'); await edit.getByRole('button', { name: 'Salvar avaliação', exact: true }).click();
-  await expect(page.getByText('Revisão pública imediata do cliente.', { exact: true })).toBeVisible();
+  await expect(published.getByText('Revisão pública imediata do cliente.', { exact: true })).toBeVisible();
   const publicRequest = page.waitForRequest(req => new URL(req.url()).pathname === '/api/v1/editions/' + data.main + '/reviews');
   await page.getByRole('button', { name: 'Atualizar avaliações', exact: true }).click(); expect(Boolean((await (await publicRequest).allHeaders()).cookie)).toBe(false);
   await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
