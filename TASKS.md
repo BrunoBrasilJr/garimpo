@@ -18,7 +18,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
-| 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | BLOCKED |
+| 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | IN_PROGRESS |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | BLOCKED |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | BLOCKED |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | BLOCKED |
@@ -1482,7 +1482,7 @@ Allowed Changes PASS com precisão PRIMARY anterior à edição; Incidental Chan
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -1544,6 +1544,12 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR
+
+2026-11-02, branch real feature/TASK-011-catalogo-mobile, base 49adf7c. TASK-008 DONE com API/contratos reais; regressões acumuladas válidas, inclusive catálogo web funcional e 150 casos PASS. ADR-001 ACCEPTED; Android/iOS preservados como alvos, sem exclusividade; PDs remanescentes não impedem este recorte. AGENTS/conciliação, README/pendências, TASKS/Scope Guard, ADR/API/testes e componentes/cliente mobile existentes relidos. DoR PASS; BLOCKED → READY → IN_PROGRESS. Continuidade autorizada sem novas permissões genéricas. Responsável recusou TalkBack; isso não dispensa rótulos/semântica/ampliação, nem autoriza alegar que um leitor/dispositivo foi testado.
+
+PRIMARY: apps/mobile/src/features/catalog/** e tests/e2e/catalog-mobile/**. Precisão técnica delegada PRIMARY antes da edição: apps/mobile/package.json e package-lock.json somente dependências estritamente necessárias de áudio compatível com Expo 57 e adaptador de teste dos componentes; apps/mobile/app.json somente plugin de reprodução com gravação/microfone/background desabilitados (não tratar permissões como incidental). expo/bundledNativeModules.json e documentação oficial SDK 57 indicam expo-audio ~57.0.5: fixar 57.0.5, sem atualizar SDK. Documentação https://docs.expo.dev/versions/v57.0.0/sdk/audio/ consultada; hooks cuidam do ciclo de vida do player, sem upload/arquivo de áudio na aplicação. Adaptador react-native-web 0.21.0 somente para validar componentes compartilhados no navegador, sem substituir evidência física nativa. Reavaliar necessidade/configuração mínima antes de instalar. Incidental previsto: registro de tela/link em navigation/App.tsx, comando/configuração estritamente necessários de testes/tipos. Sem migrations, administração mobile, regras de compra ou tarefa futura. Nenhum gate novo aprovado antecipadamente.
 
 ### TASK-012 Implementar desejos e alertas de disponibilidade
 
