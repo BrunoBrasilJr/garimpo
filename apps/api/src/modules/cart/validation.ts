@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CartError } from './errors.ts';
-export const id = z.string().uuid(), version = z.number().int().min(1).max(2147483647), quantity = z.number().int().min(1).max(1000);
+export const id = z.string().uuid().transform(value => value.toLowerCase()), version = z.number().int().min(1).max(2147483647), quantity = z.number().int().min(1).max(1000);
 export const couponCode = z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]{3,40}$/);
 export const preview = z.object({ couponCode: couponCode.optional() }).strict();
 export const add = z.object({ version, offerId: id, quantity }).strict();

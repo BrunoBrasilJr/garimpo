@@ -5,6 +5,7 @@ export async function reservedQuantities(tx: Prisma.TransactionClient, offerIds:
   return new Map(rows.map(row => [row.offerId, row._sum.quantity ?? 0]));
 }
 export async function lockOffers(tx: Prisma.TransactionClient, offerIds: string[]) {
+  offerIds = offerIds.map(id => id.toLowerCase());
   const rows = await tx.offer.findMany({ where: { id: { in: [...new Set(offerIds)] } }, select: { editionId: true } });
   for (const id of [...new Set(rows.map(row => row.editionId))].sort()) await tx.$queryRaw`SELECT id FROM "Edition" WHERE id = ${id}::uuid FOR UPDATE`;
   for (const id of [...new Set(offerIds)].sort()) await tx.$queryRaw`SELECT id FROM "Offer" WHERE id = ${id}::uuid FOR UPDATE`;

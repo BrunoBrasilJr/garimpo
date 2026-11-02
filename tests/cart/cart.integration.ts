@@ -36,7 +36,7 @@ const period = () => ({ startsAt: new Date(current - 86400000).toISOString(), en
 async function offer(kind: 'NEW' | 'USED' = 'NEW', stock = 5, priceCents = 10000) {
   const edition = await catalog.createEdition(admin.accessToken, { title: 'Reserva ' + randomUUID(), format: 'LP', artistIds: [artistId], genreIds: [genreId], primaryGenreId: genreId });
   await catalog.upload(admin.accessToken, 'edition', edition.id, png, 'image/png', 'Capa de teste'); await catalog.updateEdition(admin.accessToken, edition.id, { active: true });
-  let row = await catalog.createOffer(admin.accessToken, edition.id, kind === 'NEW' ? { kind, stockOnHand: stock, priceCents, active: true } : { kind, stockOnHand: stock, priceCents, discGrade: 'VG+', sleeveGrade: 'NM', active: false }, randomUUID());
+  let row = await catalog.createOffer(admin.accessToken, edition.id, kind === 'NEW' ? { kind, stockOnHand: stock, priceCents, active: true } : { kind, stockOnHand: stock, priceCents, discGrade: 'VG+', sleeveGrade: 'NM', particulars: 'Exemplar conferido individualmente', active: false }, randomUUID());
   if (kind === 'USED') { await catalog.upload(admin.accessToken, 'offer', row.id, png, 'image/png', 'Foto própria'); row = await catalog.updateOffer(admin.accessToken, row.id, { version: row.version, active: true }); }
   return { ...row, editionId: edition.id };
 }
@@ -45,7 +45,7 @@ async function preview(buyer: SessionBundle, couponCode?: string): Promise<Reser
   const cart = await carts.read(buyer.accessToken, couponCode); if (cart.pricing.status !== 'READY') throw new Error('Expected ready synthetic cart: ' + cart.pricing.code);
   return { version: cart.version, pricingRevision: cart.pricing.revision, ...(couponCode ? { couponCode } : {}) };
 }
-async function coupon(extra: { totalLimit?: number; perUserLimit?: number } = {}) {
+async function coupon(extra: { totalLimit?: number; perUserLimit?: number; amount?: number } = {}) {
   return pricing.createCoupon(admin.accessToken, { code: 'C' + randomUUID().replaceAll('-', '').slice(0, 16).toUpperCase(), type: 'FIXED', amount: 1000, allowPromotional: true, ...period(), ...extra });
 }
 beforeAll(async () => {
@@ -102,6 +102,36 @@ test('default runtime refuses checkout without the real pending-order adapter an
   expect((await closed.call('/checkouts', 'POST', { ...value, pendingCount: 0 }, headers)).status).toBe(422);
   pending.set(buyer.user.id, 3); await expect(checkout.reserve(buyer.accessToken, value, randomUUID())).rejects.toMatchObject({ code: 'PENDING_ORDER_LIMIT' });
   expect(await db.checkout.count({ where: { userId: buyer.user.id, status: 'ACTIVE' } })).toBe(0);
+});
+test('mobile POST reserves through real HTTPS, web GET resumes the same deadline and replay cannot duplicate holds', async () => {
+  const buyer = buyers[0]!, row = await offer(); await add(buyer, row.id); const body = await preview(buyer), headers = { 'X-Garimpo-Client': 'mobile', Authorization: 'Bearer ' + buyer.accessToken, 'Idempotency-Key': randomUUID() };
+  const made = await server.call<CheckoutView>('/checkouts', 'POST', body, headers), replay = await server.call<CheckoutView>('/checkouts', 'POST', body, headers);
+  expect(made.status).toBe(201); expect(replay.body.id).toBe(made.body.id); expect(made.cookie).toBe('');
+  const webResume = await server.call<CheckoutView>('/me/checkout', 'GET', undefined, credentials(buyer)); expect(webResume.body.id).toBe(made.body.id); expect(webResume.body.expiresAt).toBe(made.body.expiresAt); expect(Date.parse(made.body.expiresAt) - Date.parse(made.body.createdAt)).toBe(900000);
+  expect(await db.reservation.count({ where: { checkoutItem: { checkoutId: made.body.id } } })).toBe(1);
+  expect((await server.call('/me/checkout', 'GET', undefined, credentials(buyers[1]!))).status).toBe(404);
+});
+test('checkout freezes promotion/coupon configuration and exact per-unit allocation, without inventing shipping or consumed usage', async () => {
+  const buyer = buyers[0]!, row = await offer('NEW', 5, 101), discount = await coupon({ amount: 100 });
+  await pricing.createPromotion(admin.accessToken, { name: 'Metade de teste', type: 'PERCENT', amount: 5000, offerIds: [row.id], ...period() }); await add(buyer, row.id, 3);
+  const frozen = await checkout.reserve(buyer.accessToken, await preview(buyer, discount.code), randomUUID());
+  expect(frozen.quote.totalCents).toBe(53); expect(frozen.quote.units.reduce((sum, unit) => sum + unit.couponDiscountCents, 0)).toBe(100); expect(frozen.quote.units.reduce((sum, unit) => sum + unit.netPriceCents, 0)).toBe(53);
+  expect(frozen.products[0]!.unitIds).toEqual(frozen.quote.units.map(unit => unit.id)); expect(frozen.couponSnapshot).toMatchObject({ id: discount.id, amount: 100 }); expect(frozen.promotionSnapshots).toMatchObject([{ amount: 5000 }]);
+  expect((await db.couponUsage.findUniqueOrThrow({ where: { checkoutId: frozen.id } })).status).toBe('RESERVED');
+  await expect(db.checkout.update({ where: { id: frozen.id }, data: { quoteSnapshot: {} } })).rejects.toThrow();
+});
+test('real ledger counts consumed fixture history as well as current reservations for per-user and total coupon limits', async () => {
+  const discount = await coupon({ totalLimit: 2, perUserLimit: 1 }), row = await offer(); await add(buyers[0]!, row.id); const history = await checkout.reserve(buyers[0]!.accessToken, await preview(buyers[0]!, discount.code), randomUUID());
+  // Only fixture setup represents a future order's consumed state. No runtime order/payment producer exists in TASK-016.
+  await db.$transaction(async tx => {
+    await tx.couponUsage.update({ where: { checkoutId: history.id }, data: { status: 'CONSUMED' } });
+    await tx.reservation.updateMany({ where: { checkoutItem: { checkoutId: history.id } }, data: { status: 'CONSUMED', releasedAt: clock.now() } });
+    await tx.checkout.update({ where: { id: history.id }, data: { status: 'CONVERTED', closedAt: clock.now() } });
+  });
+  await expect(checkout.reserve(buyers[0]!.accessToken, await preview(buyers[0]!, discount.code), randomUUID())).rejects.toMatchObject({ code: 'COUPON_LIMIT_REACHED' });
+  await add(buyers[1]!, (await offer()).id); await checkout.reserve(buyers[1]!.accessToken, await preview(buyers[1]!, discount.code), randomUUID());
+  await add(buyers[2]!, (await offer()).id); await expect(checkout.reserve(buyers[2]!.accessToken, await preview(buyers[2]!, discount.code), randomUUID())).rejects.toMatchObject({ code: 'COUPON_LIMIT_REACHED' });
+  expect(await db.couponUsage.count({ where: { couponId: discount.id, status: { in: ['CONSUMED', 'RESERVED'] } } })).toBe(2);
 });
 test('price changes require explicit current confirmation; successful checkout freezes exact prices and metadata without physical movement', async () => {
   const buyer = buyers[0]!, row = await offer(), initialStock = row.stockOnHand; await add(buyer, row.id); const old = await preview(buyer);

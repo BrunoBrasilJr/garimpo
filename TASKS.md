@@ -2147,6 +2147,8 @@ Porta PendingOrders nega com 503 quando não pode comprovar contagem, jamais ass
 
 Gates esperados: build/tipos/lint, validação/prazos/quantidades/hash, APIs HTTPS/CSRF/propriedade/web+bearer/papéis, banco real com concorrência forçada entre clientes diferentes por último usado/novo/cupom e mesmo cliente para checkout único, rollback conjunto e falha de auditoria, replay/idempotência e expiração por outro processo. Regressões afetadas e segurança restrita antes de DONE. Não criar UI/cobrança/frete/pedido ou afirmar execução humana/nativa.
 
+Validação em andamento: fundação 131b94c build PASS. Em 0b45331 build/tipos PASS, lint FAIL por import json sem uso (IN_PROGRESS → FAILED); removido, FAILED → IN_PROGRESS. Em 58072c8 build/tipos/lint e 92 unitários PASS; integração 15/19 PASS, quatro casos com usado pararam corretamente na validação de publicação porque a fixture omitia particularidades obrigatórias (FAILED). Corrigir somente o dado sintético, sem relaxar regra/validação. Retorno à execução para nova rodada. Casos que já passaram incluem concorrência real por último novo/cupom, checkout único, expiração concorrente e CLI real em processo separado; ainda não declarar o gate inteiro aprovado. Logs locais first-check/source-check/integration-check em test-results/cart, schema task016_4807d6cc3ab44375a255b90f353157fa retido. Fixtures de contagem/estado consumido não equivalem a pedido ou pagamento implementado.
+
 ### TASK-017 Criar carrinho e reserva nas interfaces
 
 #### Status

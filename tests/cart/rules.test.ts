@@ -25,4 +25,5 @@ test('wire rejects extra authority/prices, missing price confirmation, invalid k
   expect(() => input.parse(input.add, { version: 1, offerId, quantity: 1, priceCents: 1, userId: offerId })).toThrow();
   expect(() => input.parse(input.key, 'ambiguous,key')).toThrow(); expect(() => input.parse(input.merge, { version: 1, items: Array.from({ length: 101 }, () => ({ offerId, quantity: 1 })) })).toThrow();
   expect(input.parse(input.preview, { couponCode: '  disco_10 ' })).toEqual({ couponCode: 'DISCO_10' });
+  expect(input.parse(input.id, offerId.toUpperCase())).toBe(offerId);
 });
