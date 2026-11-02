@@ -24,7 +24,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | DONE |
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | DONE |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | DONE |
-| 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | BLOCKED |
+| 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | IN_PROGRESS |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | BLOCKED |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | BLOCKED |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | BLOCKED |
@@ -2189,7 +2189,7 @@ Scope Validation: Allowed Changes PASS com precisões PRIMARY rastreáveis; Inci
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2252,6 +2252,20 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR
+
+2026-11-02, branch real feature/TASK-017-carrinho-interfaces, base dc049bb enviada ao GitHub. TASK-016 DONE com API/contratos reais, 242 casos acumulados válidos e regressões pertinentes PASS; checkpoint 015 DONE. ADR-001/003 ACCEPTED. AGENTS/conciliação, README/regras/pendências, TASK/dependências/Scope Guard, ADR/API/testes, navegação/clientes/catálogos/armazenamento e testes existentes relidos. DoR PASS; BLOCKED → READY → IN_PROGRESS. Continuidade até 28/37 e decisões técnicas rotineiras delegadas, sem nova permissão genérica.
+
+PRIMARY: features/cart web/mobile e tests/e2e/cart. Precisões PRIMARY antes da edição sob delegação: navigation/{App,route} web e navigation/App mobile somente composição, isolamento por conta, navegação e mescla; catálogo {Catalog,Edition} nos dois clientes somente callback/controle para adicionar a oferta selecionada; packages/contracts/src/cart/guest.ts somente protocolo local de dados/mescla compartilhado, sem cálculo comercial/autorização; docs/architecture/{api,parametros}.md somente estes parâmetros/wire. A regra continua no servidor, inclusive saldo/prazo/cupom/limite de pedidos. Sem pedido/frete/pagamento/migration ou estoque otimista.
+
+Persistência local guarda apenas IDs de oferta/edição/entrada, quantidades, revisão e intenções de mescla vinculadas ao cartId; sem senha/token/e-mail. Intenção de mescla persiste corpo/revisão/chave originais para repetir após resposta perdida sem dobrar quantidades. Sucesso consome somente entradas/quantidades daquele snapshot, preservando adições locais posteriores; erro de revisão confirmado exige atualização e nova confirmação, não repetição automática. Mescla é oferecida/avisada ao cliente e mostra ajustes reais. Conta interna não adiciona/mescla. Timer único usa expiresAt/serverTime, nunca item/local hold; retorno da API é autoridade. Frete/pedido/pagamento continuam 018–020 e porta de pendentes default 503 permanece visível, sem fixture no produto.
+
+Necessidades de integração PRIMARY precisas, não incidentais: account/client web/mobile somente contexto opcional de comando (Idempotency-Key, X-Garimpo-Account e sinal de cancelamento) preservado na repetição/refresh, e código de erro mobile para distinguir revisão de resposta perdida, sem alterar credenciais/renovação existentes. api/modules/cart/router.ts somente guarda opcional X-Garimpo-Account que nega divergência da identidade autenticada antes do corpo, mais seu preflight; cabeçalho só restringe e nunca concede autoridade. Isso impede uma operação pendente de visitante/conta atingir outra conta após troca de cookie/token durante retry. Compatibilidade de chamadas anteriores preservada; novos clientes de carrinho sempre vinculam a conta esperada. Teste real deve pausar requisição, trocar conta e provar ausência de alteração na nova conta.
+
+apps/mobile/package.json e package-lock.json PRIMARY somente @react-native-async-storage/async-storage 2.2.0, versão exata indicada pelo bundledNativeModules.json do Expo 57.0.31 já instalado, para dados não secretos do visitante; SecureStore de sessão permanece intacto. Confirmar metadados do pacote/instalação, hashes/auditoria/builds Android/iOS antes de aceite. tests/e2e/account/harness.mjs PRIMARY apenas opção de injeção PendingOrders por código de teste, default inalterado e sem seletor HTTP/env. Fixtures conhecidas não comprovam pedidos reais. Não abrir túnel nem ampliar relay público nesta tarefa.
+
+Incidental previsto: exports/registro mínimos diretamente causados, sujeitos aos nove critérios. Gates: tipos/build/lint/unitários do protocolo e contexto, banco/API existente, E2E real Firefox+RNW para visitante/mescla/retry/preços/checkout retomado/prazo/conflitos/conta trocada, layout/teclado/texto e exports Android/iOS. TalkBack e dispositivo real não executados/alegados. Dependência nova exige validar instalação e política de segurança, sem ocultar auditoria bruta.
 
 ### TASK-018 Implementar frete, cotação e pedidos
 
