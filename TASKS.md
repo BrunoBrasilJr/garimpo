@@ -22,7 +22,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | DONE |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | DONE |
-| 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | IN_PROGRESS |
+| 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | DONE |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | BLOCKED |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | BLOCKED |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | BLOCKED |
@@ -1978,7 +1978,7 @@ Scope Validation: Allowed Changes PASS com precisões PRIMARY anteriores ao cód
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -2048,6 +2048,16 @@ Não executada. Estado inicial preservado; a conciliação documental não é ex
 2026-11-02, branch real chore/TASK-015-checkpoint-phase02, base 2243748 já enviada ao GitHub. Dependências 009–014 DONE, artefatos e gates válidos; ADR-001/004/006 ACCEPTED, PD-006 resolvida, sem PD impeditiva deste checkpoint. AGENTS/conciliação → README/requisitos/pendências → índice/TASK/dependências/Scope Guard → ADRs/API/testes → módulos/portas → testes existentes relidos. DoR PASS; BLOCKED → READY → IN_PROGRESS. Continuidade até 28/37 explicitamente autorizada; etapa documental antiga não reverte a autorização de desenvolvimento de 25/10 e sua renovação.
 
 PRIMARY estritamente docs/validation/phase-02.md e este trecho/índice de TASKS.md; NO_INCIDENTAL_CHANGES. Nenhum código, teste, configuração de produção, dependência ou migration será alterado no checkpoint. Gates acumulados serão executados novamente, inclusive build/tipos/lint/unitários/integrações/segurança/E2E e exports das duas plataformas; não declarar N/A para o software já implementado. Compra/reservas/retenção/backup não certificadas antecipadamente; porta de elegibilidade default nega compra não verificável e só fixtures de teste injetam compras. RNW é prévia compartilhada, não teste humano/nativo/leitor de tela; recusa de TalkBack preservada e aceite integral em 033. PD-004/007/008/009 permanecem abertas para trechos futuros.
+
+#### TASK Execution Report — encerramento 2026-11-02
+
+TASK: TASK-015. Status: DONE. Branch real chore/TASK-015-checkpoint-phase02; base 2243748, commit f966775; fechamento documental no Git real. IN_PROGRESS → IN_REVIEW → DONE após revisão dos gates e escopo. PRIMARY: docs/validation/phase-02.md e somente estado/evidência/índice desta TASK em TASKS.md. Incidental Changes: NONE. NO_INCIDENTAL_CHANGES respeitada; nenhum código, teste, configuração, dependência ou migration alterado.
+
+Tests Executed: npm run verify completo, Vite preview de reviews, Expo export Android/iOS e três entradas RNW, sete suítes Playwright acumuladas (account/equipe, inventory, catalog-web, catalog-mobile, engagement, reviews, pricing). Ambiente Linux nativo do mesmo Git, Node 24.22.1/npm 11.19.1/PostgreSQL 17, revisão f966775 com código idêntico a 2243748; script/log locais test-results/phase-02/checkpoint.{sh,log}, exit 0, checkout de validação limpo ao fim. Todos os 215 casos distintos PASS: 88 unitários + 105 integrações + 22 E2E. Exportações PASS Android 605 módulos/iOS 607. Schemas isolados, comandos, cobertura e limites completos em docs/validation/phase-02.md; nenhuma tentativa falha nesta rodada. ZIP/dados originais preservados, sem túnel público.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS na política restrita/hash/regressões e negativas, npm audit bruto permanece FAIL/exit 1 com sete low deepmerge e zero moderate/high/critical; Acceptance Criteria PASS no recorte com integrações futuras negadas explicitamente; Regression Tests PASS. RNW/export não comprovam dispositivo/escala nativa/leitor; TalkBack NÃO EXECUTADO por recusa, aceitação integral em 033. Sem aprovação acadêmica, metas de desempenho, retenção ou restauração presumidas.
+
+Scope Validation: Allowed Changes PASS; Incidental Changes NONE; Forbidden Changes PASS; Scope Creep NONE. Definition of Done PASS. 15/37 DONE, checkpoint PHASE-02 concluído. Next Eligible TASK: TASK-016 candidata com dependências 015/014 satisfeitas, sujeita a sua própria DoR/contratos/guardas antes da promoção. Continuidade autorizada até pelo menos 28/37; não antecipar PHASE-04 antes de 024.
 
 ### TASK-016 Implementar carrinho e reserva única de checkout
 
