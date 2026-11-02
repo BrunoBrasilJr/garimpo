@@ -21,7 +21,7 @@ export function StockAlerts({ revision, select }: { revision: number; select: (i
     </>}
   </section>;
 }
-export function Stock({ editionId, revision, changed }: { editionId: string; revision: number; changed: () => void }) {
+export function Stock({ editionId, offerIds, revision, changed }: { editionId: string; offerIds: string[]; revision: number; changed: () => void }) {
   const [data, setData] = useState<StockPage>(), [error, setError] = useState('');
   useEffect(() => {
     const controller = new AbortController();
@@ -30,6 +30,7 @@ export function Stock({ editionId, revision, changed }: { editionId: string; rev
     return () => controller.abort();
   }, [editionId, revision]);
   const row = data?.items[0];
+  const offersById = new Map(row?.offers.map(offer => [offer.id, offer]) ?? []);
   return <section className="catalog-section"><h2>Estoque e movimentações</h2>{error ? <p role="alert">{error}</p> : null}
     {!row ? <p role="status">Carregando estoque…</p> : <>
       <p>Novos: {row.newPhysical} físicos, {quantity(row.newAvailable)} disponíveis. Usados: {row.usedPhysical} físicos, {quantity(row.usedAvailable)} disponíveis.</p>
@@ -39,7 +40,7 @@ export function Stock({ editionId, revision, changed }: { editionId: string; rev
         await catalogRequest('/admin/editions/' + editionId + '/low-stock', 'PATCH', { lowStockNewThreshold: Number(value(data, 'threshold')) }); changed();
       }}><Input label="Avisar quando disponível for menor ou igual a" name="threshold" type="number" min={0} max={2147483647} step={1} required defaultValue={row.lowStockNewThreshold} /></ActionForm>
       <p>Os avisos ficam neste painel.</p>
-      {row.offers.map((offer, index) => <div key={offer.id} className="catalog-subcard"><h3>{offer.kind === 'NEW' ? 'Novos' : 'Usado'} · oferta {index + 1}</h3>
+      {offerIds.map((id, index) => { const offer = offersById.get(id); return offer ? <div key={offer.id} className="catalog-subcard"><h3>{offer.kind === 'NEW' ? 'Novos' : 'Usado'} · oferta {index + 1}</h3>
         <p>Físico: {offer.stockOnHand} · reservado: {quantity(offer.reservedQuantity)} · disponível: {quantity(offer.availableQuantity)}</p>
         <Adjustment id={offer.id} changed={changed} />
         <h4>Últimas movimentações ({offer.movements.length} de {offer.movementCount})</h4>
@@ -47,7 +48,7 @@ export function Stock({ editionId, revision, changed }: { editionId: string; rev
           <strong>{item.deltaOnHand > 0 ? '+' : ''}{item.deltaOnHand}</strong> · {item.balanceBefore} → {item.balanceAfter} · {item.reason}<br />
           {item.actorName ?? 'Consolidação inicial'} · {new Date(item.createdAt).toLocaleString('pt-BR')}
         </li>)}</ol>}
-      </div>)}
+      </div> : null; })}
     </>}
   </section>;
 }

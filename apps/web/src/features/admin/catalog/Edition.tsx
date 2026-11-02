@@ -53,7 +53,7 @@ export function EditionEditor({ edition, metadata, changed, revision }: { editio
       await catalogRequest(`/admin/editions/${edition.id}/offers`, 'POST', body, commandKey(key, body)); key.current = null; changed();
     }}><Input label="Preço em reais" name="price" required inputMode="decimal" placeholder="129,90" /><Input key={kind} label="Quantidade física inicial" name="stock" type="number" step={1} min={0} max={kind === 'USED' ? 1 : 2147483647} required defaultValue={kind === 'USED' ? 1 : 0} />{kind === 'USED' ? <Condition /> : null}</ActionForm>
     {edition.offers.map((offer, index) => <Offer key={offer.id} offer={offer} index={index + 1} changed={changed} />)}
-    <Stock editionId={edition.id} revision={revision} changed={changed} />
+    <Stock editionId={edition.id} offerIds={edition.offers.map(offer => offer.id)} revision={revision} changed={changed} />
   </>;
 }
 function Condition({ offer }: { offer?: CatalogOffer }) {
@@ -62,8 +62,8 @@ function Condition({ offer }: { offer?: CatalogOffer }) {
     <Input label="Particularidades do exemplar" name="particulars" maxLength={4000} defaultValue={offer?.particulars ?? ''} required /></>;
 }
 function Offer({ offer, index, changed }: { offer: CatalogOffer; index: number; changed: () => void }) {
-  return <section className="catalog-subcard"><h3>Oferta {index} · {offer.kind === 'NEW' ? 'Novos' : 'Usado'} · {money(offer.priceCents)} · {offer.active ? 'Ativa' : 'Inativa'}</h3>
-    <ActionForm title={`Editar oferta ${index}`} submit="Salvar oferta" onSubmit={async data => {
+  return <section className="catalog-subcard" aria-label={`Oferta ${index}`}><h3>Oferta {index} · {offer.kind === 'NEW' ? 'Novos' : 'Usado'} · {money(offer.priceCents)} · {offer.active ? 'Ativa' : 'Inativa'}</h3>
+    <ActionForm key={offer.version} title={`Editar oferta ${index}`} submit="Salvar oferta" onSubmit={async data => {
       await catalogRequest('/admin/offers/' + offer.id, 'PATCH', { version: offer.version, priceCents: cents(value(data, 'price')), ...(offer.kind === 'USED' ? { discGrade: value(data, 'discGrade'), sleeveGrade: value(data, 'sleeveGrade'), particulars: optional(data, 'particulars') } : {}) }); changed();
     }}><Input label="Preço em reais" name="price" required inputMode="decimal" defaultValue={(offer.priceCents / 100).toFixed(2).replace('.', ',')} />{offer.kind === 'USED' ? <Condition offer={offer} /> : null}</ActionForm>
     {offer.kind === 'USED' ? <Photos owner="offers" id={offer.id} images={offer.images} changed={changed} /> : null}

@@ -97,6 +97,8 @@ test('adjustments atomically keep ledger, audit, event and quantity, with idempo
   expect(await db.auditLog.count({ where: { targetId: item.id, action: 'INVENTORY.ADJUSTED' } })).toBe(1);
   expect(await db.domainEvent.count({ where: { aggregateId: item.id, type: 'INVENTORY.STOCK_CHANGED' } })).toBe(2);
   expect((await adjust(item.id, -5)).body.stockOnHand).toBe(0);
+  expect((await server.call('/admin/offers/' + item.id, 'DELETE', undefined, headers())).status).toBe(409);
+  expect(await db.stockMovement.count({ where: { offerId: item.id } })).toBe(3);
 });
 test('reserved and committed quantities prevent destructive reductions without leaving any effect', async () => {
   const row = await edition(), item = await offer(row.id);
