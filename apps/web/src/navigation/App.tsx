@@ -8,6 +8,7 @@ import { readRoute } from './route';
 import '../features/account/account.css';
 const CatalogAdmin = lazy(() => import('../features/admin/catalog/Catalog'));
 const PublicCatalog = lazy(() => import('../features/catalog/Catalog'));
+const Saved = lazy(() => import('../features/engagement/Engagement'));
 
 export default function App() {
   const [route, setRoute] = useState(() => readRoute(location.hash)), [user, setUser] = useState<AccountView | null>(null), [loading, setLoading] = useState(true), [notice, setNotice] = useState('');
@@ -32,7 +33,7 @@ export default function App() {
     try { await request('/auth/logout', 'POST', {}, false); setNotice('Você saiu da sua conta.'); setUser(null); navigate('login'); }
     catch (cause) { setNotice(readableError(cause)); }
   }
-  const accountRoute = route.name === 'profile' || route.name === 'staff' || route.name === 'catalog-admin';
+  const accountRoute = route.name === 'profile' || route.name === 'staff' || route.name === 'catalog-admin' || route.name === 'saved';
   const publicRoute = route.name === 'catalog' || route.name === 'edition';
   return <div className="account-site">
     <a className="account-skip" href="#account-main" onClick={event => { event.preventDefault(); document.getElementById('account-main')?.focus(); }}>Pular para o conteúdo</a>
@@ -45,7 +46,8 @@ export default function App() {
         {publicRoute ? <Suspense fallback={<p role="status">Carregando catálogo…</p>}><PublicCatalog mode={route.name === 'edition' ? 'edition' : 'catalog'} query={route.query ?? ''} /></Suspense> : loading ? <section className="account-card" role="status">Preparando seu acesso…</section> :
           route.name === 'catalog-admin' && user ? user.context === 'STAFF' ? <Suspense fallback={<p role="status">Carregando catálogo…</p>}><CatalogAdmin /></Suspense> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente a equipe pode administrar o catálogo.</p></section> :
           route.name === 'staff' && user ? user.context === 'STAFF' && user.role === 'ADMIN' ? <Staff user={user} onUser={setUser} notify={setNotice} /> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente administradores podem gerenciar a equipe.</p></section> :
-          route.name === 'profile' && user ? <Profile user={user} onUser={setUser} notify={setNotice} /> :
+          route.name === 'saved' && user ? user.context === 'CUSTOMER' ? <Suspense fallback={<p role="status">Carregando desejos…</p>}><Saved /></Suspense> : <section className="account-card"><h2>Acesso de cliente</h2><p>Desejos e alertas pertencem à conta de compra.</p></section> :
+          route.name === 'profile' && user ? <><Profile user={user} onUser={setUser} notify={setNotice} />{user.context === 'CUSTOMER' ? <a href="#/saved">Meus desejos e alertas</a> : null}</> :
           <Access key={route.name} route={accountRoute ? { name: 'login', token: '' } : route} onUser={setUser} navigate={navigate} notify={setNotice} />}
       </div>
     </main><footer className="account-footer">Garimpo · Música que encontra você.</footer>

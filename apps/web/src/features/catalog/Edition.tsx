@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CatalogEdition, CatalogImage, CatalogOffer, CatalogTrack } from '@garimpo/contracts';
 import { catalogParams, price, readCatalog } from './api';
+import { EngagementActions } from '../engagement/Engagement';
 
 export function Photos({ images }: { images: CatalogImage[] }) {
   return <div className="shop-photos">{images.map(image => <figure key={image.id}><a href={image.url} target="_blank" rel="noopener noreferrer" aria-label={'Ampliar foto: ' + image.description}><img src={image.url} alt={image.description} width={240} height={240} loading="lazy" decoding="async" /></a><figcaption>{image.description}</figcaption></figure>)}</div>;
@@ -47,6 +48,7 @@ export function Edition({ query }: { query: string }) {
       <section aria-labelledby="new-offers"><h2 id="new-offers">Ofertas novas</h2>{!data.offers.some(offer => offer.kind === 'NEW') ? <p>Nenhuma oferta nova cadastrada.</p> : data.offers.filter(offer => offer.kind === 'NEW').map((offer, index) => <Offer key={offer.id} offer={offer} index={index + 1} selected={selected} select={setSelected} />)}</section>
       <section aria-labelledby="used-offers"><h2 id="used-offers">Exemplares usados</h2>{!data.offers.some(offer => offer.kind === 'USED') ? <p>Nenhum exemplar usado cadastrado.</p> : data.offers.filter(offer => offer.kind === 'USED').map((offer, index) => <Offer key={offer.id} offer={offer} index={index + 1} selected={selected} select={setSelected} />)}</section>
       {selectedOffer ? <p role="status">{selectedOffer.kind === 'NEW' ? 'Oferta nova selecionada' : 'Usado selecionado'} · {price(selectedOffer.priceCents)}. Esta seleção não reserva estoque.</p> : null}
+      <EngagementActions editionId={data.id} />
     </>}
   </section>;
 }
