@@ -1,5 +1,33 @@
 # Parâmetros e decisões pendentes
 
+## Frete configurável e criação de pedido — TASK-018, 2026-11-02
+
+PD-004 originalmente pendente exigia definir faixas/preços/prazos sem inventar
+uma tabela do professor. Sob a delegação explícita posterior de decisões e
+continuidade pelo responsável, a estratégia de implementação é tabela mantida
+exclusivamente por ADMIN, inicialmente vazia. Nenhuma faixa, preço ou prazo de
+uso real é aprovado por esta decisão. Antes de operação, o responsável cadastra
+esses dados; sem configuração, o resultado é não atendido e o pedido é negado.
+Fixtures usam valores sintéticos isolados, nunca seed automático de operação.
+Isso resolve o contrato do módulo sem afirmar aprovação de tabela inexistente.
+
+Faixas inclusivas de CEP são normalizadas para oito dígitos, agrupadas por região
+informada, sem exigência de UF ou cobertura nacional. Não admitir interseção
+ambígua entre faixas. Valores em centavos inteiros; faixa atendida exige preço
+positivo e prazo inteiro informado em dias. Não acrescentar preparação,
+calendário de feriados ou retirada. Alteração tem versão e auditoria atômica.
+
+Pedido usa os produtos/descontos congelados no checkout; frete e endereço completo
+possuem revisão canônica que precisa ser aceita. Trocar endereço recalcula só o
+frete e mantém o prazo original; não atendimento conserva a reserva até vencer.
+Transferência da reserva, consumo de cupom, criação das unidades/snapshots,
+cobrança inicial e limpeza do carrinho são uma transação. Não há baixa física
+nem confirmação financeira nesta etapa. Pix começa com 30 minutos completos e
+boleto com dois dias completos na criação do pedido. Simulador e reconciliação
+de pagamento/expiração são TASK-019; logística e cancelamento são tarefas futuras.
+O adaptador de limite consulta pedidos reais dentro da transação; fixtures não
+substituem esse adaptador no produto. Nenhuma chamada externa na transação.
+
 ## Carrinho nos clientes — TASK-017, 2026-11-02
 
 Protocolo local schema 1 em garimpo.guestcart.v1 contém somente IDs de edição/
