@@ -148,3 +148,48 @@ test('two independent consumers cannot deliver twice while contending on an acti
   expect(results.filter(value => value === 'DELIVERED')).toHaveLength(1);
   expect((await db.demoMessage.findUniqueOrThrow({ where: { availabilityAlertId: alert.id } })).attempts).toBe(1);
 });
+
+test('concurrent equivalent subscriptions produce one activation and a conflict for the duplicate', async () => {
+  const item = await edition();
+  const results = await Promise.allSettled([engagement.subscribe(customer.accessToken, item.id, 'NEW'), second.subscribe(customer.accessToken, item.id, 'NEW')]);
+  expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(1);
+  const failure = results.find(result => result.status === 'rejected'); expect(failure?.status === 'rejected' && failure.reason).toMatchObject({ status: 409 });
+  const rows = await db.availabilityAlert.findMany({ where: { editionId: item.id, status: 'ACTIVE' } }); expect(rows).toHaveLength(1);
+  await engagement.cancel(customer.accessToken, rows[0]!.id);
+});
+
+test('database preparation failure rolls back partial messages and permits a durable retry', async () => {
+  const item = await edition(), alert = await engagement.subscribe(customer.accessToken, item.id, 'ANY');
+  await inventory.adjust(admin.accessToken, item.offer, 1, 'Reposição com falha de teste', randomUUID());
+  await control.query(`CREATE FUNCTION reject_availability_test() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.type = 'AVAILABILITY.RETURNED' THEN RAISE EXCEPTION 'isolated test failure'; END IF; RETURN NEW; END $$`);
+  await control.query('CREATE TRIGGER reject_availability_test BEFORE INSERT ON "DemoMessage" FOR EACH ROW EXECUTE FUNCTION reject_availability_test()');
+  try { expect(await consumeAvailability(messages)).toBe('FAILED'); }
+  finally { await control.query('DROP TRIGGER reject_availability_test ON "DemoMessage"'); await control.query('DROP FUNCTION reject_availability_test()'); }
+  expect(await db.demoMessage.count({ where: { availabilityAlertId: alert.id } })).toBe(0);
+  expect((await db.availabilityAlert.findUniqueOrThrow({ where: { id: alert.id } })).status).toBe('ACTIVE');
+  expect(await consumeAvailability(messages)).toBe('PROCESSED'); expect(await deliverAvailability(messages)).toBe('DELIVERED');
+});
+
+test('inactive used stock does not notify until publication; condition-specific and ANY activations both match', async () => {
+  const item = await edition(), used = await engagement.subscribe(customer.accessToken, item.id, 'USED'), any = await engagement.subscribe(another.accessToken, item.id, 'ANY');
+  const offer = await catalog.createOffer(admin.accessToken, item.id, { kind: 'USED', priceCents: 4000, stockOnHand: 0, active: false, discGrade: 'VG+', sleeveGrade: 'NM', particulars: 'Conferido individualmente' }, randomUUID());
+  await catalog.upload(admin.accessToken, 'offer', offer.id, png, 'image/png', 'Foto própria');
+  await inventory.adjust(admin.accessToken, offer.id, 1, 'Usado ainda não publicado', randomUUID()); await drain();
+  expect(await db.demoMessage.count({ where: { availabilityAlertId: { in: [used.id, any.id] } } })).toBe(0);
+  const version = (await db.offer.findUniqueOrThrow({ where: { id: offer.id } })).version;
+  await catalog.updateOffer(admin.accessToken, offer.id, { version, active: true }); await drain();
+  expect(await db.demoMessage.count({ where: { availabilityAlertId: { in: [used.id, any.id] } } })).toBe(2);
+  expect(await deliverAvailability(messages)).toBe('DELIVERED'); expect(await deliverAvailability(messages)).toBe('DELIVERED');
+});
+
+test('blocked customers are not delivered to; retry uses the current confirmed account email', async () => {
+  const item = await edition(), alert = await engagement.subscribe(another.accessToken, item.id, 'NEW');
+  await inventory.adjust(admin.accessToken, item.offer, 1, 'Reposição para cliente sintético', randomUUID()); await drain();
+  await db.user.update({ where: { id: another.user.id }, data: { blockedAt: clock.now() } });
+  try { expect(await deliverAvailability(messages)).toBe('EMPTY'); }
+  finally { await db.user.update({ where: { id: another.user.id }, data: { blockedAt: null, emailNormalized: randomUUID() + '@example.invalid' } }); }
+  expect(await deliverAvailability(messages)).toBe('DELIVERED');
+  const row = await db.demoMessage.findUniqueOrThrow({ where: { availabilityAlertId: alert.id } });
+  const user = await db.user.findUniqueOrThrow({ where: { id: another.user.id } });
+  expect(JSON.parse(messages.protection.open(row.id, row.restrictedBody)).recipient).toBe(user.emailNormalized);
+});

@@ -133,6 +133,30 @@ Operações de recibo/inspeção não autorizam estorno implicitamente. Estorno 
 | API-008.02 | POST | /me/availability-alerts | editionId, kind NEW/USED/ANY | inscrição ativa | 201; 409 equivalente ativa |
 | API-008.03 | DELETE | /me/availability-alerts/{id} | id próprio | sem corpo, inscrição encerrada | 204 |
 
+Contrato de desejos/alertas (TASK-012): GET aceita apenas page/pageSize, padrão 1/20,
+máximo 100 itens por página; devolve `{items,page,pageSize,total}`. Desejo contém
+`id,edition:{id,title,active},createdAt`. PUT aceita corpo vazio e é idempotente;
+DELETE não remove inscrição de alerta. Alerta contém `id,edition,kind,status,
+createdAt,closedAt,delivery`, com status ACTIVE/DELIVERED/CANCELLED e delivery
+nulo ou `{status:PENDING|FAILED|DELIVERED,attempts}`. POST aceita somente
+editionId/kind; 409 ALERT_ALREADY_ACTIVE para ativação equivalente ainda ativa.
+Sucesso ou cancelamento preserva o ID histórico; nova inscrição tem novo ID.
+DELETE é idempotente para ativação própria já encerrada e retorna 404 para ID
+alheio. Conta interna não usa esses recursos. Exige sessão CUSTOMER, HTTPS,
+origem/CSRF web ou bearer mobile pelos mesmos guardas de contas; PUT também
+consta no preflight. Nunca retorna credenciais, corpo de mensagem ou dados de
+outro cliente. Desejar não inscreve em alerta; nenhum dos dois reserva estoque.
+
+O evento congela o público elegível na própria transação de retorno de
+disponibilidade NEW/USED; ANY corresponde a ambas. Quem se inscreve depois não
+recebe evento antigo, mesmo com timestamps iguais. Uma ativação tem no máximo
+uma mensagem; falha mantém ACTIVE e mensagem FAILED para retry, entrega local
+confirma mensagem/encerra inscrição atomicamente. Cancelamento impede entrega
+pendente. Nesta fase, retorno usa a disponibilidade pública física das ofertas
+ativas; a integração real das reservas/liberações comerciais permanece TASK-023.
+Workers dedicados não consomem tipos futuros/desconhecidos. Apenas o canal de
+teste protegido é implementado; nenhum e-mail externo é enviado.
+
 ## RF-009 Avaliar compra verificada
 
 **Atores:** Cliente. **Pré-condição:** Pedido entregue com unidade mantida da edição.
