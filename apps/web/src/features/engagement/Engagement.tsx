@@ -19,7 +19,7 @@ export function EngagementActions({ editionId }: { editionId: string }) {
     <p>Desejos e alertas são independentes. Nenhum deles reserva estoque ou dá prioridade.</p>
     {!customer ? <p><a href="#/login">Entre com sua conta de cliente</a> para salvar desejos e criar alertas.</p> : <>
       <button disabled={busy} onClick={() => { void act(false); }}>Salvar nos desejos</button>
-      <label>Condição do alerta<select value={kind} onChange={event => setKind(event.target.value as AvailabilityKind)}>{conditions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+      <label htmlFor="availability-kind">Condição do alerta</label><select id="availability-kind" value={kind} onChange={event => setKind(event.target.value as AvailabilityKind)}>{conditions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
       <button className="secondary" disabled={busy} onClick={() => { void act(true); }}>Avisar quando voltar</button><a href="#/saved">Meus desejos e alertas</a>
     </>}{notice ? <p role="status">{notice}</p> : null}</section>;
 }
