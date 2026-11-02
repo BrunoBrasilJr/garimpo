@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import { randomBytes, randomUUID } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -25,6 +26,7 @@ import { isolatedNoCommercialBindings } from '../inventory/fixtures.ts';
 let db: Database, other: Database, accounts: Accounts, engagement: Engagement, second: Engagement, catalog: Catalog, inventory: Inventory, messages: AccessMessages, otherMessages: AccessMessages;
 let admin: SessionBundle, customer: SessionBundle, another: SessionBundle, server: Awaited<ReturnType<typeof openCatalogServer>>, png: Buffer, control: Client;
 const password = 'Uma frase segura e longa para desejos!', clock = { now: () => new Date('2026-11-02T16:00:00Z') };
+const encryptionKey = randomBytes(32).toString('hex'), technicalSecret = randomBytes(32).toString('base64url');
 const credentials = (session: SessionBundle) => web({ cookie: `__Host-garimpo-access=${session.accessToken}; __Host-garimpo-refresh=${session.refreshToken}; __Host-garimpo-csrf=${session.csrfToken}`, csrf: session.csrfToken });
 async function edition() {
   const artist = await catalog.changeMetadata(admin.accessToken, 'artist', 'Artista ' + randomUUID()), genre = await catalog.changeMetadata(admin.accessToken, 'genre', 'Genero ' + randomUUID());
@@ -47,7 +49,7 @@ beforeAll(async () => {
   customer = await accounts.login(first, password); another = await accounts.login(next, password);
   const root = await mkdtemp(join(tmpdir(), 'garimpo-engagement-'));
   catalog = new Catalog(accounts, new PublicImageStore(root), isolatedNoCommercialBindings); inventory = new Inventory(catalog);
-  const protection = new MessageProtection(randomBytes(32).toString('hex'), randomBytes(32).toString('base64url'));
+  const protection = new MessageProtection(encryptionKey, technicalSecret);
   messages = new AccessMessages(accounts, protection, 'https://localhost:5173'); otherMessages = new AccessMessages(new Accounts(other, clock), protection, 'https://localhost:5173');
   server = await openCatalogServer({ db, clock, mediaRoot: root, commercialBindings: isolatedNoCommercialBindings });
   png = await sharp({ create: { width: 4, height: 4, channels: 3, background: 'green' } }).png().toBuffer();
@@ -192,4 +194,16 @@ test('blocked customers are not delivered to; retry uses the current confirmed a
   const row = await db.demoMessage.findUniqueOrThrow({ where: { availabilityAlertId: alert.id } });
   const user = await db.user.findUniqueOrThrow({ where: { id: another.user.id } });
   expect(JSON.parse(messages.protection.open(row.id, row.restrictedBody)).recipient).toBe(user.emailNormalized);
+});
+
+test('the real local worker prepares and delivers a restock activation in Node strip-only mode', async () => {
+  const item = await edition(), alert = await engagement.subscribe(customer.accessToken, item.id, 'NEW');
+  await inventory.adjust(admin.accessToken, item.offer, 1, 'Reposição para processo real', randomUUID());
+  const result = spawnSync(process.execPath, ['--experimental-strip-types', 'apps/api/src/modules/messaging/run-worker.ts'], {
+    encoding: 'utf8', timeout: 30000, env: { ...process.env, DATABASE_URL: process.env.TEST_DATABASE_URL!, GARIMPO_MESSAGE_MODE: 'local-test',
+      GARIMPO_MESSAGE_ENCRYPTION_KEY: encryptionKey, GARIMPO_MESSAGE_TECHNICAL_SECRET: technicalSecret, WEB_ORIGIN: 'https://localhost:5173' }
+  });
+  expect(result.status, 'Real worker must complete without exposing protected configuration.').toBe(0);
+  expect((await db.availabilityAlert.findUniqueOrThrow({ where: { id: alert.id } })).status).toBe('DELIVERED');
+  expect((await db.demoMessage.findUniqueOrThrow({ where: { availabilityAlertId: alert.id } })).status).toBe('DELIVERED');
 });
