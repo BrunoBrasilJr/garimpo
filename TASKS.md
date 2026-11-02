@@ -22,7 +22,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | DONE |
 | 14 | TASK-014 Implementar administração de cupons e promoções | PHASE-02 | HIGH | TASK-009 | DONE |
-| 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | BLOCKED |
+| 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | IN_PROGRESS |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | BLOCKED |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | BLOCKED |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | BLOCKED |
@@ -1978,7 +1978,7 @@ Scope Validation: Allowed Changes PASS com precisões PRIMARY anteriores ao cód
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2042,6 +2042,12 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+
+#### Início e DoR
+
+2026-11-02, branch real chore/TASK-015-checkpoint-phase02, base 2243748 já enviada ao GitHub. Dependências 009–014 DONE, artefatos e gates válidos; ADR-001/004/006 ACCEPTED, PD-006 resolvida, sem PD impeditiva deste checkpoint. AGENTS/conciliação → README/requisitos/pendências → índice/TASK/dependências/Scope Guard → ADRs/API/testes → módulos/portas → testes existentes relidos. DoR PASS; BLOCKED → READY → IN_PROGRESS. Continuidade até 28/37 explicitamente autorizada; etapa documental antiga não reverte a autorização de desenvolvimento de 25/10 e sua renovação.
+
+PRIMARY estritamente docs/validation/phase-02.md e este trecho/índice de TASKS.md; NO_INCIDENTAL_CHANGES. Nenhum código, teste, configuração de produção, dependência ou migration será alterado no checkpoint. Gates acumulados serão executados novamente, inclusive build/tipos/lint/unitários/integrações/segurança/E2E e exports das duas plataformas; não declarar N/A para o software já implementado. Compra/reservas/retenção/backup não certificadas antecipadamente; porta de elegibilidade default nega compra não verificável e só fixtures de teste injetam compras. RNW é prévia compartilhada, não teste humano/nativo/leitor de tela; recusa de TalkBack preservada e aceite integral em 033. PD-004/007/008/009 permanecem abertas para trechos futuros.
 
 ### TASK-016 Implementar carrinho e reserva única de checkout
 
