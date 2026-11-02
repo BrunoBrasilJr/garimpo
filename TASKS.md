@@ -14,7 +14,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
-| 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | BLOCKED |
+| 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | BLOCKED |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | BLOCKED |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | BLOCKED |
@@ -1069,7 +1069,7 @@ Nota de entrega anterior ao início: em 26/10/2026, o responsável solicitou pub
 
 #### Status
 
-BLOCKED
+DONE
 
 #### Phase
 
@@ -1141,6 +1141,18 @@ Autonomia posterior explícita: ao receber proposta concreta de PD-006 (Goldmine
 Responsável respondeu “Não quero usar TalkBack” para esta rodada. Leitor de tela permanece NÃO EXECUTADO; inspeção de rótulos/roles e escala de texto não é teste real de TalkBack. A limitação é rastreada em docs/validation/phase-01.md e na aceitação integral TASK-033; não afirmar certificação, paridade iOS ou execução Chrome/Edge a partir de resultados Firefox. Gates e decisão de fechamento do checkpoint continuam pendentes.
 
 BLOCKER real na revalidação: build/tipos/lint e 72 casos automáticos (33 unidade/protocolo/relógio + 9 core + 14 contas + 16 mensagens) PASS. npm run audit:toolchain FAIL/exit 1 por avisos novos, com relatório integral em test-results/bootstrap/audit-patched.json: 23 pacotes afetados (1 high, 20 moderate, 2 low), incluindo novas origens node-forge, minimatch, glob e deepmerge. A exceção antiga para um único aviso não cobre esses casos. O roteiro interrompeu corretamente antes de E2E/bundle. IN_PROGRESS → BLOCKED por dependência de segurança; preservar trabalho do checkpoint e corrigir a ferramenta no escopo próprio da TASK-002 antes de retomar. Nenhuma auditoria falha convertida em PASS, nenhuma TASK nova concluída.
+
+Retomada após correção em 2026-11-01: TASK-002 DONE em fix/TASK-002-toolchain-security, código 2ebf90a e fechamento bd7ee7c incorporados por fast-forward na branch deste checkpoint. DoR revalidada, dependências/ADRs/artefatos válidos. BLOCKED → READY → IN_PROGRESS → IN_REVIEW → DONE. Gates acumulados da mesma revisão de código: instalação limpa com scripts, build/tipos/lint, 45 unitários, 39 integrações, sete E2E Firefox/HTTPS e exportação Android PASS. Total 91 casos distintos; nenhuma suíte repetida apenas por alterações documentais. Npm audit bruto FAIL/exit 1, sete low somente de deepmerge; política restrita de hashes/patch/regressões PASS. Falhas anteriores mantidas em docs/validation/phase-01.md. Testes realizados pelo agente; sem novo teste humano/nativo ou TalkBack/iOS/Chrome/Edge inventados. Validação integral dessas limitações na TASK-033.
+
+##### TASK Execution Report — fechamento PHASE-01
+
+TASK: TASK-007. Status: DONE. Branch: chore/TASK-007-checkpoint-phase01. Commits existentes: 9297f20 (bloqueio), 2ebf90a e bd7ee7c (correção TASK-002 incorporada). Hash do fechamento documental será obtido do log real.
+
+Primary Changes: docs/validation/phase-01.md e trechos operacionais/índice pertinentes de TASKS.md. Incidental Changes: NONE. Tests Executed: npm ci --no-audit --no-fund; npm run verify; npm run bundle:android; npm run test:account-ui, runtime Linux Node 24.22.1/npm 11.19.1, PostgreSQL 17 e schemas separados; resultados reais no documento de validação. Conferência documental de índice/grafo/escopo antes do commit. Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS no critério restrito, auditoria bruta FAIL preservada; Acceptance Criteria PASS no recorte da fase; Regression Tests PASS. Allowed Changes PASS; Incidental Changes NONE; Forbidden Changes PASS; Scope Creep NONE; Definition of Done PASS.
+
+Contagem: 7/37 DONE. Next Eligible TASK: TASK-008 como candidata com dependência satisfeita; segue BLOCKED até sua conferência própria de DoR e consolidação documental de PD-006. Continuidade autorizada; não iniciar código de catálogo por meio deste checkpoint.
+
+Conferência final própria PASS: 37 tarefas, 79 dependências, grafo sem ciclos, índice/estados detalhados coerentes e referências locais dos dois documentos alterados existentes. Restauração de node_modules no caminho original terminou exit 0, hashes dos quatro arquivos revisados PASS e npm ls confirmou uma versão deduplicada de Forge 1.4.2/deepmerge 4.3.1/glob 14.0.3/minimatch 11.0.3. Árvores parciais e ZIP do responsável preservados; somente os dois arquivos PRIMARY entram no fechamento deste checkpoint.
 
 ### TASK-008 Implementar catálogo, metadados e imagens na API
 
