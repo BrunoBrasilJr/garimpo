@@ -6,7 +6,7 @@ import { forwarded, send, session } from './http';
 const key = 'garimpo.guestcart.v1';
 test('visitor persists locally, merges adjusted new and unique used items once, and remains usable at narrow enlarged text', async ({ page, app, scenario }) => {
   await addNew(page, app.origin, scenario.data.main, 4);
-  await page.getByRole('radio', { name: /Selecionar oferta usada 2 por/ }).check();
+  await page.getByRole('radio', { name: /Selecionar usado 2 por/ }).check();
   await page.getByRole('button', { name: 'Adicionar ao carrinho', exact: true }).click();
   await page.goto(app.origin + '/#/cart'); await expect(page.getByRole('article')).toHaveCount(2);
   await expect(page.getByRole('timer')).toHaveCount(0); await page.reload(); await expect(page.getByRole('article')).toHaveCount(2);
@@ -71,7 +71,7 @@ test('account change during merge cannot apply an old intent under the new cooki
   });
   await login(page, app.origin, scenario.customer.input.email, scenario.customer.input.password); await arrived;
   const other = await page.context().newPage(); await other.route('**/api/v1/me/cart/merge', route => route.abort('failed'));
-  await other.goto(app.origin + '/#/account'); await other.getByRole('button', { name: 'Sair', exact: true }).click();
+  await other.goto(app.origin + '/#/profile'); await other.getByRole('button', { name: 'Sair', exact: true }).click();
   await login(other, app.origin, buyerB.input.email, buyerB.input.password);
   const rejected = page.waitForResponse(response => response.url().endsWith('/me/cart/merge') && response.status() === 403); release();
   expect((await (await rejected).json()).code).toBe('ACCOUNT_CONTEXT_CHANGED');

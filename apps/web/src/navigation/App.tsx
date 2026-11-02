@@ -34,7 +34,7 @@ export default function App() {
     return () => controller.abort();
   }, []);
   function navigate(name: string) { location.hash = '#/' + name; }
-  function loggedIn(value: AccountView) { setCartReady(''); setUser(value); setLoginEpoch(epoch => epoch + 1); }
+  function loggedIn(value: AccountView | null) { setCartReady(''); setUser(value); setLoginEpoch(epoch => epoch + 1); }
   async function logout() {
     try { await request('/auth/logout', 'POST', {}, false); setNotice('Você saiu da sua conta.'); setUser(null); setCartReady(''); navigate('login'); }
     catch (cause) { setNotice(readableError(cause)); }
