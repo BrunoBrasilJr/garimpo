@@ -1936,6 +1936,8 @@ Incidental previsto: exports, comandos/runner de teste, relação de router/fixt
 
 Precisão PRIMARY do registro antes da edição: reutilizar catalog/router.ts, já responsável pela fronteira web da equipe e pelo módulo inventory, para incluir somente /admin/coupons e /admin/promotions, uma guarda ADMIN antes do parser e registro de pricing/router.ts. Assim preservam-se os mesmos HTTPS/origem/cookie/CSRF e a revalidação transacional própria; app.ts não precisa de alteração nem novo pool/router de autenticação duplicado. A expansão de caminhos/autoridade é PRIMARY explícita sob delegação, não incidental. OPERATOR é negado antes de interpretar o corpo desses endpoints, inclusive se inválido.
 
+Validação em andamento, sem DoD antecipada: IN_PROGRESS → FAILED no primeiro typecheck (TS2379, propriedade opcional active incompatível com exactOptionalPropertyTypes). Corrigido apenas o tipo de entrada de period(), sem desativar flags; FAILED → IN_PROGRESS, build/typecheck/lint PASS em 2543b33. Em 2c7179a: 88 unitários PASS, integração de descontos 11/12 PASS; FAILED por ausência de evidência de sobreposição no observador pg_stat_activity. O observador mantinha BEGIN para segurar a linha e precisava renovar o snapshot de estatísticas a cada consulta. Correção de teste 754165c adiciona pg_stat_clear_snapshot e exige dois application_name distintos ativos aguardando lock; não substitui concorrência por mock nem relaxa o resultado esperado. FAILED → IN_PROGRESS para repetir os gates relevantes. Logs locais ignorados first-check.log, second-check.log, integration-check.log e targeted.log em test-results/pricing; schemas garimpo_test retidos, base original intacta.
+
 ### TASK-015 Checkpoint PHASE-02
 
 #### Status
