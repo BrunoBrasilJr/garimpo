@@ -3,7 +3,7 @@ import type { CatalogEdition, CatalogFilters, CatalogPage } from '@garimpo/contr
 export class CatalogError extends Error { constructor(readonly status: number, message: string) { super(message); } }
 export class MobileCatalogClient {
   readonly origin: string;
-  constructor(origin: string, private readonly transport: typeof fetch = fetch) {
+  constructor(origin: string, private readonly transport: typeof fetch = globalThis.fetch.bind(globalThis)) {
     const url = new URL(origin), match = /^https:\/\/(?:[a-z0-9.-]+|\[[a-f0-9:]+\])(?::([1-9]\d{0,4}))?$/i.exec(origin);
     if (!match || Number(match[1] ?? 443) > 65535 || url.origin !== origin) throw new Error('An exact HTTPS API origin is required.');
     this.origin = origin;

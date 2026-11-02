@@ -1,4 +1,4 @@
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { MobileCatalogClient, cents } from '../../../apps/mobile/src/features/catalog/client';
 
 test('mobile public catalog accepts only exact HTTPS origins without embedded credentials or paths', () => {
@@ -22,4 +22,9 @@ test('public images cannot resolve private, external or local-file paths; missin
 test('localized price filtering preserves cents and rejects fraction/overflow ambiguity', () => {
   expect(cents('129,90')).toBe('12990'); expect(cents('0.01')).toBe('1');
   for (const value of ['1.299,90', '-1', '1,999', '21474836,48', 'NaN']) expect(() => cents(value)).toThrow();
+});
+test('default browser transport preserves the fetch global receiver', async () => {
+  vi.stubGlobal('fetch', async function(this: unknown) { expect(this).toBe(globalThis); return Response.json({ items: [] }); });
+  try { await new MobileCatalogClient('https://localhost:8443').filters(new AbortController().signal); }
+  finally { vi.unstubAllGlobals(); }
 });
