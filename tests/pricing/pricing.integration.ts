@@ -128,7 +128,12 @@ test('two real configuration edits overlap on a coupon lock and only one current
   const first = pricing.updateCoupon(admin.accessToken, row.id, { version: row.version, amount: 200 }), next = second.updateCoupon(admin.accessToken, row.id, { version: row.version, amount: 300 });
   const settled = Promise.allSettled([first, next]); let overlap = false;
   try {
-    for (let i = 0; i < 100; i++) { const result = await control.query("SELECT count(*)::int AS n FROM pg_stat_activity WHERE application_name IN ('TASK014_A','TASK014_B') AND wait_event_type = 'Lock'"); if (result.rows[0].n >= 2) { overlap = true; break; } await new Promise(resolve => setTimeout(resolve, 20)); }
+    for (let i = 0; i < 100; i++) {
+      // This observer retains its row lock inside BEGIN; refresh its statistics snapshot per poll.
+      await control.query('SELECT pg_stat_clear_snapshot()');
+      const result = await control.query("SELECT count(DISTINCT application_name)::int AS n FROM pg_stat_activity WHERE application_name IN ('TASK014_A','TASK014_B') AND state = 'active' AND wait_event_type = 'Lock'");
+      if (result.rows[0].n >= 2) { overlap = true; break; } await new Promise(resolve => setTimeout(resolve, 20));
+    }
   } finally { await control.query('ROLLBACK'); }
   const results = await settled; expect(overlap).toBe(true); expect(results.filter(value => value.status === 'fulfilled')).toHaveLength(1);
   const rejected = results.find(value => value.status === 'rejected'); expect(rejected?.status === 'rejected' && rejected.reason).toMatchObject({ status: 409 }); expect((await db.coupon.findUniqueOrThrow({ where: { id: row.id } })).version).toBe(2);
