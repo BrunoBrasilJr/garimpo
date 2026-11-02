@@ -5,6 +5,22 @@ import { ActionForm, Input, value } from './Forms';
 import { catalogRequest, commandKey } from './client';
 
 const quantity = (value: number | null) => value === null ? 'Não conferido' : String(value);
+export function StockAlerts({ revision, select }: { revision: number; select: (id: string) => void }) {
+  const [page, setPage] = useState(1), [data, setData] = useState<StockPage>(), [error, setError] = useState('');
+  useEffect(() => {
+    const controller = new AbortController();
+    catalogRequest<StockPage>('/admin/stock?lowStock=true&page=' + page, 'GET', undefined, undefined, controller.signal)
+      .then(result => { if (!controller.signal.aborted) { setData(result); setError(''); } }).catch(cause => { if (!controller.signal.aborted) setError(readableError(cause)); });
+    return () => controller.abort();
+  }, [page, revision]);
+  return <section className="catalog-section"><h2>Estoque baixo</h2><p>Somente alertas confirmados. Saldos ainda não conferidos podem exigir revisão individual.</p>
+    {error ? <p role="alert">{error}</p> : !data ? <p role="status">Conferindo alertas…</p> : <>
+      {!data.items.length ? <p>Nenhum alerta confirmado nesta página.</p> : <ul>{data.items.map(row => <li key={row.id}><button type="button" className="secondary" onClick={() => select(row.id)}>{row.title}</button>
+        {row.lowStockNew === true ? ' · novos no limite' : ''}{row.lowStockUsed === true ? ' · sem usados disponíveis' : ''}</li>)}</ul>}
+      <nav aria-label="Páginas dos alertas"><button type="button" disabled={page <= 1} onClick={() => setPage(value => value - 1)}>Alertas anteriores</button><span>Página {page} de {Math.max(1, data.totalPages)}</span><button type="button" disabled={page >= data.totalPages} onClick={() => setPage(value => value + 1)}>Próximos alertas</button></nav>
+    </>}
+  </section>;
+}
 export function Stock({ editionId, revision, changed }: { editionId: string; revision: number; changed: () => void }) {
   const [data, setData] = useState<StockPage>(), [error, setError] = useState('');
   useEffect(() => {

@@ -4,6 +4,7 @@ import type { CatalogEdition, CatalogMetadata, CatalogOffer, CatalogImage } from
 import { ActionForm, Input, Select, value, optional, numberOrNull } from './Forms';
 import { catalogRequest, cents, commandKey, money } from './client';
 import { Stock } from './Stock';
+import { ClientError } from '../../account/client';
 
 export type Metadata = { artist: CatalogMetadata[]; genre: CatalogMetadata[]; label: CatalogMetadata[] };
 const options = (items: CatalogMetadata[]) => items.map(item => ({ value: item.id, label: item.name }));
@@ -75,7 +76,7 @@ function Photos({ owner, id, images, changed }: { owner: 'editions' | 'offers'; 
     <div className="catalog-photos">{images.map(image => <figure key={image.id}><img src={image.url} alt={image.description} width={160} height={160} loading="lazy" /><figcaption>{image.description}</figcaption>
       <ActionForm title={'Remover foto: ' + image.description} submit="Remover foto" onSubmit={async () => { await catalogRequest('/admin/images/' + image.id, 'DELETE'); changed(); }} /></figure>)}</div>
     <ActionForm title="Enviar foto" submit="Enviar foto" reset onSubmit={async data => {
-      const file = data.get('photo'); if (!(file instanceof File) || !file.size || file.size > 5_000_000) throw new Error('Selecione uma imagem de até 5 MB.');
+      const file = data.get('photo'); if (!(file instanceof File) || !file.size || file.size > 5_000_000) throw new ClientError(422, 'INVALID_IMAGE', 'Selecione uma imagem de até 5 MB.');
       await catalogRequest(`/admin/${owner}/${id}/images?description=${encodeURIComponent(value(data, 'description'))}`, 'POST', file); changed();
     }}><Input label="Imagem JPEG, PNG ou WebP de até 5 MB" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required /><Input label="Descrição da foto" name="description" required maxLength={500} /></ActionForm>
   </section>;

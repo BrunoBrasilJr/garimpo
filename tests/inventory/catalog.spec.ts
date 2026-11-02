@@ -26,7 +26,7 @@ test('operator administers metadata, edition, tracks, publication, offers and st
   const png = await sharp({ create: { width: 20, height: 20, channels: 3, background: 'orange' } }).png().toBuffer();
   const photo = page.getByRole('form', { name: 'Enviar foto', exact: true });
   await photo.getByLabel('Imagem JPEG, PNG ou WebP de até 5 MB').setInputFiles({ name: 'capa.png', mimeType: 'image/png', buffer: png });
-  await photo.getByLabel('Descrição da foto').fill('Capa da edição de teste'); await photo.getByRole('button').click();
+  await photo.getByLabel('Descrição da foto').fill('Capa da edição de teste'); await photo.getByRole('button', { name: 'Enviar foto', exact: true }).click();
   await expect(page.getByRole('img', { name: 'Capa da edição de teste' })).toBeVisible();
   await page.getByRole('form', { name: 'Publicar edição', exact: true }).getByRole('button').click();
   await expect(page.getByRole('heading', { name: title + ' · Publicada', exact: true })).toBeVisible();

@@ -5,6 +5,7 @@ import { ActionForm, Input, value } from './Forms';
 import { catalogRequest } from './client';
 import { EditionEditor, EditionFields, editionBody } from './Edition';
 import type { Metadata } from './Edition';
+import { StockAlerts } from './Stock';
 import './catalog.css';
 
 export default function Catalog() {
@@ -31,12 +32,13 @@ export default function Catalog() {
   useEffect(() => {
     if (!selected) return;
     const controller = new AbortController();
-    catalogRequest<CatalogEdition>('/admin/editions/' + selected, 'GET', undefined, undefined, controller.signal).then(setEdition).catch(cause => {
+    catalogRequest<CatalogEdition>('/admin/editions/' + selected, 'GET', undefined, undefined, controller.signal).then(result => { if (!controller.signal.aborted) setEdition(result); }).catch(cause => {
       if (!controller.signal.aborted) { setError(readableError(cause)); setEdition(undefined); }
     }); return () => controller.abort();
   }, [selected, revision]);
   return <div className="catalog-admin"><h1 ref={heading} tabIndex={-1}>Catálogo e estoque</h1><p>Cadastre edições, ofertas e exemplares; acompanhe o estoque físico.</p>
     {notice ? <p role="status">{notice}</p> : null}{error ? <div role="alert" className="account-error">{error}<button type="button" onClick={changed}>Tentar novamente</button></div> : null}
+    <StockAlerts revision={revision} select={id => { if (id !== selected) { setSelected(id); setEdition(undefined); } }} />
     <details><summary>Artistas, gêneros e gravadoras</summary><div className="catalog-grid">{(['artist', 'genre', 'label'] as const).map(type => <MetadataEditor key={type} type={type} items={metadata[type]} changed={changed} />)}</div></details>
     <details><summary>Criar edição</summary>{!metadata.artist.length || !metadata.genre.length ? <p>Cadastre ao menos um artista e um gênero antes da edição.</p> : <ActionForm title="Nova edição" submit="Criar rascunho" onSubmit={async data => {
       const result = await catalogRequest<CatalogEdition>('/admin/editions', 'POST', editionBody(data)); setSelected(result.id); setEdition(result); changed();
