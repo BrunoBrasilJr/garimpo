@@ -44,6 +44,8 @@ test('operator administers metadata, edition, tracks, publication, offers and st
   await expect(adjustment.getByRole('alert')).toBeFocused();
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   const publicReply = await page.evaluate(async () => { const response = await fetch('/api/v1/editions'); return { status: response.status, data: await response.json() }; });
   expect(publicReply.status).toBe(200); const publicData = publicReply.data;
   expect(publicData.items.find((item: { title: string }) => item.title === title)).toMatchObject({ editionYear: 1997, tracks: [{ title: 'Faixa de conferência' }], offers: [{ priceCents: 12990, stockOnHand: 5 }] });
