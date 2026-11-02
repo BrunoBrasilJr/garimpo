@@ -1,0 +1,11 @@
+.pricing-view, .pricing-form, .pricing-picker { display: grid; gap: 16px; min-width: 0; }
+.pricing-form label { display: grid; gap: 8px; min-width: 0; }
+.pricing-form .pricing-check { display: flex; align-items: flex-start; gap: 12px; }
+.pricing-form .pricing-check input { width: 22px; min-height: 22px; flex: 0 0 22px; margin-top: 3px; }
+.pricing-picker { border: 1px solid #a9b4a8; border-radius: 8px; padding: 14px; }
+.pricing-view :is(h2,h3,h4,p,label,li,button) { overflow-wrap: anywhere; min-width: 0; }
+.pricing-view :is(input,select) { max-width: 100%; min-width: 0; }
+.pricing-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.pricing-view article { border-top: 1px solid #b9c1b4; padding-top: 16px; display: grid; gap: 12px; }
+.pricing-picker ul { margin: 0; padding-left: 20px; }
+.pricing-picker li { margin: 10px 0; }

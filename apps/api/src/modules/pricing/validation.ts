@@ -7,7 +7,7 @@ export const target = z.object({ kind: z.enum(['OFFER', 'EDITION', 'GENRE']), id
 const targets = z.array(target).max(1000).refine(value => new Set(value.map(item => item.kind + ':' + item.id)).size === value.length, 'Alvos repetidos.');
 const offerIds = z.array(id).min(1).max(1000).refine(value => new Set(value).size === value.length, 'Ofertas repetidas.');
 const couponShape = { ...common, code: z.string().trim().toUpperCase().regex(/^[A-Z0-9_-]{3,40}$/), minimumEligibleCents: integer.optional(), allowPromotional: z.boolean().optional(), totalLimit: integer.min(1).nullable().optional(), perUserLimit: integer.min(1).nullable().optional(), targets: targets.optional() };
-const promotionShape = { ...common, name: z.string().trim().min(1).max(200), offerIds };
+const promotionShape = { ...common, name: z.string().trim().min(1).max(200).refine(value => !value.includes('\0')), offerIds };
 function valid(value: { type: string; amount: number; startsAt: string; endsAt: string }) { return (value.type !== 'PERCENT' || value.amount <= 10000) && Date.parse(value.endsAt) > Date.parse(value.startsAt); }
 export const couponCreate = z.object(couponShape).strict().refine(valid, 'Confira percentual e intervalo de validade.');
 export const promotionCreate = z.object(promotionShape).strict().refine(valid, 'Confira percentual e intervalo de validade.');

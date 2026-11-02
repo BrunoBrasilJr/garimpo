@@ -1934,6 +1934,8 @@ Decisões técnicas sob delegação, documentadas antes do código, não atribu�
 
 Incidental previsto: exports, comandos/runner de teste, relação de router/fixtures mínima e navegação ADMIN, sujeitos aos nove critérios. Painel não expõe UUID para digitação: seletores por nomes/condição/referência de estoque. Sem SDK/dependência nova, conta OPERATOR configurando desconto, uso de cupom/reserva antecipado ou cobrança real. Critérios de moeda e fronteiras de permissão, períodos/sobreposição/estorno de centavos, catálogo público com promoção e filtros coerentes, rollback e versão concorrente serão demonstrados em testes reais antes de DONE.
 
+Precisão PRIMARY do registro antes da edição: reutilizar catalog/router.ts, já responsável pela fronteira web da equipe e pelo módulo inventory, para incluir somente /admin/coupons e /admin/promotions, uma guarda ADMIN antes do parser e registro de pricing/router.ts. Assim preservam-se os mesmos HTTPS/origem/cookie/CSRF e a revalidação transacional própria; app.ts não precisa de alteração nem novo pool/router de autenticação duplicado. A expansão de caminhos/autoridade é PRIMARY explícita sob delegação, não incidental. OPERATOR é negado antes de interpretar o corpo desses endpoints, inclusive se inválido.
+
 ### TASK-015 Checkpoint PHASE-02
 
 #### Status

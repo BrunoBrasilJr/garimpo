@@ -1,5 +1,5 @@
 import type { CouponView, NamedPricingTarget, PricingPage, PromotionView, PricingTarget } from '@garimpo/contracts';
-import type { Prisma } from '../../persistence/client.ts';
+import type { Prisma, Database } from '../../persistence/client.ts';
 import { serializable } from '../../persistence/transaction.ts';
 import { Accounts } from '../accounts/service.ts';
 import { AccountError } from '../accounts/errors.ts';
@@ -17,7 +17,7 @@ const offerLabel = (offer: { id: string; kind: string; edition: { title: string 
 const namedTargets = (row: CouponRow): NamedPricingTarget[] => row.targets.map(item => item.offer ? { kind: 'OFFER', id: item.offerId!, label: offerLabel(item.offer) } : item.edition ? { kind: 'EDITION', id: item.editionId!, label: item.edition.title } : { kind: 'GENRE', id: item.genreId!, label: item.genre!.name });
 function couponView(row: CouponRow): CouponView { return { id: row.id, code: row.code, type: row.type, amount: row.amount, minimumEligibleCents: row.minimumEligibleCents, allowPromotional: row.allowPromotional, totalLimit: row.totalLimit, perUserLimit: row.perUserLimit, startsAt: row.startsAt.toISOString(), endsAt: row.endsAt.toISOString(), active: row.active, version: row.version, targets: namedTargets(row), usage: { status: 'NOT_INTEGRATED' } }; }
 function promotionView(row: PromotionRow): PromotionView { return { id: row.id, name: row.name, type: row.type, amount: row.amount, startsAt: row.startsAt.toISOString(), endsAt: row.endsAt.toISOString(), active: row.active, version: row.version, offers: row.offers.map(item => ({ id: item.offerId, label: offerLabel(item.offer) })) }; }
-const period = (input: { type: 'PERCENT' | 'FIXED'; amount: number; startsAt: string; endsAt: string; active?: boolean }) => ({ type: input.type, amount: input.amount, startsAt: new Date(input.startsAt), endsAt: new Date(input.endsAt), active: input.active ?? true });
+const period = (input: { type: 'PERCENT' | 'FIXED'; amount: number; startsAt: string; endsAt: string; active?: boolean | undefined }) => ({ type: input.type, amount: input.amount, startsAt: new Date(input.startsAt), endsAt: new Date(input.endsAt), active: input.active ?? true });
 const targetData = (input: PricingTarget) => ({ ...(input.kind === 'OFFER' ? { offerId: input.id } : input.kind === 'EDITION' ? { editionId: input.id } : { genreId: input.id }) });
 const conflict = () => new PricingError(409, 'PRICING_VERSION_CONFLICT', 'A configuração mudou. Atualize e confira a versão atual.');
 const missing = () => new PricingError(404, 'PRICING_NOT_FOUND', 'Esta configuração não está disponível.');
@@ -30,7 +30,7 @@ export async function activePromotions(tx: Prisma.TransactionClient, offerIds: s
 export class Pricing {
   readonly accounts: Accounts;
   constructor(accounts: Accounts) { this.accounts = accounts; }
-  async admin(tx: Prisma.TransactionClient, access: string) { const { user } = await this.accounts.authorize(tx, access); if (user.context !== 'STAFF' || user.role !== 'ADMIN') throw new AccountError(403, 'ADMIN_REQUIRED'); return user; }
+  async admin(tx: Prisma.TransactionClient | Database, access: string) { const { user } = await this.accounts.authorize(tx, access); if (user.context !== 'STAFF' || user.role !== 'ADMIN') throw new AccountError(403, 'ADMIN_REQUIRED'); return user; }
   private async audit(tx: Prisma.TransactionClient, actorId: string, action: string, id: string, value: unknown) {
     const changes = JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
     await appendAudit(tx, { actorId, action: 'PRICING.' + action, targetType: 'PRICING', targetId: id, result: 'SUCCESS', reason: 'ADMIN_CONFIGURATION', changes }, this.accounts.clock);

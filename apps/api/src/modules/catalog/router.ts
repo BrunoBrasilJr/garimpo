@@ -13,9 +13,12 @@ import { CatalogError, missing, conflict } from './errors.ts';
 import * as input from './validation.ts';
 import { registerInventoryRoutes } from '../inventory/router.ts';
 import type { CommercialBindings } from './lifecycle.ts';
+import { Pricing } from '../pricing/service.ts';
+import { PricingError } from '../pricing/errors.ts';
+import { registerPricingRoutes } from '../pricing/router.ts';
 
 export interface CatalogOptions extends AccountsOptions { mediaRoot?: string; commercialBindings?: CommercialBindings }
-const routePrefix = /^\/(editions|catalog|admin\/(editions|offers|images|catalog-metadata|stock)|media\/products)(\/|$)/;
+const routePrefix = /^\/(editions|catalog|admin\/(editions|offers|images|catalog-metadata|stock|coupons|promotions)|media\/products)(\/|$)/;
 function cookie(request: Request, name: string) {
   const values = (request.get('cookie') ?? '').split(';').map(value => value.trim()).filter(value => value.startsWith(name + '='));
   if (values.length > 1) throw new AccountError(422, 'AMBIGUOUS_CREDENTIALS');
@@ -63,7 +66,10 @@ export function createCatalogRouter(options: CatalogOptions = {}) {
     }
     next();
   });
+  const pricing = () => new Pricing(service().accounts);
+  router.use(['/admin/coupons', '/admin/promotions'], async (request, _response, next) => { await pricing().admin(service().db, access(request)); next(); });
   router.use(express.json({ limit: '128kb', strict: true }));
+  registerPricingRoutes(router, pricing, access);
   registerInventoryRoutes(router, service, access);
   router.get('/catalog/filters', async (_request, response) => { response.json(await service().filters()); });
   router.get('/editions', async (request, response) => { response.json(await service().list(input.parse(input.catalogQuery, request.query))); });
@@ -116,7 +122,7 @@ export function createCatalogRouter(options: CatalogOptions = {}) {
   const errors: ErrorRequestHandler = (error: unknown, request, response, next) => {
     if (response.headersSent) { next(error); return; }
     const correlationId = randomUUID();
-    if (error instanceof CatalogError || error instanceof AccountError) {
+    if (error instanceof CatalogError || error instanceof AccountError || error instanceof PricingError) {
       response.status(error.status).json({ code: error.code, message: error.message, fieldErrors: error.fieldErrors, correlationId }); return;
     }
     if (error && typeof error === 'object' && 'code' in error) {
