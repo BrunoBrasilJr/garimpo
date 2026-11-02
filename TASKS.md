@@ -9,7 +9,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | Ordem | TASK | Fase | Prioridade | Dependências | Estado |
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
-| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | IN_PROGRESS |
+| 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
 | 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | DONE |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
@@ -159,7 +159,7 @@ Gates locais: prontidão, planejamento, decisões documentais, revisão, testes 
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -243,6 +243,20 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 Iniciada em 2026-10-25 sob autorização contínua. DoR PASS: TASK-001 DONE, seis ADRs ACCEPTED e DOC-001/002 confirmados pelo responsável; parâmetros/plataformas necessários definidos. Baseline de software: inexistente, primeiro bootstrap. Plano PRIMARY: package.json/lock, tsconfig, API/web/mobile bootstrap, contracts, configuração de testes e docs/architecture/execution.md. Incidental previsto: .gitignore para excluir dependências/segredos/builds da estrutura Git (necessário, causal, mínimo, sem funcionalidade/negócio/arquitetura/contrato/segurança alterados; nenhum Forbidden). Git será inicializado nesta tarefa; branch real registrada após criação. Sem banco/migrations/contas/catálogo nesta tarefa. Gates e testes manuais ainda pendentes.
 
 Reabertura em 2026-11-01: auditoria nova do checkpoint detectou regressão externa de segurança na toolchain, baseline FAIL. Correção em fix/TASK-002-toolchain-security, base 9297f20 que preserva o checkpoint BLOCKED. TASK-001 continua DONE; código de negócio não foi alterado. Gate conhecido não aprovado: 23 pacotes afetados, relatório original copiado para test-results/toolchain-20261101/audit-before.json. Estado atual IN_PROGRESS da correção; conclusão histórica de 25/10 permanece registrada, mas não aprova o novo baseline. Nenhuma nova TASK foi criada para inflar contagem.
+
+Revisão posterior em 2026-11-01: correção de código em 2ebf90a, sem alterações comerciais ou de SDK. Instalação limpa Linux do mesmo commit PASS (804 pacotes, preinstall/postinstall e quatro arquivos revisados conferidos), build/tipos/lint PASS, 45 unitários e 39 integrações PASS. npm audit bruto FAIL/exit 1 com sete low e zero moderate/high/critical; política restrita PASS somente para a cadeia deepmerge com hashes verificados, release Forge corrigida obrigatória e rejeição de avisos desconhecidos. Exportação Android PASS, 586 módulos. E2E inicial FAILED por três timeouts; segunda rodada FAILED em um cadastro ainda aguardando resposta após dez segundos. Sem alterar fonte, scrypt, TLS ou limites dos testes, após pausar a cópia própria de dependências e liberar caches do Ubuntu, terceira rodada integral PASS, sete casos. As falhas anteriores estão preservadas. Transição de validação FAILED → IN_PROGRESS → IN_REVIEW → DONE; não declarar que as rodadas iniciais passaram. Total da rodada válida: 91 casos distintos. Evidências: test-results/toolchain-20261101/native-clean-and-gates.log, native-ui-recheck.log, native-ui-memory-recheck.log e audit-after.json. Testes novos pelo agente, sem inventar nova inspeção humana ou TalkBack. Restauração de node_modules no caminho Windows segue como cópia operacional independente, sem alterar a instalação Linux limpa validada; não usar a árvore parcial antes da conclusão/conferência.
+
+##### TASK Execution Report — correção de 2026-11-01
+
+TASK: TASK-002. Status: DONE. Branch: fix/TASK-002-toolchain-security. Commit de código: 2ebf90a; este fechamento documental será conferido no log Git, sem hash antecipado.
+
+Primary Changes: package.json e package-lock.json; patches/deepmerge+4.3.1.json e .patch; patches/node-forge+1.4.2.json; tests/bootstrap/apply-toolchain-patch.mjs; tests/bootstrap/security/audit-policy.mjs, audit-policy.test.ts, check-audit.mjs, deepmerge.test.ts, forge.test.ts, toolchain-compatibility.test.ts e toolchain-integrity.mjs; TASKS.md e docs/architecture/execution.md. Todos PRIMARY na ampliação rastreada desta TASK. Incidental Changes: NONE.
+
+Tests Executed: npm ci --no-audit --no-fund, npm run verify, npm run bundle:android e npm run test:account-ui, no checkout Linux isolado da revisão 2ebf90a, Node 24.22.1/npm 11.19.1, PostgreSQL 17 e schemas separados em garimpo_test. Instalação com scripts, build/tipos/lint, 45 unitários, 39 integrações e sete E2E PASS; exportação Android PASS. Nenhum reset/drop/truncate da base original. E2E final mantém limites originais e valida TLS real, inclusive negativa sem CA. Rodadas anteriores falhas preservadas, sem serem contadas como PASS.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS nos fluxos existentes exercitados; Security PASS no critério restrito de mitigação reproduzível, com npm audit bruto FAIL/exit 1 e sete low preservados; Acceptance Criteria PASS; Regression Tests PASS. Aceites humanos de bootstrap anteriores permanecem históricos, pois não houve alteração de interface ou SDK; não se declara nova inspeção física ou leitor de tela.
+
+Scope Validation: Allowed Changes PASS; Incidental Changes NONE; Forbidden Changes PASS; Scope Creep NONE. Definition of Done: PASS. Next Eligible TASK: TASK-007, retomada do checkpoint preservado e reavaliação documental dos gates acumulados; TASK-008 ainda não iniciada neste fechamento. Continuidade já autorizada.
 
 
 Falha de validação em 2026-10-25: npm run verify PASS (build/tipos/lint e 1 teste real de socket), bundle Android PASS (580 módulos), página inicial renderizada no navegador. npm audit --audit-level=high FAIL, saída 1: cinco avisos altos transitivos do Expo, origens node-forge (GHSA-86w9-cpqp-85rv) e zod (GHSA-mrhx-c7xc-m3w5). Diagnóstico em andamento; não usar npm audit fix --force (sugere downgrade incompatível para Expo 44), não desabilitar auditoria. Gate de segurança falhou; revisão/manual/conclusão não aprovados. Preservar correção no escopo da configuração de dependências e repetir gates afetados. Evidência: test-results/bootstrap/agent-verification.log.
