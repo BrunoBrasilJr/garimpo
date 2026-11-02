@@ -140,6 +140,9 @@ model Offer {
   movements    StockMovement[]
   promotions   PromotionOffer[]
   couponTargets CouponTarget[]
+  cartItems CartItem[]
+  checkoutItems CheckoutItem[]
+  reservations Reservation[]
 
   @@index([editionId, kind, active])
   @@index([active, priceCents])
@@ -232,6 +235,9 @@ model User {
   wishes          WishlistEntry[]
   availabilityAlerts AvailabilityAlert[]
   reviews         Review[]
+  cart            Cart?
+  checkouts       Checkout[]
+  couponUsages    CouponUsage[]
   reviewRevisions ReviewRevision[]
 }
 
@@ -266,6 +272,7 @@ model Address {
   deletedAt    DateTime? @db.Timestamptz(3)
   createdAt    DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+  checkouts    Checkout[]
 
   @@index([userId, deletedAt])
 }
@@ -442,6 +449,7 @@ model Coupon {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
   targets CouponTarget[]
+  usages CouponUsage[]
   @@index([active, startsAt, endsAt])
 }
 
@@ -513,4 +521,119 @@ model IdempotencyRecord {
   createdAt   DateTime @default(now()) @db.Timestamptz(3)
 
   @@unique([actorScope, operation, key])
+}
+
+enum CheckoutStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  CONVERTED
+}
+
+enum ReservationStatus {
+  ACTIVE
+  CONSUMED
+  RELEASED
+  EXPIRED
+}
+
+enum CouponUsageStatus {
+  RESERVED
+  CONSUMED
+  RELEASED
+}
+
+model Cart {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @unique @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  items CartItem[]
+  checkouts Checkout[]
+}
+
+model CartItem {
+  id String @id @default(uuid()) @db.Uuid
+  cartId String @db.Uuid
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Restrict)
+  offerId String @db.Uuid
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  quantity Int
+  lastSeenPriceCents Int
+  @@unique([cartId, offerId])
+  @@index([offerId])
+}
+
+model Checkout {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  cartId String @db.Uuid
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Restrict)
+  cartVersion Int
+  status CheckoutStatus @default(ACTIVE)
+  version Int @default(1)
+  couponCode String? @db.VarChar(40)
+  requestKey String @db.VarChar(128)
+  requestHash String @db.Char(64)
+  pricingRevision String @db.Char(64)
+  quoteSnapshot Json
+  addressId String? @db.Uuid
+  address Address? @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt DateTime @db.Timestamptz(3)
+  closedAt DateTime? @db.Timestamptz(3)
+  items CheckoutItem[]
+  couponUsage CouponUsage?
+  @@unique([userId, requestKey])
+  @@index([userId, status, expiresAt])
+  @@index([status, expiresAt, id])
+  @@index([cartId])
+  @@index([addressId])
+}
+
+model CheckoutItem {
+  id String @id @default(uuid()) @db.Uuid
+  checkoutId String @db.Uuid
+  checkout Checkout @relation(fields: [checkoutId], references: [id], onDelete: Restrict)
+  offerId String @db.Uuid
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  quantity Int
+  snapshot Json
+  reservation Reservation?
+  @@unique([checkoutId, offerId])
+  @@index([offerId])
+}
+
+model Reservation {
+  id String @id @default(uuid()) @db.Uuid
+  offerId String @db.Uuid
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  checkoutItemId String @unique @db.Uuid
+  checkoutItem CheckoutItem @relation(fields: [checkoutItemId], references: [id], onDelete: Restrict)
+  quantity Int
+  status ReservationStatus @default(ACTIVE)
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  releasedAt DateTime? @db.Timestamptz(3)
+  @@index([offerId, status, expiresAt])
+  @@index([status, expiresAt, id])
+}
+
+model CouponUsage {
+  id String @id @default(uuid()) @db.Uuid
+  couponId String @db.Uuid
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Restrict)
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  checkoutId String @unique @db.Uuid
+  checkout Checkout @relation(fields: [checkoutId], references: [id], onDelete: Restrict)
+  status CouponUsageStatus @default(RESERVED)
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  releasedAt DateTime? @db.Timestamptz(3)
+  @@index([couponId, status, expiresAt])
+  @@index([userId, couponId, status, expiresAt])
 }

@@ -12,3 +12,5 @@ export type { StockMovementView, StockOfferView, StockEditionView, StockPage, St
 export type { AvailabilityKind, SavedEdition, WishView, AlertView, EngagementPage, AvailabilityMessageContent } from './engagement/index.js';
 export type { PublicReview, PrivateReview, ReviewPage, PublicReviewPage, ReviewDraft, ReviewRevisionView } from './reviews/index.js';
 export type { DiscountType, PricingTarget, NamedPricingTarget, DiscountView, PromotionView, CouponView, PricingPage, PricedUnit, PriceQuote } from './pricing/index.js';
+export type { CartLine, CartPricing, CartView, CartChange } from './cart/index.js';
+export type { CheckoutProduct, CheckoutSnapshot, CheckoutView } from './checkout/index.js';
