@@ -13,6 +13,7 @@ import { Carts } from './service.ts';
 import { Checkouts } from '../checkout/service.ts';
 import type { PendingOrders } from '../checkout/pending-orders.ts';
 import * as input from './validation.ts';
+import { orderPendingCount } from '../orders/pending-orders.ts';
 
 export interface CheckoutOptions extends AccountsOptions { pendingOrders?: PendingOrders }
 const prefix = /^\/(?:me\/cart(?:\/|$)|me\/checkout(?:\/|$)|checkouts(?:\/|$))/;
@@ -32,7 +33,7 @@ export function createCartRouter(options: CheckoutOptions = {}) {
   const router = express.Router(), db = options.db ?? (process.env.DATABASE_URL ? createDatabase(process.env.DATABASE_URL) : undefined);
   const accounts = db ? new Accounts(db, options.clock, options.policy) : undefined;
   const service = () => { if (!accounts) throw new CartError(503, 'DATABASE_UNAVAILABLE', 'O carrinho está temporariamente indisponível.'); return accounts; };
-  const carts = () => new Carts(service()), checkouts = () => new Checkouts(service(), options.pendingOrders);
+  const carts = () => new Carts(service()), checkouts = () => new Checkouts(service(), options.pendingOrders ?? orderPendingCount(service().clock));
   const origin = options.webOrigin ?? process.env.WEB_ORIGIN ?? 'https://localhost:5173';
   if (new URL(origin).protocol !== 'https:' || new URL(origin).origin !== origin) throw new Error('WEB_ORIGIN must be an exact HTTPS origin.');
   router.use((req, _res, next) => { if (!prefix.test(req.path)) { next('router'); return; } next(); });
