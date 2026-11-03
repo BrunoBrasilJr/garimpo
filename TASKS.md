@@ -2394,6 +2394,10 @@ Gates planejados: validação/monetário unitários, migration em schema separad
 
 O gate routes-check em 71f9ae1 passou build/tipos/lint e 107/108 unitários; o único FAIL é o teste histórico de bootstrap que exigia 404 para /orders quando essa rota ainda não existia. O novo router corretamente devolve 403 HTTPS_REQUIRED em HTTP. IN_PROGRESS → FAILED → IN_PROGRESS para adequação rastreável, sem DONE. PRIMARY adicional mínimo sob delegação: tests/bootstrap/api.test.ts somente atualizar esse cenário para provar a nova proteção HTTPS do POST /orders e preservar 404 em caminho inexistente. Não remover teste nem relaxar guarda para obter 404; acrescentar assert do código de erro. Demais casos e comandos preservados.
 
+#### Validação parcial e ajuste de sincronização — 2026-11-02
+
+acceptance-check.log em 285f1a7: build/tipos/lint, 108 unitários, 24 integrações de checkout, 22 de carrinho, 12 de preços, política de segurança e três E2E do painel de frete PASS. Seis E2E de carrinho PASS; o negativo restante parou na espera visual de login (10s) antes de testar a reserva. Screenshot retido em test-results/checkout/unavailable-login-failure.png mostra o cliente já autenticado ao capturar; não atribuir o erro à porta de pendentes nem dispensar o cenário. Regressões posteriores não executadas nessa tentativa. IN_PROGRESS → FAILED → IN_PROGRESS. PRIMARY adicional mínimo antes da edição: tests/e2e/cart/fixtures.ts somente sincronizar o helper de login com sua resposta HTTP real e validar status 200 antes de exigir a navegação; sem aumentar timeout, sleep ou alterar produto/autenticação. Mesma sincronização nos helpers de freight-admin, no próprio escopo. Repetir os casos afetados, preservando o log que falhou. Falhas anteriores de tipos/nomes de renovação e inicializador redundante de fixture permanecem em integration-check.log e integration-check2.log, corrigidas em e071fdf/c98d4d3; integration-check3.log teve 108 unitários/21 integrações PASS antes dos três casos finais adicionados.
+
 ### TASK-019 Implementar simulador, cobranças e estornos automáticos
 
 #### Status

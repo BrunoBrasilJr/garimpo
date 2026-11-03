@@ -25,7 +25,8 @@ export const test = configured.extend<{ scenario: { data: Awaited<ReturnType<typ
 });
 export async function login(page: Page, origin: string, email: string, password: string) {
   await page.goto(origin + '/#/login'); const form = page.getByRole('form', { name: 'Bom te ver de novo' });
-  await form.getByLabel('E-mail', { exact: true }).fill(email); await form.getByLabel('Senha', { exact: true }).fill(password); await form.getByRole('button').click();
+  await form.getByLabel('E-mail', { exact: true }).fill(email); await form.getByLabel('Senha', { exact: true }).fill(password);
+  const signed = page.waitForResponse(response => response.url() === origin + '/api/v1/auth/login' && response.request().method() === 'POST'); await form.getByRole('button').click(); expect((await signed).status()).toBe(200);
   await expect(page.getByRole('link', { name: 'Minha conta', exact: true })).toBeVisible();
 }
 export async function addNew(page: Page, origin: string, editionId: string, count = 1) {

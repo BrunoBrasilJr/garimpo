@@ -3,7 +3,8 @@ import { randomUUID } from 'node:crypto';
 import { resolve } from 'node:path';
 import { test, expect } from '../account/fixtures';
 async function login(page: Page, origin: string, email: string, password: string) {
-  await page.goto(origin + '/#/login'); const form = page.getByRole('form', { name: 'Bom te ver de novo' }); await form.getByLabel('E-mail', { exact: true }).fill(email); await form.getByLabel('Senha', { exact: true }).fill(password); await form.getByRole('button').click(); await expect(page.getByRole('link', { name: 'Minha conta', exact: true })).toBeVisible();
+  await page.goto(origin + '/#/login'); const form = page.getByRole('form', { name: 'Bom te ver de novo' }); await form.getByLabel('E-mail', { exact: true }).fill(email); await form.getByLabel('Senha', { exact: true }).fill(password);
+  const signed = page.waitForResponse(response => response.url() === origin + '/api/v1/auth/login' && response.request().method() === 'POST'); await form.getByRole('button').click(); expect((await signed).status()).toBe(200); await expect(page.getByRole('link', { name: 'Minha conta', exact: true })).toBeVisible();
 }
 async function fill(page: Page, region: string, start = '10000-000', end = '10999-999') {
   const form = page.getByRole('form', { name: 'Configurar frete' }); await form.getByLabel('Nome da região', { exact: true }).fill(region); await form.getByLabel('Valor do frete em reais', { exact: true }).fill('15,50'); await form.getByLabel('Prazo estimado em dias', { exact: true }).fill('7'); await form.getByLabel('CEP inicial da faixa 1', { exact: true }).fill(start); await form.getByLabel('CEP final da faixa 1', { exact: true }).fill(end); return form;
