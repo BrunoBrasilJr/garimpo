@@ -238,6 +238,8 @@ O carrinho envia esse contexto em leituras/mutações e preserva a mesma chave e
 corpo em repetição. Mescla local só é consumida após sucesso real; erro de rede
 retém intenção para replay, erro confirmado de revisão exige nova conferência.
 
+O mesmo cabeçalho opcional restritivo é aceito nas leituras/mutações de `/me/addresses` usadas pelo checkout: conta diferente retorna 403 ACCOUNT_CONTEXT_CHANGED antes do parser, inclusive com corpo inválido. Ausência do cabeçalho conserva os controles existentes de autenticação/propriedade/CSRF; ele não concede acesso nem substitui bearer/cookies. Interfaces de compra enviam o dono esperado também na seleção de endereço. Repetição de pedido/tentativa preserva chave e corpo originais num diário local por dono contendo somente referências e cenário; credenciais, endereço textual e preços autoritativos não entram nesse diário.
+
 ## RF-011 Cotar e criar pedido
 
 **Atores:** Visitante para frete; cliente para pedido. **Pré-condição:** Checkout válido, e-mail confirmado e endereço atendido para pedido.

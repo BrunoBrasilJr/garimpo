@@ -86,7 +86,9 @@ export async function startHarness({ realtime = false, configureWeb, reviewPurch
     advance,
     pauseNextCapture() {
       if (captureGate) throw new Error('A capture barrier is already armed.');
-      let enter, release; const reached = new Promise(resolve => { enter = resolve; }), wait = new Promise(resolve => { release = resolve; }); captureGate = { enter, wait };
+      /** @type {() => void} */ let enter = () => {};
+      /** @type {() => void} */ let release = () => {};
+      const reached = new Promise(resolve => { enter = () => resolve(undefined); }), wait = new Promise(resolve => { release = () => resolve(undefined); }); captureGate = { enter, wait };
       return { reached, release };
     },
     async paymentEvent(id, result, eventId = randomUUID()) { await localGateway.event(id, result, eventId); await new Payments(accounts, gateway).apply(id); },
