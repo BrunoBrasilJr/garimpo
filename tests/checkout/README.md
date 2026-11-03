@@ -38,6 +38,13 @@ trace, vídeo ou túnel público. Artefatos ignorados ficam em test-results/chec
 e test-results/account-ui; não compartilhar chaves/credenciais. Auditoria bruta
 e gate de política continuam resultados separados, sem alegar auditoria limpa.
 
+Em máquina com pouca memória, é possível executar os recortes em processos
+separados com `NODE_OPTIONS=--max-old-space-size=512`. Esse limite de heap foi
+validado na repetição de carrinho/contas/descontos; não modifica custo de senha,
+regras, TLS, banco, timeout dos cenários ou runtime normal da aplicação. Registrar
+as tentativas que falharem e o resultado de cada recorte, sem considerar uma
+seleção vazia ou uma suíte interrompida como aprovada. Não é aferição de SLA.
+
 Pedido inicial é PENDING com cobrança ACTIVE, sem venda/baixa física ou código
 de pagamento fictício. Simulador/expiração de pedido são TASK-019; UI de compra
 completa é TASK-020; logística/cancelamento têm tarefas próprias. Os testes

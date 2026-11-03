@@ -25,7 +25,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 15 | TASK-015 Checkpoint PHASE-02 | PHASE-02 | CRITICAL | TASK-009, TASK-010, TASK-011, TASK-012, TASK-013, TASK-014 | DONE |
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | DONE |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | DONE |
-| 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | IN_REVIEW |
+| 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | DONE |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | BLOCKED |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | BLOCKED |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | BLOCKED |
@@ -2302,7 +2302,7 @@ Scope Validation: Allowed Changes PASS; Incidental Changes PASS (um arquivo expo
 
 #### Status
 
-IN_REVIEW
+DONE
 
 #### Phase
 
@@ -2397,6 +2397,43 @@ O gate routes-check em 71f9ae1 passou build/tipos/lint e 107/108 unitários; o �
 #### Validação parcial e ajuste de sincronização — 2026-11-02
 
 acceptance-check.log em 285f1a7: build/tipos/lint, 108 unitários, 24 integrações de checkout, 22 de carrinho, 12 de preços, política de segurança e três E2E do painel de frete PASS. Seis E2E de carrinho PASS; o negativo restante parou na espera visual de login (10s) antes de testar a reserva. Screenshot retido em test-results/checkout/unavailable-login-failure.png mostra o cliente já autenticado ao capturar; não atribuir o erro à porta de pendentes nem dispensar o cenário. Regressões posteriores não executadas nessa tentativa. IN_PROGRESS → FAILED → IN_PROGRESS. PRIMARY adicional mínimo antes da edição: tests/e2e/cart/fixtures.ts somente sincronizar o helper de login com sua resposta HTTP real e validar status 200 antes de exigir a navegação; sem aumentar timeout, sleep ou alterar produto/autenticação. Mesma sincronização nos helpers de freight-admin, no próprio escopo. Repetir os casos afetados, preservando o log que falhou. Falhas anteriores de tipos/nomes de renovação e inicializador redundante de fixture permanecem em integration-check.log e integration-check2.log, corrigidas em e071fdf/c98d4d3; integration-check3.log teve 108 unitários/21 integrações PASS antes dos três casos finais adicionados.
+
+#### TASK Execution Report — 2026-11-02
+
+TASK: TASK-018. Status: DONE. Branch: feature/TASK-018-frete-pedidos. Commits reais f91a047..358132f, iniciados em a3079d9; implementação/contratos/fixtures e correções descritos no histórico da branch. Fechamento neste registro. Estados IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → FAILED → IN_REVIEW → DONE; tentativas falhas preservadas, sem tratá-las como PASS.
+
+Primary Changes: 39 arquivos PRIMARY, conforme delimitação anterior. apps/api/prisma/schema.prisma e migration 202611020006_freight_orders materializam FreightRate/CepRange, Order/OrderItem/OrderUnit, PaymentCharge inicial e vínculos de frete/transferência/uso, sem seeds de operação. EXCLUDE GiST garante faixas inclusivas não sobrepostas; CHECKs monetários/prazos, FKs RESTRICT e triggers protegem snapshots/unidades originais, sem extensão nova. apps/api/src/modules/freight/** e apps/web/src/features/admin/freight/** entregam gestão ADMIN/web, várias faixas, versão otimista, auditoria transacional, erros e layout ampliado. navigation/App e route web somente compõem/guardam esse painel. README e docs/architecture/{parametros,api,data-model}.md registram a resolução de implementação de PD-004, wire e modelo: sem tabela configurada não há atendimento; dados operacionais reais não foram inventados.
+
+checkout/{quotes,service}.ts, orders/**, accounts/checkout.ts e inventory/transfer.ts entregam cotação pública sem hold, cotação privada com produtos congelados, aceite de endereço/frete sem renovar prazo e criação PIX/BOLETO com conta apta/e-mail confirmado antes do primeiro pedido. Criar pedido transfere a mesma reserva sem lacuna, consome uso, materializa líquidos por unidade (inclusive zero), guarda snapshots e cobrança inicial ACTIVE e limpa carrinho atomicamente com auditoria/outbox/recibo. Sem baixar físico, aprovar pagamento ou enviar notificação fictícia. Idempotência preserva o mesmo recurso após reinício; alterações comerciais não reescrevem histórico. Prazo é revalidado após a última espera de lock; correção de CEP não encerra antecipadamente checkout vivo. app.ts e cart/router.ts somente compõem as novas rotas e o contador real de Order em transação, sem seletor HTTP/env para fixture.
+
+PRIMARY de testes: tests/checkout/**, tests/freight/**, tests/e2e/freight-admin/**; tests/cart/cart.integration.ts e tests/e2e/cart/{unavailable.spec.ts,README.md} preservam o negativo UNAVAILABLE por injeção explícita após o default real; tests/bootstrap/api.test.ts preserva ausência de rota desconhecida e acrescenta prova HTTPS_REQUIRED no novo POST /orders. tests/e2e/cart/fixtures.ts somente espera resposta real de login/status 200 antes da navegação. TASKS.md registra limites, estados e evidências. Demais caminhos propostos no início que não precisaram de edição não são apresentados como alterados.
+
+Incidental Changes:
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| packages/contracts/src/index.ts | Exportar somente os novos tipos de frete/cotação/pedido | Registro mínimo diretamente necessário aos módulos novos; aditivo, sem regra/autorização/arquitetura ou contrato incompatível. |
+| package.json | test:checkout e inclusão no verify | Gate necessário à suíte nova; nenhuma dependência, versão ou política de segurança alterada. |
+| tests/core/run-integration.mjs | Aceitar somente o nome checkout e prefixo task018 | Vincular a suíte ao runner existente, preservando guardas de URL/banco separado, schema UUID e ausência de reset/drop. Não abrir caminho arbitrário nem mudar proteção de dados. |
+
+Nove critérios incidentais PASS nos três registros: necessidade/causa direta, mínima alteração, sem funcionalidade independente, negócio, arquitetura, quebra de contrato, alteração de autoridade/proteção ou proibição. Orçamento limitado ao registro/export/comando do incremento, sem limpeza geral.
+
+Tests Executed: Ubuntu WSL, Node 24.22.1/npm 11.19.1/PostgreSQL 17; Firefox/HTTPS real com CA isolada confiada, sem bypass. Schemas novos retidos e dados sintéticos, sem migrar/resetar a base original.
+
+- schema-check.log em d1131db: geração/tipos PASS, nova migration aplicada e 22 integrações anteriores de carrinho PASS. services-check.log em fa13a14: build/tipos/lint PASS. routes-check.log registrou 107/108 unitários e a expectativa histórica de 404 corrigida conforme registro acima; não declarar esse comando aprovado.
+- integration-check.log falhou em tipos de fixtures (nome renew e ID opcional), corrigidos em e071fdf. integration-check2.log falhou por três inicializadores redundantes de observação, corrigidos em c98d4d3, sem desabilitar lint. integration-check3.log em c98d4d3: build/tipos/lint, 108 unitários e as primeiras 21 integrações novas PASS.
+- test-results/checkout/acceptance-check.log em 285f1a7: build/tipos/lint PASS; 108 unitários/24 arquivos PASS; 24 integrações novas em task018_8de91435380042948a3af3598ab24796 PASS; 22 de carrinho em task016_af0d669893a54e93a7c7dc7ef3f944e8 PASS; 12 de preços em task014_f272bb69c3bc4eb0beea56e068a8c2e4 PASS. Provas reais de duas sessões esperando em pg_stat_activity antes da liberação: recibo único, último usado, interseção de CEP e versão otimista. Fronteiras de relógio após lock testadas em compra e aceite de endereço. Rollback completo de auditoria de pedido e de configuração, snapshots/centavos/unidades gratuitas, conta/CSRF/origem/bearer/propriedade, primeiro e-mail, limite real de três e preservação do prazo original aprovados. Contagem do incremento não usa KNOWN 0.
+- Mesmo log: audit:toolchain PASS na política/hash/mitigações; auditoria bruta continua FAIL, exit 1, sete achados low de deepmerge, nenhum moderate/high/critical. Dependências/patches anteriores preservados; nenhuma auditoria limpa alegada. Três E2E novos do painel de frete PASS. O comando completo terminou FAIL somente na espera visual do último login do carrinho; seis outros casos PASS e tentativa retida.
+- ui-recheck.log em fb7234e: tipos/lint e três E2E de frete PASS novamente; seis E2E de carrinho PASS, incluindo o negativo de pendentes, mas um cenário atingiu 180s no preparo administrativo. Não foi falha de uma asserção de compra nem foi descartado. Observação de ambiente: Windows com 7916 MB totais e somente 85 MB livres. IN_REVIEW → FAILED → IN_REVIEW; não fechar aplicativos alheios nem alterar custo de senha, TLS ou timeout para obter PASS.
+- remaining-ui.log: primeira expressão de seleção ancorada retornou zero casos e exit 1; resultado NÃO é PASS. Seleção corrigida em remaining-ui2.sh. test-results/checkout/remaining-ui2.log em 358132f, exit 0: cenário restante do carrinho PASS (1), contas/equipe PASS (7), descontos PASS (2), com heap Node limitado a 512 MiB apenas nesses processos e execução isolada. Produto em apps/packages é idêntico ao código 285f1a7 validado acima; somente documentação e sincronização de fixture mudaram depois. Assim todos os sete cenários de carrinho têm repetição válida no código atual, sem afirmar sucesso da execução conjunta que falhou ou aferição de desempenho/SLA. As duas tentativas continuam disponíveis para revisão.
+- Testes de painel usam dados efetivamente cadastrados por ADMIN via API/UX, não tabela de operação presumida. Layout/foco web 390px e texto 200%, ausência de rolagem horizontal e screenshot freight-narrow-enlarged.png inspecionados. Exportações mobile não foram repetidas: nenhum código de interface mobile/dependência mudou, apenas tipos e API; typecheck mobile e regressão RNW do carrinho PASS. Aparelho, escala nativa e leitores NÃO EXECUTADOS, sem alegação de aceite.
+- git diff --check PASS; verificador documental preserva 37 IDs/79 dependências/grafo acíclico e índice/seções coerentes. Sem alteração de fonte original ou renumeração.
+
+Quality Gates: Build PASS; Lint PASS; Unit Tests PASS (108); Integration Tests PASS (24 novos + 22 carrinho + 12 preços pertinentes); API Tests PASS; Security PASS na política/mitigações/guardas, auditoria bruta FAIL conhecida explicitamente preservada; Acceptance Criteria PASS no incremento; Regression Tests PASS por recortes reais (7 carrinho, 7 contas/equipe, 2 descontos e 3 novos de frete). Registros anteriores não afetados preservados. Não executar verify completo de fase nem certificar desempenho nesta tarefa; checkpoint 024 exige os gates acumulados da fase.
+
+Scope Validation: Allowed Changes PASS com precisões PRIMARY rastreáveis; Incidental Changes PASS conforme tabela; Forbidden Changes PASS; Scope Creep NONE. Definition of Done PASS. 18/37 DONE; acumulado 291 casos distintos com evidências = 108 unitários + 151 integrações + 32 E2E. Dados/ZIP originais preservados; nenhum novo túnel, cobrança real, implantação ou mensagem externa.
+
+Next Eligible TASK: TASK-019 candidata, dependência 018 concluída, própria DoR/Scope Guard antes de iniciar. Fronteiras explícitas: 019 deve processar expiração/cancelamento de pendente/cobrança e liberação do cupom consumido, pagamento tardio e estorno, sem tomar o contador/hold lógico expirado como prova de transição já executada. UI de compra completa é 020, logística 021 e cancelamento administrativo de vínculos 022. Continuidade até 28/37 permanece autorizada; nenhum checkpoint pulado.
 
 ### TASK-019 Implementar simulador, cobranças e estornos automáticos
 
