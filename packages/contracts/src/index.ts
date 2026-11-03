@@ -20,3 +20,4 @@ export type { GuestLine, GuestMergeIntent, GuestCartState, GuestStorage, GuestEx
 export type { PaymentScenario, PaymentView, PaymentPage, RefundView, CommerceMessageContent } from './payments/index.js';
 export { PurchaseJournal, PurchaseJournalError, decodePurchaseJournal } from './checkout/journal.js';
 export type { PurchaseIntent, OrderIntent, PurchaseJournalState, PurchaseStorage } from './checkout/journal.js';
+export type { OrderStage, LogisticsStage, OriginalShipmentView, OrderStageEvent, OrderCustomer, OrderSummary, OrderPage, OrderPayment, HistoryPage, OrderDetail, LogisticsCommand, ShipmentMessageContent } from './orders/index.js';

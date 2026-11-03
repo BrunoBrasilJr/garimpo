@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { RestrictedMessage, AvailabilityMessageContent, CommerceMessageContent } from '@garimpo/contracts';
+import type { RestrictedMessage, AvailabilityMessageContent, CommerceMessageContent, ShipmentMessageContent } from '@garimpo/contracts';
 import type { Prisma } from '../../persistence/client.ts';
 import type { User } from '../../persistence/generated/client.ts';
 import { serializable } from '../../persistence/transaction.ts';
@@ -59,7 +59,7 @@ export class AccessMessages {
     // Recipient is inside the encrypted body. Bound scanning rather than pretending it is indexed plaintext.
     const rows = await this.accounts.db.demoMessage.findMany({ where, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: filter.recipient ? 1000 : pageSize, skip: filter.recipient ? 0 : (page - 1) * pageSize });
     const opened = rows.map(row => ({ id: row.id, type: row.type, status: row.status, attempts: row.attempts,
-      deliveredAt: row.deliveredAt?.toISOString() ?? null, content: JSON.parse(this.protection.open(row.id, row.restrictedBody)) as RestrictedMessage['content'] | AvailabilityMessageContent | CommerceMessageContent }));
+      deliveredAt: row.deliveredAt?.toISOString() ?? null, content: JSON.parse(this.protection.open(row.id, row.restrictedBody)) as RestrictedMessage['content'] | AvailabilityMessageContent | CommerceMessageContent | ShipmentMessageContent }));
     const matched = filter.recipient ? opened.filter(row => row.content.recipient === filter.recipient).slice((page - 1) * pageSize, page * pageSize) : opened;
     if (id && !matched.length) throw new AccountError(404, 'MESSAGE_NOT_FOUND');
     return id ? matched[0]! : { items: matched, page, pageSize, recipientScanLimit: filter.recipient ? 1000 : null };
