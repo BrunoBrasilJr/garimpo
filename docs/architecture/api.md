@@ -249,7 +249,7 @@ retém intenção para replay, erro confirmado de revisão exige nova conferênc
 | API | Método | Rota/operação | Entrada | Saída/finalidade | Respostas |
 | --- | --- | --- | --- | --- | --- |
 | API-011.01 | POST | /checkout/quote | itens ou checkoutId, CEP/endereço, cupom | preços, frete/cobertura, prazos e revisão; visitante permitido | 200; 422 CEP/cupom; 409 revisão |
-| API-011.02 | POST | /orders | checkoutId, método PIX/BOLETO, endereço e frete aceitos, chave | pedido pendente; Pix 30min/boleto 2 dias; cobrança ativa | 201; 403 e-mail não confirmado; 409 prazo/saldo |
+| API-011.02 | POST | /orders | checkoutId, método PIX/BOLETO, endereço e frete aceitos, chave | pedido pendente; Pix 30min/boleto 2 dias; cobrança ativa | 201; 403 e-mail não confirmado; 409 prazo/saldo/revisão; 422 dados/CEP |
 | API-011.03 | PATCH | /checkouts/{id}/address | endereço próprio e revisão de frete aceita | frete recalculado; prazo original preservado | 200; 422 não atendido |
 
 Detalhamento RF-011/RF-029 (TASK-018): POST /checkout/quote aceita exatamente
