@@ -198,3 +198,8 @@ test('persisted blocked customer state is revalidated before any order or transf
   await expect(f.orders.create(buyer.accessToken, ready.body, ready.key)).rejects.toMatchObject({ code: 'ACCOUNT_UNAVAILABLE' }); expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0); expect((await f.db.reservation.findFirstOrThrow({ where: { checkoutItem: { checkoutId: ready.checkout.id } } })).orderItemId).toBeNull();
   // Administrative cancellation of existing holds belongs to TASK-022; no fake cancellation is asserted.
 });
+
+test('customer bearer creates only the owned initial order without web cookies or a simulated payment approval', async () => {
+  const ready = await f.ready(buyer), result = await f.server.call<OrderCreationView>('/orders', 'POST', ready.body, { 'X-Garimpo-Client': 'mobile', Authorization: 'Bearer ' + buyer.accessToken, 'X-Garimpo-Account': buyer.user.id, 'Idempotency-Key': ready.key });
+  expect(result.status).toBe(201); expect(result.headers['set-cookie']).toBeUndefined(); expect(result.body.status).toBe('PENDING'); expect(result.body.charges[0]!.status).toBe('ACTIVE');
+});
