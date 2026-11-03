@@ -26,7 +26,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | DONE |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | DONE |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | DONE |
-| 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | IN_PROGRESS |
+| 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | DONE |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | BLOCKED |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | BLOCKED |
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | BLOCKED |
@@ -2439,7 +2439,7 @@ Next Eligible TASK: TASK-019 candidata, dependência 018 concluída, própria Do
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -2487,7 +2487,7 @@ Criar cartão antes de pedido, confirmação Pix/boleto, vencimento, cobrança i
 - apps/api/src/modules/orders/** criação atômica do pedido pago por cartão
 - apps/api/src/modules/accounts/** consulta de e-mail confirmado antes da criação
 
-Precisão PRIMARY da TASK-019, registrada antes das edições: contratos em packages/contracts/src/payments/**; apps/api/src/app.ts somente composição do roteador e porta substituível do simulador; docs/architecture/api.md, data-model.md e parametros.md somente wire, persistência e retomada de pagamentos/estornos. tests/catalog/http.ts somente composição opcional da porta no harness; tests/payments/** inclui fixtures próprias, API e concorrência real. modules/checkout/lifecycle.ts e modules/pricing/usage.ts somente coordenação MVCC de cupom e exclusão lógica de usos de pedidos pendentes vencidos; modules/orders/service.ts somente extração mínima da criação atômica compartilhada. modules/messaging/run-worker.ts somente inclusão do consumidor comercial. Registro mínimo de scripts, export de contratos e seleção da suite no runner são candidatos INCIDENTAl, sujeitos aos nove critérios. Sem interface nesta tarefa, sem autorização de pós-venda, sem novo serviço/dependência externa e sem relógio público.
+Precisão PRIMARY da TASK-019, registrada antes das edições: contratos em packages/contracts/src/payments/**; apps/api/src/app.ts somente composição do roteador e porta substituível do simulador; docs/architecture/api.md, data-model.md e parametros.md somente wire, persistência e retomada de pagamentos/estornos. tests/catalog/http.ts somente composição opcional da porta no harness; tests/payments/** inclui fixtures próprias, API e concorrência real. modules/checkout/lifecycle.ts e modules/pricing/usage.ts somente coordenação MVCC de cupom e exclusão lógica de usos de pedidos pendentes vencidos; modules/orders/service.ts somente extração mínima da criação atômica compartilhada. modules/messaging/run-worker.ts somente inclusão do consumidor comercial. Registro mínimo de scripts, export de contratos e seleção da suite no runner são candidatos INCIDENTAL, sujeitos aos nove critérios. Sem interface nesta tarefa, sem autorização de pós-venda, sem novo serviço/dependência externa e sem relógio público.
 
 DoR 2026-11-02: TASK-018 DONE/009333a e artefatos existentes; gates relevantes da dependência preservados, inclusive 24 integrações de checkout e regressões de carrinho/preço. ADR-002/003/004 ACCEPTED, regras e APIs relidas; nenhuma PD impeditiva deste incremento. Autorização contínua posterior do responsável já registrada prevalece sobre a etapa documental histórica, preservada em AGENTS. Branch real feature/TASK-019-pagamentos-simulados, base 009333a. BLOCKED → READY → IN_PROGRESS. ZIP do usuário preservado. Gateway local substituível chamado entre transações: intenção, resultado durável e aplicação separados. PENDING é resolvido por comando técnico LOCAL, sem alterar prazo/relógio; confirmação após prazo estorna. Falha de estorno fica visível; somente sistema/ADMIN repetem automático. Eventos financeiros imutáveis separam venda e estorno tardio sem venda. A validação incluirá reinício, falha de mensagem e disputa entre duas conexões PostgreSQL.
 
@@ -2524,7 +2524,44 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+#### TASK Execution Report — 2026-11-02
+
+TASK: TASK-019. Status: DONE. Branch: feature/TASK-019-pagamentos-simulados, base 009333a. Commits reais d01e7d4, 0f5adcd, bbfc76e, 11b879f, 5b1ea36 e 3cc457e; fechamento documental neste registro. Estados BLOCKED → READY → IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE, preservadas as tentativas falhas descritas acima.
+
+Primary Changes: 31 arquivos PRIMARY. TASKS.md registra escopo/estado/evidência; apps/api/prisma/schema.prisma e migration 202611020007_payments materializam tentativas, obrigações, recibos, eventos financeiros, cadeia de cobranças, FKs, CHECKs, limites e imutabilidade. apps/api/src/app.ts compõe somente o roteador/porta; jobs/order-expiry.ts processa lote limitado em banco. modules/payments/{charges,cli,draft,gateway,router,service,validation}.ts implementam o simulador local, intenção/recibo/aplicação separados, retomada, consultas próprias e substituição interna de cobrança. modules/orders/{service,expiry}.ts compartilham a escrita atômica e vencimento; inventory/payment.ts consome reserva/estoque com movimento único; checkout/lifecycle.ts e pricing/usage.ts coordenam cupom por MVCC e excluem uso de pendente logicamente vencido, preservando consumos pagos. modules/refunds/automatic.ts registra obrigação/tentativas e repete somente automático por sistema/ADMIN, sem autorização de pós-venda. modules/messaging/{commerce,run-worker,service}.ts preparam/entregam mensagens comerciais protegidas, repetíveis e com texto legível, sem SMTP real. packages/contracts/src/payments/index.ts define wire/tipos; docs/architecture/{api,data-model,parametros}.md detalham contratos/modelo/fronteira ratificada; tests/catalog/http.ts só compõe a porta opcional do harness; tests/payments/{README.md,fixtures.ts,payments.integration.ts,validation.test.ts,vitest.integration.config.ts} registram/verificam o incremento.
+
+### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| package.json | scripts test:payments, simulator, orders:expire e inclusão da suite no verify | Registro mínimo dos comandos já implementados, necessário para reproduzir os gates. |
+| packages/contracts/src/index.ts | exports dos tipos de pagamento/mensagem comercial | Disponibilizar os contratos no ponto público já existente; adição compatível sem comportamento. |
+| tests/core/run-integration.mjs | seleção da suite payments e prefixo isolado task019 | Reusar o runner seguro e migrations existentes para testar o módulo sem tocar na base original. |
+
+Nove critérios PASS para os três incidentais: indispensáveis/diretamente causados, mínimos, sem funcionalidade de negócio independente, arquitetura, segurança ou quebra de contrato; nenhum Forbidden Change. Ajustes de segurança/coordenação/transição estão PRIMARY, explicitados antes da edição.
+
+### Tests Executed
+
+Ambiente real: Ubuntu WSL2, Node 24.22.1/npm 11.19.1, PostgreSQL 17 em loopback/garimpo_test, checkout nativo isolado de validação. Nenhum reset/drop/truncate da base original; schemas mantidos. Limite de heap 1536 MiB somente nos processos Node dos gates após OOM do compilador com 512 MiB; sem redução de scrypt, casos ou validação.
+
+- test-results/payments/acceptance3.log, revisão 5b1ea36, exit 0: npm run build/typecheck/lint, npm test (111 PASS), test:payments (30 PASS), test:checkout (24 PASS, schema task018_d32f5e00b51a46dd84ac33355c21e458), test:cart (22 PASS, task016_3fd11d2757b24898a7aec80555d44ce4), test:pricing (12 PASS, task014_177a69f454164026bc2d9765ebf59b54) e audit:toolchain PASS na política restritiva.
+- test-results/payments/final.log, revisão 3cc457e, exit 0: build/tipos/lint e 111 unitários PASS; test:payments 32/32 PASS no schema task019_c7fbeb79bf634254866d3195636351eb, incluindo os dois casos finais de cupom MVCC e limite/autoridade de estorno; test:messaging 16/16 PASS em task005_4eeb4c07b88f44c490af893d9d1353c7, inclusive worker real Node strip-only, caixa técnica, links e concorrência. Mudanças desde a rodada anterior somente contratos/texto de mensagens comerciais e testes correspondentes; regras de criação/estoque/carrinho/preços permaneceram idênticas às regressões aprovadas.
+- As 32 integrações financeiras usam HTTPS e banco reais, confirmações antes e exatamente no prazo, recusa sem pedido, estoque usado, Pix/boleto, replay, tentativa pendente sem renovação, troca de método/endereço, bloqueio, expiração/liberação de cupom, cobrança substituída e restituição do valor antigo. Gateway em espera comprova intenção commitada e aquisição da identidade por outro job enquanto a porta aguarda fora de transação. Falhas após recibo de captura/estorno e falha de auditoria comprovam retomada sem venda/crédito duplicado. Duas sessões realmente bloqueadas em pg_stat_activity verificam aplicação única, expiração/aprovação, estorno concorrente e cupom pago que não pode ser reutilizado por snapshot antigo. CLI de fonte e compilado resolvem/repetem a mesma confirmação realmente tardia em processos separados, sem relógio público. Triggers recusam alteração de evento/recibo e excesso de obrigação sobre captura.
+- Mensagens comerciais criptografadas, deduplicadas e entrega FAILED → DELIVERED sem desfazer venda, com repetição independente, PASS. Auditoria bruta mantém FAIL/exit 1: sete achados low conhecidos de deepmerge, zero moderate/high/critical; política/hash/mitigações e regressões de protótipo/assinatura/schema PASS, sem esconder o relatório. Aviso de depreciação do driver pg permanece nos logs de integrações; não foi suprimido nem tratado como falha de critério financeiro.
+- git diff --check e checker de backlog PASS: 37 IDs, 79 arestas, grafo acíclico, índice/seções coerentes. Não houve alteração de dependência, fonte original, serviço externo, túnel, cobrança real ou envio de email.
+
+### Quality Gates
+
+Build PASS; Lint PASS; Unit Tests PASS (111); Integration Tests PASS (32 financeiros + recortes reais 24 checkout/22 carrinho/12 preços/16 mensagens); API Tests PASS; Security PASS nos controles/política ratificada, auditoria bruta FAIL conhecida preservada; Acceptance Criteria PASS; Regression Tests PASS nos recortes afetados. Não há interface nova: exportações/E2E visuais/aparelhos/leitores N/A por ausência de mudança de UI; não foram certificados nem repetidos artificialmente. Checkpoint 024 exigirá gates acumulados da fase.
+
+### Scope Validation
+
+Allowed Changes PASS com precisão rastreável; Incidental Changes PASS; Forbidden Changes PASS; Scope Creep NONE. Definition of Done PASS. 19/37 DONE; acumulado 326 casos distintos com evidência = 111 unitários + 183 integrações + 32 E2E. ZIP e dados originais preservados.
+
+### Next Eligible TASK
+
+TASK-020 candidata, dependências 017/018/019 DONE, exige própria DoR/Scope Guard antes de promoção. UI de endereço/frete/método e acompanhamento ainda não entregue; logística 021, política de bloqueio/encerramento 022 e integrações 023 seguem suas tarefas. Continuidade explicitamente autorizada até pelo menos 28/37; nenhum checkpoint foi antecipado.
+
 
 ### TASK-020 Criar checkout e simulação nos clientes
 
