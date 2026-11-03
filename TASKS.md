@@ -26,7 +26,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 16 | TASK-016 Implementar carrinho e reserva única de checkout | PHASE-03 | CRITICAL | TASK-015, TASK-014 | DONE |
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | DONE |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | DONE |
-| 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | BLOCKED |
+| 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | IN_PROGRESS |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | BLOCKED |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | BLOCKED |
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | BLOCKED |
@@ -2439,7 +2439,7 @@ Next Eligible TASK: TASK-019 candidata, dependência 018 concluída, própria Do
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2486,6 +2486,10 @@ Criar cartão antes de pedido, confirmação Pix/boleto, vencimento, cobrança i
 - apps/api/src/modules/checkout/** fechamento pelo resultado do cartão
 - apps/api/src/modules/orders/** criação atômica do pedido pago por cartão
 - apps/api/src/modules/accounts/** consulta de e-mail confirmado antes da criação
+
+Precisão PRIMARY da TASK-019, registrada antes das edições: contratos em packages/contracts/src/payments/**; apps/api/src/app.ts somente composição do roteador e porta substituível do simulador; docs/architecture/api.md, data-model.md e parametros.md somente wire, persistência e retomada de pagamentos/estornos. tests/catalog/http.ts somente composição opcional da porta no harness; tests/payments/** inclui fixtures próprias, API e concorrência real. modules/checkout/lifecycle.ts e modules/pricing/usage.ts somente coordenação MVCC de cupom e exclusão lógica de usos de pedidos pendentes vencidos; modules/orders/service.ts somente extração mínima da criação atômica compartilhada. modules/messaging/run-worker.ts somente inclusão do consumidor comercial. Registro mínimo de scripts, export de contratos e seleção da suite no runner são candidatos INCIDENTAl, sujeitos aos nove critérios. Sem interface nesta tarefa, sem autorização de pós-venda, sem novo serviço/dependência externa e sem relógio público.
+
+DoR 2026-11-02: TASK-018 DONE/009333a e artefatos existentes; gates relevantes da dependência preservados, inclusive 24 integrações de checkout e regressões de carrinho/preço. ADR-002/003/004 ACCEPTED, regras e APIs relidas; nenhuma PD impeditiva deste incremento. Autorização contínua posterior do responsável já registrada prevalece sobre a etapa documental histórica, preservada em AGENTS. Branch real feature/TASK-019-pagamentos-simulados, base 009333a. BLOCKED → READY → IN_PROGRESS. ZIP do usuário preservado. Gateway local substituível chamado entre transações: intenção, resultado durável e aplicação separados. PENDING é resolvido por comando técnico LOCAL, sem alterar prazo/relógio; confirmação após prazo estorna. Falha de estorno fica visível; somente sistema/ADMIN repetem automático. Eventos financeiros imutáveis separam venda e estorno tardio sem venda. A validação incluirá reinício, falha de mensagem e disputa entre duas conexões PostgreSQL.
 
 #### Incidental Changes Policy
 

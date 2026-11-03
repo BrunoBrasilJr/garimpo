@@ -11,14 +11,17 @@ import type { ReviewOptions } from './modules/reviews/router.ts';
 import { createCartRouter } from './modules/cart/router.ts';
 import type { CheckoutOptions } from './modules/cart/router.ts';
 import { createFreightOrderRouter } from './modules/freight/router.ts';
+import { createPaymentsRouter } from './modules/payments/router.ts';
+import type { PaymentOptions } from './modules/payments/router.ts';
 
-export function createApp(accounts?: AccountsOptions, messaging?: MessagingOptions, catalog?: CatalogOptions, reviews?: ReviewOptions, checkout?: CheckoutOptions) {
+export function createApp(accounts?: AccountsOptions, messaging?: MessagingOptions, catalog?: CatalogOptions, reviews?: ReviewOptions, checkout?: CheckoutOptions, payments?: PaymentOptions) {
   const app = express();
   app.disable('x-powered-by');
   app.get('/health', (_request, response) => {
     const body: HealthResponse = { status: 'ok', service: 'garimpo-api' };
     response.json(body);
   });
+  app.use('/api/v1', createPaymentsRouter({ ...accounts, ...payments }));
   app.use('/api/v1', createFreightOrderRouter({ ...accounts, ...checkout }));
   app.use('/api/v1', createCartRouter({ ...accounts, ...checkout }));
   app.use('/api/v1', createReviewsRouter({ ...accounts, ...reviews }));

@@ -594,6 +594,7 @@ model Checkout {
   freightSnapshot Json?
   freightRevision String? @db.Char(64)
   order Order?
+  paymentAttempts PaymentAttempt[]
   @@unique([userId, requestKey])
   @@index([userId, status, expiresAt])
   @@index([status, expiresAt, id])
@@ -724,6 +725,9 @@ model Order {
   items OrderItem[]
   charges PaymentCharge[]
   couponUsage CouponUsage?
+  paymentAttempts PaymentAttempt[]
+  refunds Refund[]
+  financialEvents FinancialEvent[]
   @@index([userId, status, expiresAt])
   @@index([status, expiresAt, id])
 }
@@ -769,6 +773,101 @@ model PaymentCharge {
   status ChargeStatus @default(ACTIVE)
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   expiresAt DateTime @db.Timestamptz(3)
+  productCents BigInt @default(0)
+  shippingCents Int @default(0)
+  supersedesId String? @unique @db.Uuid
+  supersedes PaymentCharge? @relation("ChargeReplacement", fields: [supersedesId], references: [id], onDelete: Restrict)
+  replacement PaymentCharge? @relation("ChargeReplacement")
+  paymentAttempts PaymentAttempt[]
   @@index([orderId])
   @@index([status, expiresAt])
+}
+
+enum PaymentResult {
+  PENDING
+  APPROVED
+  DECLINED
+}
+enum RefundStatus {
+  PENDING
+  FAILED
+  SUCCEEDED
+}
+model PaymentAttempt {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  checkoutId String @db.Uuid
+  checkout Checkout @relation(fields: [checkoutId], references: [id], onDelete: Restrict)
+  orderId String? @db.Uuid
+  order Order? @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  chargeId String? @db.Uuid
+  charge PaymentCharge? @relation(fields: [chargeId], references: [id], onDelete: Restrict)
+  method PaymentMethod
+  scenario String @db.VarChar(30)
+  result PaymentResult @default(PENDING)
+  amountCents BigInt
+  productCents BigInt
+  shippingCents Int
+  context Json
+  eventKey String @unique @db.VarChar(200)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  receivedAt DateTime? @db.Timestamptz(3)
+  appliedAt DateTime? @db.Timestamptz(3)
+  outcome String? @db.VarChar(40)
+  refunds Refund[]
+  financialEvents FinancialEvent[]
+  @@index([userId, createdAt, id])
+  @@index([chargeId])
+  @@index([checkoutId])
+  @@index([result, appliedAt])
+}
+model Refund {
+  id String @id @default(uuid()) @db.Uuid
+  paymentAttemptId String @db.Uuid
+  paymentAttempt PaymentAttempt @relation(fields: [paymentAttemptId], references: [id], onDelete: Restrict)
+  orderId String? @db.Uuid
+  order Order? @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  origin String @db.VarChar(40)
+  originKey String @unique @db.VarChar(200)
+  status RefundStatus @default(PENDING)
+  productCents BigInt
+  shippingCents Int
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  completedAt DateTime? @db.Timestamptz(3)
+  attempts RefundAttempt[]
+  financialEvents FinancialEvent[]
+  @@index([paymentAttemptId])
+  @@index([orderId])
+  @@index([status, createdAt, id])
+}
+model RefundAttempt {
+  id String @id @default(uuid()) @db.Uuid
+  refundId String @db.Uuid
+  refund Refund @relation(fields: [refundId], references: [id], onDelete: Restrict)
+  attemptKey String @unique @db.VarChar(200)
+  actorId String? @db.Uuid
+  scenario String @db.VarChar(30)
+  result RefundStatus @default(PENDING)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  receivedAt DateTime? @db.Timestamptz(3)
+  appliedAt DateTime? @db.Timestamptz(3)
+  @@index([refundId])
+}
+model FinancialEvent {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String? @db.Uuid
+  order Order? @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  paymentAttemptId String @db.Uuid
+  paymentAttempt PaymentAttempt @relation(fields: [paymentAttemptId], references: [id], onDelete: Restrict)
+  refundId String? @db.Uuid
+  refund Refund? @relation(fields: [refundId], references: [id], onDelete: Restrict)
+  type String @db.VarChar(40)
+  productCents BigInt
+  shippingCents Int
+  occurredAt DateTime @db.Timestamptz(3)
+  eventKey String @unique @db.VarChar(200)
+  @@index([orderId])
+  @@index([paymentAttemptId])
+  @@index([refundId])
+  @@index([occurredAt, type])
 }

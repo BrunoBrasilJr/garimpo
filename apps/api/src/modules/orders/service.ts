@@ -8,6 +8,7 @@ import { appendAudit } from '../../core/audit.ts';
 import { enqueue } from '../../core/outbox.ts';
 import { json } from '../cart/quote.ts';
 import { CartError, missing } from '../cart/errors.ts';
+import type { CheckoutRecord } from '../checkout/lifecycle.ts';
 import { checkoutInclude, closeCheckout, lockCustomer, lockCoupons } from '../checkout/lifecycle.ts';
 import { requirePendingCapacity } from '../checkout/pending-orders.ts';
 import { lockOffers, reservedQuantities } from '../inventory/reservations.ts';
@@ -18,9 +19,9 @@ import { ownAddress } from '../checkout/quotes.ts';
 import { orderPendingCount } from './pending-orders.ts';
 import type { CreateOrderInput } from './validation.ts';
 import * as validate from './validation.ts';
-const include = { items: { include: { units: { orderBy: { logicalIndex: 'asc' } } }, orderBy: { offerId: 'asc' } }, charges: { orderBy: { createdAt: 'asc' } } } satisfies Prisma.OrderInclude;
-type OrderRecord = Prisma.OrderGetPayload<{ include: typeof include }>;
-function cents(value: bigint): number { const number = Number(value); if (!Number.isSafeInteger(number) || number < 0) throw new Error('Stored monetary total is outside the exact JSON range.'); return number; }
+export const include = { items: { include: { units: { orderBy: { logicalIndex: 'asc' } } }, orderBy: { offerId: 'asc' } }, charges: { orderBy: { createdAt: 'asc' } } } satisfies Prisma.OrderInclude;
+export type OrderRecord = Prisma.OrderGetPayload<{ include: typeof include }>;
+export function cents(value: bigint): number { const number = Number(value); if (!Number.isSafeInteger(number) || number < 0) throw new Error('Stored monetary total is outside the exact JSON range.'); return number; }
 export const orderDeadline = (method: 'PIX' | 'BOLETO', now: Date) => new Date(now.getTime() + (method === 'PIX' ? 30 * 60 * 1000 : 48 * 60 * 60 * 1000));
 export class Orders {
   readonly accounts: Accounts;
@@ -62,22 +63,28 @@ export class Orders {
       const otherHolds = await reservedQuantities(tx, checkout.items.map(item => item.offerId), now, checkout.id), offers = await tx.offer.findMany({ where: { id: { in: checkout.items.map(item => item.offerId) } } });
       if (checkout.items.some(item => item.quantity > (offers.find(offer => offer.id === item.offerId)?.stockOnHand ?? 0) - (otherHolds.get(item.offerId) ?? 0))) throw new CartError(409, 'INSUFFICIENT_STOCK', 'Não foi possível confirmar todo o saldo reservado. Tente novamente após conferir os itens.');
       if (snapshot.quote.couponId && (checkout.couponUsage?.status !== 'RESERVED' || checkout.couponUsage.expiresAt <= now || checkout.couponUsage.couponId !== snapshot.quote.couponId)) throw new CartError(409, 'COUPON_RESERVATION_UNAVAILABLE', 'Não foi possível confirmar a utilização reservada do cupom.');
-      const expiresAt = orderDeadline(input.method, now), totalCents = snapshot.quote.totalCents + freight.amountCents;
-      const row = await tx.order.create({ data: {
-        userId: user.id, checkoutId: checkout.id, method: input.method, status: 'PENDING', snapshot: json(snapshot), addressSnapshot: json(address), freightSnapshot: json(freight),
-        subtotalCents: BigInt(snapshot.quote.baseSubtotalCents), discountCents: BigInt(snapshot.quote.baseSubtotalCents - snapshot.quote.totalCents), shippingCents: freight.amountCents, totalCents: BigInt(totalCents), createdAt: now, expiresAt,
-        items: { create: snapshot.products.map(product => ({ offerId: product.offerId, editionId: product.editionId, quantity: product.quantity, productSnapshot: json(product),
-          units: { create: product.unitIds.map((id, logicalIndex) => { const unit = snapshot.quote.units.find(unit => unit.id === id && unit.offerId === product.offerId); if (!unit) throw new Error('Frozen unit allocation is incomplete.'); return { id, logicalIndex, netPaidCents: unit.netPriceCents, priceSnapshot: json(unit), currentOfferId: product.offerId }; }) }
-        })) }, charges: { create: { method: input.method, amountCents: BigInt(totalCents), status: 'ACTIVE', createdAt: now, expiresAt } }
-      }, include });
-      for (const item of row.items) { const source = checkout.items.find(source => source.offerId === item.offerId); if (!source || source.quantity !== item.quantity) throw new Error('Frozen order and checkout quantities disagree.'); await transferReservation(tx, source.id, item.id, item.quantity, now, expiresAt); }
-      if (checkout.couponUsage) { const usage = await tx.couponUsage.updateMany({ where: { id: checkout.couponUsage.id, status: 'RESERVED', expiresAt: { gt: now } }, data: { orderId: row.id, status: 'CONSUMED', expiresAt } }); if (usage.count !== 1) throw new Error('Expected reserved coupon usage before order conversion.'); }
-      await tx.checkout.update({ where: { id: checkout.id, status: 'ACTIVE' }, data: { status: 'CONVERTED', closedAt: now, version: { increment: 1 } } });
-      await tx.cartItem.deleteMany({ where: { cartId: cart.id } }); await tx.cart.update({ where: { id: cart.id }, data: { version: { increment: 1 }, updatedAt: now } });
-      await appendAudit(tx, { actorId: user.id, action: 'ORDER.CREATED', targetType: 'ORDER', targetId: row.id, result: 'SUCCESS', reason: 'CHECKOUT_HOLD_ATOMICALLY_TRANSFERRED', changes: { checkoutId: checkout.id, method: input.method, totalCents, expiresAt: expiresAt.toISOString() } }, this.accounts.clock);
-      await enqueue(tx, { type: 'ORDER.CREATED', aggregateId: row.id, payload: { orderId: row.id, userId: user.id } }, this.accounts.clock);
+      const row = await materializeOrder(this.accounts, tx, checkout, snapshot, address, freight, input.method, now);
       await tx.idempotencyRecord.create({ data: { ...receipt, requestHash, resultRef: row.id, createdAt: now } }); return { row };
     });
     if (result.error) throw result.error; return this.view(result.row!);
   }
+}
+
+/** Caller holds User, sorted offers/coupon and accepted freight; all financial checks occur before this shared atomic write. */
+export async function materializeOrder(accounts: Accounts, tx: Prisma.TransactionClient, checkout: CheckoutRecord, snapshot: CheckoutSnapshot, address: AcceptedFreight['address'], freight: AcceptedFreight['freight'], method: 'PIX' | 'BOLETO' | 'CARD', now: Date): Promise<OrderRecord> {
+      const expiresAt = method === 'CARD' ? null : orderDeadline(method, now), totalCents = snapshot.quote.totalCents + freight.amountCents;
+      const row = await tx.order.create({ data: {
+        userId: checkout.userId, checkoutId: checkout.id, method: method, status: method === 'CARD' ? 'PAID' : 'PENDING', paidAt: method === 'CARD' ? now : null, snapshot: json(snapshot), addressSnapshot: json(address), freightSnapshot: json(freight),
+        subtotalCents: BigInt(snapshot.quote.baseSubtotalCents), discountCents: BigInt(snapshot.quote.baseSubtotalCents - snapshot.quote.totalCents), shippingCents: freight.amountCents, totalCents: BigInt(totalCents), createdAt: now, expiresAt,
+        items: { create: snapshot.products.map(product => ({ offerId: product.offerId, editionId: product.editionId, quantity: product.quantity, productSnapshot: json(product),
+          units: { create: product.unitIds.map((id, logicalIndex) => { const unit = snapshot.quote.units.find(unit => unit.id === id && unit.offerId === product.offerId); if (!unit) throw new Error('Frozen unit allocation is incomplete.'); return { id, logicalIndex, netPaidCents: unit.netPriceCents, priceSnapshot: json(unit), currentOfferId: product.offerId }; }) }
+        })) }, ...(method === 'CARD' ? {} : { charges: { create: { method, amountCents: BigInt(totalCents), productCents: BigInt(snapshot.quote.totalCents), shippingCents: freight.amountCents, status: 'ACTIVE', createdAt: now, expiresAt: expiresAt! } } })
+      }, include });
+      for (const item of row.items) { const source = checkout.items.find(source => source.offerId === item.offerId); if (!source || source.quantity !== item.quantity) throw new Error('Frozen order and checkout quantities disagree.'); await transferReservation(tx, source.id, item.id, item.quantity, now, expiresAt ?? checkout.expiresAt); }
+      if (checkout.couponUsage) { const usage = await tx.couponUsage.updateMany({ where: { id: checkout.couponUsage.id, status: 'RESERVED', expiresAt: { gt: now } }, data: { orderId: row.id, status: 'CONSUMED', expiresAt: expiresAt ?? checkout.expiresAt } }); if (usage.count !== 1) throw new Error('Expected reserved coupon usage before order conversion.'); }
+      await tx.checkout.update({ where: { id: checkout.id, status: 'ACTIVE' }, data: { status: 'CONVERTED', closedAt: now, version: { increment: 1 } } });
+      await tx.cartItem.deleteMany({ where: { cartId: checkout.cartId } }); await tx.cart.update({ where: { id: checkout.cartId }, data: { version: { increment: 1 }, updatedAt: now } });
+      await appendAudit(tx, { actorId: checkout.userId, action: 'ORDER.CREATED', targetType: 'ORDER', targetId: row.id, result: 'SUCCESS', reason: 'CHECKOUT_HOLD_ATOMICALLY_TRANSFERRED', changes: { checkoutId: checkout.id, method: method, totalCents, expiresAt: expiresAt?.toISOString() ?? null } }, accounts.clock);
+      await enqueue(tx, { type: 'ORDER.CREATED', aggregateId: row.id, payload: { orderId: row.id, userId: checkout.userId } }, accounts.clock);
+      return row;
 }

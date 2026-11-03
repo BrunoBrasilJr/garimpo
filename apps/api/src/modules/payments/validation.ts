@@ -1,0 +1,11 @@
+import { z } from 'zod';
+import { address, key, parse } from '../orders/validation.ts';
+export { key, parse };
+export { id } from '../freight/validation.ts';
+export const scenario = z.enum(['APPROVED', 'DECLINED', 'PENDING', 'APPROVED_REFUND_FAIL']);
+export const card = address.extend({ scenario }).strict();
+export const charge = z.object({ chargeId: z.string().uuid().transform(value => value.toLowerCase()), scenario }).strict();
+export const retry = z.object({ scenario: z.enum(['SUCCEEDED', 'FAILED']) }).strict();
+export const page = z.object({ page: z.coerce.number().int().min(1).max(1000000).default(1), pageSize: z.coerce.number().int().min(1).max(30).default(10) }).strict();
+export type CardInput = z.infer<typeof card>;
+export type ChargeInput = z.infer<typeof charge>;

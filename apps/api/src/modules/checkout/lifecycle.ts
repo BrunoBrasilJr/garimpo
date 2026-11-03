@@ -14,7 +14,7 @@ export async function lockCustomer(accounts: Accounts, tx: Prisma.TransactionCli
   return (await accounts.authorize(tx, access, true)).user;
 }
 export async function lockCoupons(tx: Prisma.TransactionClient, ids: (string | undefined | null)[]) {
-  for (const id of [...new Set(ids.filter((id): id is string => Boolean(id)))].sort()) await tx.$queryRaw`SELECT id FROM "Coupon" WHERE id = ${id}::uuid FOR UPDATE`;
+  for (const id of [...new Set(ids.filter((id): id is string => Boolean(id)))].sort()) await tx.$queryRaw`UPDATE "Coupon" SET "updatedAt" = "updatedAt" WHERE id = ${id}::uuid RETURNING id`;
 }
 export async function activeCheckout(tx: Prisma.TransactionClient, userId: string) { return tx.checkout.findFirst({ where: { userId, status: 'ACTIVE' }, include: checkoutInclude }); }
 /** Caller owns User, then all affected editions/offers and coupons in stable order. */

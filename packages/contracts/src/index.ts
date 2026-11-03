@@ -17,3 +17,4 @@ export type { CheckoutProduct, CheckoutSnapshot, CheckoutView, CheckoutQuote, In
 export type { CepRangeInput, FreightRateInput, FreightRateView, FreightPage, FreightQuote, DeliveryAddressSnapshot, AcceptedFreight } from './freight/index.js';
 export { GuestCartStore, GuestDataError, decodeGuest, guestTag } from './cart/guest.js';
 export type { GuestLine, GuestMergeIntent, GuestCartState, GuestStorage, GuestExclusive } from './cart/guest.js';
+export type { PaymentScenario, PaymentView, PaymentPage, RefundView } from './payments/index.js';
