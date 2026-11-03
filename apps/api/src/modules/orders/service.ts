@@ -19,6 +19,7 @@ import { ownAddress } from '../checkout/quotes.ts';
 import { orderPendingCount } from './pending-orders.ts';
 import type { CreateOrderInput } from './validation.ts';
 import * as validate from './validation.ts';
+import { orderEvent } from './events.ts';
 export const include = { items: { include: { units: { orderBy: { logicalIndex: 'asc' } } }, orderBy: { offerId: 'asc' } }, charges: { orderBy: { createdAt: 'asc' } } } satisfies Prisma.OrderInclude;
 export type OrderRecord = Prisma.OrderGetPayload<{ include: typeof include }>;
 export function cents(value: bigint): number { const number = Number(value); if (!Number.isSafeInteger(number) || number < 0) throw new Error('Stored monetary total is outside the exact JSON range.'); return number; }
@@ -80,6 +81,7 @@ export async function materializeOrder(accounts: Accounts, tx: Prisma.Transactio
           units: { create: product.unitIds.map((id, logicalIndex) => { const unit = snapshot.quote.units.find(unit => unit.id === id && unit.offerId === product.offerId); if (!unit) throw new Error('Frozen unit allocation is incomplete.'); return { id, logicalIndex, netPaidCents: unit.netPriceCents, priceSnapshot: json(unit), currentOfferId: product.offerId }; }) }
         })) }, ...(method === 'CARD' ? {} : { charges: { create: { method, amountCents: BigInt(totalCents), productCents: BigInt(snapshot.quote.totalCents), shippingCents: freight.amountCents, status: 'ACTIVE', createdAt: now, expiresAt: expiresAt! } } })
       }, include });
+      await orderEvent(tx, accounts.clock, { orderId: row.id, version: row.version, fromStatus: null, toStatus: row.status, reason: 'CREATED_FROM_CHECKOUT', occurredAt: now, actor: { id: checkout.userId, role: 'USER' } });
       for (const item of row.items) { const source = checkout.items.find(source => source.offerId === item.offerId); if (!source || source.quantity !== item.quantity) throw new Error('Frozen order and checkout quantities disagree.'); await transferReservation(tx, source.id, item.id, item.quantity, now, expiresAt ?? checkout.expiresAt); }
       if (checkout.couponUsage) { const usage = await tx.couponUsage.updateMany({ where: { id: checkout.couponUsage.id, status: 'RESERVED', expiresAt: { gt: now } }, data: { orderId: row.id, status: 'CONSUMED', expiresAt: expiresAt ?? checkout.expiresAt } }); if (usage.count !== 1) throw new Error('Expected reserved coupon usage before order conversion.'); }
       await tx.checkout.update({ where: { id: checkout.id, status: 'ACTIVE' }, data: { status: 'CONVERTED', closedAt: now, version: { increment: 1 } } });

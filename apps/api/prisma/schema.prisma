@@ -245,6 +245,8 @@ model User {
   orders          Order[]
   paymentAttempts PaymentAttempt[]
   refundAttempts RefundAttempt[]
+  orderStatusEvents OrderStatusEvent[]
+  originalShipmentRecords Shipment[]
 }
 
 model Session {
@@ -730,6 +732,8 @@ model Order {
   paymentAttempts PaymentAttempt[]
   refunds Refund[]
   financialEvents FinancialEvent[]
+  statusEvents OrderStatusEvent[]
+  shipments Shipment[]
   @@index([userId, status, expiresAt])
   @@index([status, expiresAt, id])
 }
@@ -874,4 +878,36 @@ model FinancialEvent {
   @@index([paymentAttemptId])
   @@index([refundId])
   @@index([occurredAt, type])
+}
+
+model OrderStatusEvent {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String @db.Uuid
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  version Int
+  fromStatus OrderStatus?
+  toStatus OrderStatus
+  actorId String? @db.Uuid
+  actor User? @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  actorRole Role?
+  reason String @db.VarChar(500)
+  occurredAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@unique([orderId, version])
+  @@index([actorId])
+  @@index([orderId, occurredAt, id])
+}
+model Shipment {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String @db.Uuid
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  kind String @default("ORIGINAL") @db.VarChar(30)
+  trackingCode String @db.VarChar(120)
+  postedAt DateTime @db.Timestamptz(3)
+  deliveredAt DateTime? @db.Timestamptz(3)
+  createdById String @db.Uuid
+  createdBy User @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([orderId])
+  @@index([createdById])
 }

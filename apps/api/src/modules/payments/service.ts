@@ -14,6 +14,7 @@ import { lockOffers } from '../inventory/reservations.ts';
 import { consumeOrderStock } from '../inventory/payment.ts';
 import { Orders, include, materializeOrder, cents } from '../orders/service.ts';
 import { expireOrder } from '../orders/expiry.ts';
+import { orderEvent } from '../orders/events.ts';
 import { cardDraft } from './draft.ts';
 import { LocalGateway } from './gateway.ts';
 import type { PaymentGateway } from './gateway.ts';
@@ -90,7 +91,8 @@ export class Payments {
             const now = this.accounts.clock.now();
             if (order.status === 'PENDING' && order.expiresAt && order.expiresAt > now && attempt.receivedAt && attempt.receivedAt < order.expiresAt && charge.status === 'ACTIVE' && charge.expiresAt > now && charge.amountCents === attempt.amountCents && !user.blockedAt && !user.closedAt && !user.inactiveAt) {
               await consumeOrderStock(tx, order, this.accounts.clock);
-              await tx.order.update({ where: { id: order.id }, data: { status: 'PAID', paidAt: attempt.receivedAt, version: { increment: 1 } } });
+              const updated = await tx.order.update({ where: { id: order.id }, data: { status: 'PAID', paidAt: attempt.receivedAt, version: { increment: 1 } } });
+              await orderEvent(tx, this.accounts.clock, { orderId: order.id, version: updated.version, fromStatus: 'PENDING', toStatus: 'PAID', reason: 'SIMULATED_PAYMENT', occurredAt: attempt.receivedAt });
               await tx.paymentCharge.update({ where: { id: charge.id }, data: { status: 'PAID' } }); paid = true;
             }
           }
