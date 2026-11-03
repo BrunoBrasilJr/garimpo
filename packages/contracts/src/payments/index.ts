@@ -11,3 +11,4 @@ export interface PaymentView {
   createdAt: string; receivedAt: string | null; serverTime: string; order: OrderCreationView | null; refunds: RefundView[];
 }
 export interface PaymentPage { items: PaymentView[]; page: number; pageSize: number; total: number; totalPages: number }
+export interface CommerceMessageContent { recipient: string; purpose: string; title: string; message: string; userId: string; orderId?: string | null; paymentAttemptId?: string; refundId?: string; notice: string; link: string }

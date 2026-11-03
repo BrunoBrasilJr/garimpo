@@ -12,6 +12,8 @@ import { expireOrders } from '../../apps/api/src/jobs/order-expiry.ts';
 import { expireReservations } from '../../apps/api/src/jobs/reservations.ts';
 import { lockOffers } from '../../apps/api/src/modules/inventory/reservations.ts';
 import { lockCoupons } from '../../apps/api/src/modules/checkout/lifecycle.ts';
+import { Checkouts } from '../../apps/api/src/modules/checkout/service.ts';
+import { orderPendingCount } from '../../apps/api/src/modules/orders/pending-orders.ts';
 import { AccessMessages } from '../../apps/api/src/modules/messaging/service.ts';
 import { MessageProtection } from '../../apps/api/src/modules/messaging/protection.ts';
 import { consumeCommerce, deliverCommerce } from '../../apps/api/src/modules/messaging/commerce.ts';
@@ -175,6 +177,16 @@ test('customer activity is owner-scoped, paginated and includes pending attempts
   expect((await f.server.call('/me/payment-attempts?pageSize=10000', 'GET', undefined, credentials(buyer))).status).toBe(422);
 });
 
+test('automatic retry refuses post-sale obligations even for ADMIN and the database caps total obligations to captured money', async () => {
+  const ready = await f.ready(buyer), paid = await f.payments.card(buyer.accessToken, ready.checkout.id, card(ready), randomUUID());
+  // A fixture represents a future module's obligation; no post-sale opening/authorization is implemented here.
+  const obligation = await f.db.refund.create({ data: { paymentAttemptId: paid.id, orderId: paid.orderId, origin: 'POST_SALE', originKey: randomUUID(), productCents: 10000n, shippingCents: 0, createdAt: f.clock.now() } });
+  const result = await f.server.call<{ code: string }>('/admin/automatic-refunds/' + obligation.id + '/retry', 'POST', { scenario: 'SUCCEEDED' }, { ...credentials(f.admin), 'Idempotency-Key': randomUUID() });
+  expect(result.status).toBe(403); expect(result.body.code).toBe('POST_SALE_AUTHORIZATION_REQUIRED'); expect(await f.db.refundAttempt.count({ where: { refundId: obligation.id } })).toBe(0);
+  await expect(f.db.refund.create({ data: { paymentAttemptId: paid.id, orderId: paid.orderId, origin: 'POST_SALE', originKey: randomUUID(), productCents: 1501n, shippingCents: 0, createdAt: f.clock.now() } })).rejects.toThrow();
+  expect((await f.db.refund.findUniqueOrThrow({ where: { id: obligation.id } })).status).toBe('PENDING');
+});
+
 async function waiting(expected: number) {
   for (let index = 0; index < 250; index++) { await f.control.query('SELECT pg_stat_clear_snapshot()'); const result = await f.control.query("SELECT count(DISTINCT application_name)::int AS n FROM pg_stat_activity WHERE application_name IN ('TASK019_A','TASK019_B') AND state='active' AND wait_event_type='Lock'"); if (result.rows[0].n === expected) return true; await new Promise(resolve => setTimeout(resolve, 20)); } return false;
 }
@@ -246,6 +258,22 @@ test('coupon capacity excludes a pending order that expired even when its expiry
   f.advance(Date.parse(order.expiresAt!) - f.clock.now().getTime()); await f.freshRoles(); const other = await f.customer(), next = await f.ready(other, { couponCode: code }); expect(next.checkout.status).toBe('ACTIVE');
   expect((await f.db.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe('PENDING');
   expect((await f.db.couponUsage.findUniqueOrThrow({ where: { orderId: order.id } })).status).toBe('CONSUMED');
+});
+
+test('a concurrent checkout cannot reuse the last coupon from a payment validated before the deadline even with an older serializable snapshot', async () => {
+  const code = 'RACE' + randomUUID().replaceAll('-', '').slice(0, 10).toUpperCase();
+  await f.pricing.createCoupon(f.admin.accessToken, { code, type: 'FIXED', amount: 1, startsAt: f.clock.now().toISOString(), endsAt: new Date(f.clock.now().getTime() + 7 * 86400000).toISOString(), totalLimit: 1 });
+  const ready = await f.ready(buyer, { couponCode: code }), order = await f.orders.create(buyer.accessToken, ready.body, ready.key), attempt = await f.payments.charge(buyer.accessToken, order.id, { chargeId: order.charges[0]!.id, scenario: 'PENDING' }, randomUUID());
+  const other = await f.customer(), product = await f.offer(), preview = await f.draft(other, product.id, 1, code); await f.gateway.event(attempt.id, 'APPROVED', randomUUID());
+  await f.control.query(`CREATE FUNCTION wait_payment_sale() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.type='SALE' THEN PERFORM pg_advisory_xact_lock(19019019); END IF; RETURN NEW; END $$`);
+  await f.control.query('CREATE TRIGGER wait_payment_sale BEFORE INSERT ON "FinancialEvent" FOR EACH ROW EXECUTE FUNCTION wait_payment_sale()'); await f.control.query('SELECT pg_advisory_lock(19019019)');
+  const applying = f.payments.apply(attempt.id); let competing: Promise<unknown> | undefined, one: boolean, two: boolean;
+  try {
+    one = await waiting(1); f.advance(Date.parse(order.expiresAt!) - f.clock.now().getTime()); const renewed = await f.accounts.renew(other.refreshToken, other.csrfToken);
+    competing = new Checkouts(f.secondAccounts, orderPendingCount(f.clock)).reserve(renewed.accessToken, preview, randomUUID()).catch(error => error); two = await waiting(2);
+  } finally { await f.control.query('SELECT pg_advisory_unlock(19019019)'); }
+  try { await applying; expect(one).toBe(true); expect(two!).toBe(true); expect(await competing).toMatchObject({ code: 'COUPON_LIMIT_REACHED' }); expect((await f.payments.view(attempt.id)).outcome).toBe('PAID'); }
+  finally { await f.control.query('DROP TRIGGER wait_payment_sale ON "FinancialEvent"'); await f.control.query('DROP FUNCTION wait_payment_sale()'); }
 });
 
 test('terminal receipts and immutable financial events cannot be rewritten, and event identities cannot target another attempt', async () => {
