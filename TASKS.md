@@ -27,7 +27,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | DONE |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | DONE |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | DONE |
-| 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | IN_PROGRESS |
+| 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | DONE |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | BLOCKED |
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | BLOCKED |
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | BLOCKED |
@@ -2567,7 +2567,7 @@ TASK-020 candidata, dependências 017/018/019 DONE, exige própria DoR/Scope Gua
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -2637,7 +2637,50 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+#### TASK Execution Report — 2026-11-03
+
+TASK: TASK-020. Status: DONE. Branch: feature/TASK-020-checkout-clientes, base 9093c8e. Commits reais 7e89775, e215941, aa5127f, 476f71c, 9eb3e16 e 3fc1ae7, com fechamento documental neste registro. Estados BLOCKED → READY → IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE; tentativas incompletas/falhas retidas acima, sem aprovação presumida.
+
+### Primary Changes
+
+23 arquivos PRIMARY, conforme delimitação anterior: TASKS.md; apps/api/src/modules/accounts/router.ts somente vínculo opcional de dono nos endereços/CORS antes do parser; apps/web/src/features/checkout/{Checkout.tsx,Deadline.tsx,useFlow.ts,checkout.css}; apps/mobile/src/features/checkout/{Checkout.tsx,Deadline.tsx,useFlow.ts}; Cart.tsx de ambos somente ligação ao checkout/frete aceito; navegação App.tsx/route.ts web e App.tsx mobile somente entradas e guardas. packages/contracts/src/checkout/journal.ts guarda referências/chave/corpo por conta, valida formato/tamanho/dono e serializa escrita entre instâncias; docs/architecture/api.md explicita o vínculo compatível. tests/e2e/account/harness.mjs acrescenta somente porta técnica de captura/evento/consulta/expiração/repetição para testes, sem endpoint público. tests/e2e/checkout/{README.md,checkout.spec.ts,fixtures.ts,journal.test.ts,mobile-entry.tsx,playwright.config.ts} exercitam o fluxo real.
+
+Interfaces mostram cupom/produtos congelados, endereço próprio, cobertura/preço/prazo cotados, aceite explícito e revisão final do endereço aceito antes do método. Mudança de frete pede nova cotação/aceite. Recusa de cartão conserva reserva e permite nova tentativa ou Pix/boleto. Pix inicia 30min; boleto 48h, sempre com prazo absoluto do servidor. Resultado PENDING não vira sucesso; estorno PENDING/FAILED/SUCCEEDED permanece visível sem autorização de repetição para cliente. Não há coleta de cartão real. Diário é gravado antes do envio; falha de armazenamento impede comando novo, perda de rede conserva chave/corpo e retomada é explícita. Cookies/bearer diferentes do dono visível são rejeitados. Nenhuma migration, regra financeira, dependência ou serviço externo novo.
+
+### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| packages/contracts/src/index.ts | exports do diário/tipos de intenção | Ponto público já utilizado pelos dois clientes; registro mínimo diretamente causado pelo diário, sem regra financeira/autorização/arquitetura independente. |
+
+Nove critérios PASS para o incidental. Controle de conta, armazenamento/retomada e composição de navegação são PRIMARY, não classificados como incidental de segurança.
+
+### Tests Executed
+
+Ubuntu WSL2, Node 24.22.1/npm 11.19.1, PostgreSQL 17/garimpo_test com schemas novos retidos, Firefox com CA confiada apenas no perfil isolado, HTTPS sem bypass. Base original e ZIP preservados. Heap de processo 1536 MiB nos compiladores e 512 MiB no Playwright, sem mudar scrypt, cenários ou timeout.
+
+- build.log em 7e89775: build/tipos/lint PASS. acceptance.log em e215941 falhou em tipos de duas construções de teste, corrigidas sem mudar produto/segurança. acceptance2.log interrompido durante lint: resultado incompleto, não é PASS. Processo ausente confirmado antes de retomar WSL/PostgreSQL sem reset.
+- acceptance3.log em aa5127f: build/tipos/lint PASS; npm test 116/116 PASS (cinco casos novos do diário: preservação por instância/dono, rejeição de corrupção/campos sensíveis, falha de escrita, disputa entre instâncias e conclusão antiga que não apaga tentativa nova); test:accounts 14/14 PASS em task004_c7d637caecd4455f9d9e43ca9d3c6701, incluindo CRUD/histórico de endereço, papéis, sessão, CSRF/origem/HTTPS e concorrência.
+- Consulta npm nativa inicial retornou JSON incompleto: FAIL retido, sem suprimir validação. Consulta Windows independente retornou sete low conhecidos; não foi usada para fingir execução do checker Linux. audit-ipv4.log: npm run audit:toolchain nativo com NODE_OPTIONS=--dns-result-order=ipv4first, exit 0 na política/hash/mitigações atuais. Preferência IPv4 somente naquele processo; TLS, registry e política preservados. Auditoria bruta continua FAIL/exit 1, sete low de deepmerge, zero moderate/high/critical. Nenhum relatório antigo substituído por aprovado fictício.
+- ui.log em aa5127f: quatro E2E novos PASS (cupom/frete/recusa/repetição web; cartão recebido tarde e estorno FAILED→SUCCEEDED; bearer/AsyncStorage RNW; armazenamento/guarda de endereços). Dois FAIL retidos: consulta Pix antes do fim do interceptador e seletor de resultado sem aria-label explícito. Screenshot boleto-failure.png inspecionado mostra pedido/cobrança/prazo válidos; corrigida a sincronização e o rótulo no escopo, sem aumentar timeout.
+- recheck.log em 476f71c, exit 0: build/tipos/lint PASS; preview web dos componentes nativos e os dois E2E afetados PASS. Pix repete exatamente chave/corpo após resposta perdida e reload, com um pedido/cobrança/venda; boleto preserva 172800000ms e restitui tardio sem venda. Regresso E2E do carrinho de preço alterado/duas renderizações/prazo original PASS (1). O seam legado daquele teste de carrinho é preservado; os seis E2E novos de checkout usam contador de pendentes real e serviços/DB reais.
+- Mesmo recheck.log: npm run bundle:android PASS (625 módulos) e expo export --platform ios --output-dir dist/ios PASS (627 módulos). São bundles, não APK/IPA ou execução em aparelho. Produto em apps/packages não mudou depois de 476f71c.
+- visual-recheck.log em 9eb3e16, exit 0: tipos/lint e jornada RNW PASS com capturas adicionais do pedido/pagamento ampliados. native-final.log em 3fc1ae7, exit 0: tipos/lint e a mesma jornada estendida PASS, comprovando recusa de cartão sem pedido nem novo prazo, troca para boleto, referência persistida após remount/login, resultado pendente e confirmação posterior. Nenhum caso contado duas vezes por repetição. Todos os seis E2E novos têm PASS no produto final por recortes documentados; a execução conjunta que falhou não foi renomeada como sucesso.
+- Capturas checkout-web-narrow-enlarged.png, checkout-rnw-narrow-enlarged.png, checkout-rnw-order-enlarged.png e checkout-rnw-payment-enlarged.png inspecionadas. Web 390px/texto 200% mantém foco e ausência de rolagem horizontal; RNW amplia texto por CSS, com confirmação e valores legíveis. A captura de elemento maior que a viewport do ScrollView mostra apenas a porção visível, explicitamente sem alegar inspeção integral fora dela. Não comprova fonte/acessibilidade nativa. TalkBack/VoiceOver/aparelhos NÃO EXECUTADOS; recusa do responsável preservada.
+- Revisão React: guardas separadas dos hooks, props/controladores estáveis, aborto/generation e limpeza de listeners, listas com chaves, diário versionado/mínimo, operações independentes paralelas e replay reconhecido serial para coordenação da identidade. Sem rede por tick de contador. git diff --check/checker documental PASS, 37 IDs/79 arestas e grafo acíclico.
+
+### Quality Gates
+
+Build PASS; Lint PASS; Unit Tests PASS (116); Integration Tests PASS (14 contas + fluxos reais API/DB dos E2E); API Tests PASS incluindo corpo inválido recusado pelo dono antes do parser; Security PASS nos controles/política/hash ratificados, auditoria bruta FAIL conhecida preservada; Acceptance Criteria PASS no incremento; Regression Tests PASS por recortes afetados. Android/iOS export PASS; aparelhos/leitores N/A como execução de gate automatizado, não PASS manual. Checkpoint 024 exige validação acumulada da fase.
+
+### Scope Validation
+
+Allowed Changes PASS com precisões PRIMARY rastreáveis; Incidental Changes PASS; Forbidden Changes PASS; Scope Creep NONE. Definition of Done PASS. 20/37 DONE; acumulado 337 casos distintos com evidência = 116 unitários + 183 integrações + 38 E2E.
+
+### Next Eligible TASK
+
+TASK-021 candidata (019 DONE), própria DoR/Scope Guard antes da promoção. Este incremento acompanha tentativas e referências locais de pedidos; histórico geral entre aparelhos e logística pertencem à 021. Diário web é por conta/aba (sessionStorage); mobile por conta no AsyncStorage; não apresentar a lista de referências como histórico completo. Continuidade autorizada até pelo menos 28/37 permanece ativa, sem pular o checkpoint 024.
+
 
 ### TASK-021 Implementar histórico e logística manual
 
