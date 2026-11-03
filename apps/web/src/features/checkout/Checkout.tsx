@@ -10,7 +10,7 @@ import { Deadline, useServerNow } from './Deadline';
 import './checkout.css';
 const methods = { CARD: 'Cartão simulado', PIX: 'Pix', BOLETO: 'Boleto' };
 const statuses = { PENDING: 'Aguardando pagamento', PAID: 'Pago', CANCELLED: 'Cancelado', PREPARING: 'Em separação', SEPARATED: 'Separado', SHIPPED: 'Enviado', DELIVERED: 'Entregue' };
-const scenarios = [{ value: 'APPROVED', label: 'Aprovar' }, { value: 'DECLINED', label: 'Recusar' }, { value: 'PENDING', label: 'Deixar pendente' }] as const;
+const scenarios = [{ value: 'APPROVED', label: 'Aprovar' }, { value: 'DECLINED', label: 'Recusar' }, { value: 'PENDING', label: 'Deixar pendente' }, { value: 'APPROVED_REFUND_FAIL', label: 'Aprovar, com falha se precisar estornar' }] as const;
 type Scenario = typeof scenarios[number]['value'];
 export default function Checkout({ user, mode = 'checkout' }: { user: AccountView | null; mode?: 'checkout' | 'payments' }) {
   if (!user) return <section className="account-card"><h2>Entre para continuar a compra</h2><a href="#/login">Entrar na conta de compra</a></section>;

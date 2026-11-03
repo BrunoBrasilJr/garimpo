@@ -63,11 +63,11 @@ export function useFlow(request: PurchaseRequest, journal: PurchaseJournal, mess
     }
   }
   function resume() { if (saved?.pending) void work(signal => send(saved.pending!, signal)); }
-  function pay(method: 'CARD' | 'PIX' | 'BOLETO', scenario: 'APPROVED' | 'DECLINED' | 'PENDING') {
+  function pay(method: 'CARD' | 'PIX' | 'BOLETO', scenario: 'APPROVED' | 'DECLINED' | 'PENDING' | 'APPROVED_REFUND_FAIL') {
     const checkout = data?.checkout, accepted: AcceptedFreight | null | undefined = checkout?.freight; if (!checkout || !accepted) return;
     const common = { version: checkout.version, addressId: accepted.address.id, freightRevision: accepted.revision }, key = 'purchase.' + guestTag();
     submit(method === 'CARD' ? { kind: 'CARD', key, targetId: checkout.id, body: { ...common, scenario } } : { kind: 'ORDER', key, targetId: checkout.id, body: { ...common, checkoutId: checkout.id, method } });
   }
-  function simulate(order: OrderCreationView, scenario: 'APPROVED' | 'DECLINED' | 'PENDING') { const charge = order.charges.find(row => row.status === 'ACTIVE'); if (charge) submit({ kind: 'CHARGE', key: 'payment.' + guestTag(), targetId: order.id, body: { chargeId: charge.id, scenario } }); }
+  function simulate(order: OrderCreationView, scenario: 'APPROVED' | 'DECLINED' | 'PENDING' | 'APPROVED_REFUND_FAIL') { const charge = order.charges.find(row => row.status === 'ACTIVE'); if (charge) submit({ kind: 'CHARGE', key: 'payment.' + guestTag(), targetId: order.id, body: { chargeId: charge.id, scenario } }); }
   return { data, quote, saved, error, notice, busy, loading, page, setPage, refresh, inspect, accept, invalidateQuote, pay, simulate, resume };
 }

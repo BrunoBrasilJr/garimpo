@@ -13,7 +13,7 @@ import { useFlow } from './useFlow';
 import type { PurchaseRequest } from './useFlow';
 const methods = { CARD: 'Cartão simulado', PIX: 'Pix', BOLETO: 'Boleto' };
 const statuses = { PENDING: 'Aguardando pagamento', PAID: 'Pago', CANCELLED: 'Cancelado', PREPARING: 'Em separação', SEPARATED: 'Separado', SHIPPED: 'Enviado', DELIVERED: 'Entregue' };
-const scenarios = [{ value: 'APPROVED', label: 'Aprovar' }, { value: 'DECLINED', label: 'Recusar' }, { value: 'PENDING', label: 'Deixar pendente' }] as const;
+const scenarios = [{ value: 'APPROVED', label: 'Aprovar' }, { value: 'DECLINED', label: 'Recusar' }, { value: 'PENDING', label: 'Deixar pendente' }, { value: 'APPROVED_REFUND_FAIL', label: 'Aprovar, com falha se precisar estornar' }] as const;
 type Scenario = typeof scenarios[number]['value'];
 function Choice({ label, checked, disabled, check = false, choose }: { label: string; checked: boolean; disabled: boolean; check?: boolean; choose: () => void }) {
   return <Pressable accessibilityRole={check ? 'checkbox' : 'radio'} accessibilityLabel={label} accessibilityState={{ checked, disabled }} disabled={disabled} onPress={choose} style={[s.button, s.secondary, disabled ? s.disabled : null]}><Text allowFontScaling style={[s.buttonText, s.secondaryText]}>{checked ? '☑' : '☐'} {label}</Text></Pressable>;

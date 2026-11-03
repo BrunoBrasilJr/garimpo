@@ -1,0 +1,75 @@
+import { resolve } from 'node:path';
+import { randomUUID } from 'node:crypto';
+import type { OrderCreationView } from '@garimpo/contracts';
+import { test, expect, reserve, accept, confirm } from './fixtures';
+import { forwarded, send, session } from '../cart/http';
+
+test('web carries coupon prices through freight rejection/revision and card decline/retry without renewing the deadline', async ({ page, app, scenario }) => {
+  const code = 'UI' + randomUUID().replaceAll('-', '').slice(0, 12).toUpperCase();
+  expect((await scenario.admin.call('/admin/coupons', 'POST', { code, type: 'FIXED', amount: 500, startsAt: new Date().toISOString(), endsAt: '2099-01-01T00:00:00.000Z' })).status).toBe(201);
+  const checkout = await reserve(page, app, scenario.customer, scenario.data.main, code); await expect(page.getByText('Cupom: ' + code + '.', { exact: true })).toBeVisible();
+  await page.getByRole('radio', { name: /Endereço sem cobertura ·/ }).check(); await page.getByRole('button', { name: 'Cotar frete deste endereço', exact: true }).click(); await expect(page.getByText(/Este CEP não é atendido/)).toBeVisible(); await expect(page.getByRole('button', { name: 'Simular cartão', exact: true })).toBeDisabled();
+  await page.getByRole('radio', { name: /Titular da compra ·/ }).check(); await page.getByRole('button', { name: 'Cotar frete deste endereço', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Confira o frete', exact: true })).toBeVisible();
+  expect((await scenario.admin.call('/admin/freight-rates/' + scenario.rate.id, 'PATCH', { version: scenario.rate.version, amountCents: 1600 })).status).toBe(200);
+  await page.getByRole('button', { name: 'Aceitar endereço e frete cotados', exact: true }).click(); await expect(page.getByRole('alert')).toContainText('mudou'); await expect(page.getByRole('heading', { name: 'Endereço e frete aceitos', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Cotar frete deste endereço', exact: true }).click(); await expect(page.getByRole('region', { name: 'Cotação de frete', exact: true })).toContainText('16,00'); await page.getByRole('button', { name: 'Aceitar endereço e frete cotados', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Endereço e frete aceitos', exact: true })).toBeVisible();
+  await page.getByLabel('Resultado do cartão no simulador', { exact: true }).selectOption('DECLINED'); await confirm(page); await page.getByRole('button', { name: 'Simular cartão', exact: true }).click(); await expect(page.getByRole('status').filter({ hasText: 'Pagamento recusado.' })).toBeVisible();
+  let state = await app.purchaseState(checkout.id); expect(state.orders).toHaveLength(0); expect(state.checkout.expiresAt.toISOString()).toBe(checkout.expiresAt);
+  await page.getByLabel('Resultado do cartão no simulador', { exact: true }).selectOption('APPROVED'); await confirm(page); await page.getByRole('button', { name: 'Simular cartão', exact: true }).click(); await expect(page.getByText('Pagamento confirmado · R$ 140,90', { exact: true })).toBeVisible();
+  state = await app.purchaseState(checkout.id); expect(state.orders).toHaveLength(1); expect(state.orders[0]!.status).toBe('PAID'); expect(state.events.filter(e => e.type === 'SALE')).toHaveLength(1); expect(state.orders[0]!.totalCents).toBe(14090n);
+  await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; }); await page.getByRole('button', { name: 'Atualizar finalização e pagamentos', exact: true }).focus(); await expect(page.getByRole('button', { name: 'Atualizar finalização e pagamentos', exact: true })).toBeFocused(); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true); await page.screenshot({ path: resolve(app.directory, 'checkout-web-narrow-enlarged.png'), fullPage: true });
+});
+
+test('lost successful Pix order response survives reload and resumes the exact original key/body before simulating payment', async ({ page, app, scenario }) => {
+  const checkout = await reserve(page, app, scenario.customer, scenario.data.main); await accept(page); await page.getByRole('radio', { name: 'Pix', exact: true }).check(); await confirm(page);
+  let first = true, body = '', key = '';
+  await page.route('**/api/v1/orders', async route => {
+    if (first) { first = false; body = route.request().postData()!; key = route.request().headers()['idempotency-key']!; const result = await send<OrderCreationView>(app, '/orders', 'POST', body, forwarded(await route.request().allHeaders())); expect(result.status).toBe(201); await route.abort('failed'); }
+    else { expect(route.request().postData()).toBe(body); expect(route.request().headers()['idempotency-key']).toBe(key); await route.continue(); }
+  });
+  await page.getByRole('button', { name: 'Criar pedido Pix', exact: true }).click(); await expect(page.getByRole('button', { name: 'Retomar tentativa com os mesmos dados', exact: true })).toBeVisible(); const committed = await app.purchaseState(checkout.id); expect(committed.orders).toHaveLength(1);
+  await page.reload(); await expect(page.getByRole('button', { name: 'Retomar tentativa com os mesmos dados', exact: true })).toBeEnabled(); await page.getByRole('button', { name: 'Retomar tentativa com os mesmos dados', exact: true }).click();
+  const order = page.locator('[data-order-id="' + committed.orders[0]!.id + '"]'); await expect(order).toContainText('Aguardando pagamento'); await expect(order.locator('time')).toHaveAttribute('datetime', committed.orders[0]!.expiresAt!.toISOString());
+  await order.getByRole('button', { name: 'Executar simulação deste pagamento', exact: true }).click(); await expect(order).toContainText('Cobrança paga');
+  const final = await app.purchaseState(checkout.id); expect(final.orders).toHaveLength(1); expect(final.orders[0]!.charges).toHaveLength(1); expect(final.events.filter(e => e.type === 'SALE')).toHaveLength(1); expect(final.orders[0]!.expiresAt!.getTime() - final.orders[0]!.createdAt.getTime()).toBe(1800000);
+});
+
+test('boleto shows its full two-day deadline, stays pending without renewal and displays late-payment refund after expiry', async ({ page, app, scenario }) => {
+  const checkout = await reserve(page, app, scenario.customer, scenario.data.main); await accept(page); await page.getByRole('radio', { name: 'Boleto', exact: true }).check(); await expect(page.getByText('Boleto: 2 dias completos a partir da criação do pedido.', { exact: true })).toBeVisible(); await confirm(page); await page.getByRole('button', { name: 'Criar pedido com boleto', exact: true }).click();
+  await expect(page.locator('[data-order-id]')).toContainText('Aguardando pagamento'); const state = await app.purchaseState(checkout.id); const orderId = state.orders[0]!.id, order = page.locator('[data-order-id="' + orderId + '"]'); expect(state.orders[0]!.expiresAt!.getTime() - state.orders[0]!.createdAt.getTime()).toBe(172800000);
+  await order.getByLabel('Resultado do pagamento', { exact: true }).selectOption('PENDING'); await order.getByRole('button', { name: 'Executar simulação deste pagamento', exact: true }).click(); await expect(page.getByText(/Resultado pendente ·/)).toBeVisible();
+  const original = (await app.purchaseState(checkout.id)).attempts[0]!; app.advance(2 * 86400000); await app.expirePayments(); await app.paymentEvent(original.id, 'APPROVED'); await page.getByRole('button', { name: 'Atualizar finalização e pagamentos', exact: true }).click();
+  await expect(order).toContainText('Cancelado'); await expect(page.getByRole('heading', { name: 'Estorno concluído', exact: true })).toBeVisible(); const final = await app.purchaseState(checkout.id); expect(final.events.map(e => e.type)).toEqual(['LATE_REFUND']); expect(final.orders[0]!.expiresAt!.toISOString()).toBe(state.orders[0]!.expiresAt!.toISOString());
+});
+
+test('a card captured after expiry displays failed automatic refund and later system retry without a fictitious order', async ({ page, app, scenario }) => {
+  const checkout = await reserve(page, app, scenario.customer, scenario.data.main); await accept(page); await page.getByLabel('Resultado do cartão no simulador', { exact: true }).selectOption('APPROVED_REFUND_FAIL'); await confirm(page);
+  const barrier = app.pauseNextCapture(); try { await page.getByRole('button', { name: 'Simular cartão', exact: true }).click(); await barrier.reached; app.advance(16 * 60000); } finally { barrier.release!(); }
+  await expect(page.getByRole('heading', { name: 'Estorno com falha', exact: true })).toBeVisible(); const failed = await app.purchaseState(checkout.id); expect(failed.orders).toHaveLength(0); expect(failed.events).toHaveLength(0); const refund = failed.attempts[0]!.refunds[0]!; expect(refund.status).toBe('FAILED'); await expect(page.getByRole('button', { name: /repetir estorno|autorizar estorno/i })).toHaveCount(0);
+  await app.retryAutomaticRefund(refund.id); await page.getByRole('button', { name: 'Atualizar finalização e pagamentos', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Estorno concluído', exact: true })).toBeVisible(); const final = await app.purchaseState(checkout.id); expect(final.orders).toHaveLength(0); expect(final.events.map(e => e.type)).toEqual(['LATE_REFUND']); expect(final.attempts[0]!.refunds[0]!.attempts).toHaveLength(2);
+});
+
+test('native renderer uses owned addresses and bearer, persists a boleto reference across remount and displays a later approval', async ({ page, app, scenario }) => {
+  const checkout = await reserve(page, app, scenario.customer, scenario.data.main); await page.goto(app.origin + '/purchase-mobile-preview.html');
+  async function signIn() { await page.getByRole('textbox', { name: 'E-mail', exact: true }).fill(scenario.customer.input.email); await page.getByLabel('Senha', { exact: true }).fill(scenario.customer.input.password); await page.getByRole('button', { name: 'Entrar', exact: true }).click(); await expect(page.getByRole('button', { name: 'Sair', exact: true })).toBeVisible(); await expect(page.getByRole('button', { name: 'Atualizar finalização e pagamentos', exact: true })).toBeEnabled(); }
+  await signIn(); await page.getByRole('radio', { name: /Endereço sem cobertura ·/ }).click(); await page.getByRole('button', { name: 'Cotar frete deste endereço', exact: true }).click(); await expect(page.getByText(/Este CEP não é atendido/)).toBeVisible();
+  await page.getByRole('radio', { name: /Titular da compra ·/ }).click(); await page.getByRole('button', { name: 'Cotar frete deste endereço', exact: true }).click(); await page.getByRole('button', { name: 'Aceitar endereço e frete cotados', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Endereço e frete aceitos', exact: true })).toBeVisible();
+  await page.getByRole('radio', { name: 'Boleto', exact: true }).click(); await page.getByRole('checkbox', { name: 'Conferi o endereço aceito, frete, produtos e método de pagamento', exact: true }).click();
+  const request = page.waitForRequest(r => r.url().endsWith('/orders') && r.method() === 'POST'); await page.getByRole('button', { name: 'Criar pedido com boleto', exact: true }).click(); const sent = await request; expect(sent.headers()['x-garimpo-client']).toBe('mobile'); expect(sent.headers()['cookie']).toBeUndefined();
+  await expect(page.getByText('Aguardando pagamento', { exact: true })).toBeVisible(); const state = await app.purchaseState(checkout.id), order = page.getByTestId('purchase-order-' + state.orders[0]!.id); await page.reload(); await signIn(); await expect(order).toContainText('Aguardando pagamento');
+  await order.getByRole('radio', { name: /Deixar pendente pagamento do pedido/ }).click(); await order.getByRole('button', { name: 'Executar simulação deste pagamento', exact: true }).click(); await expect(page.getByText(/Resultado pendente ·/)).toBeVisible();
+  const pending = (await app.purchaseState(checkout.id)).attempts[0]!; await app.paymentEvent(pending.id, 'APPROVED'); await page.getByRole('button', { name: 'Atualizar finalização e pagamentos', exact: true }).click(); await expect(order).toContainText('Cobrança paga');
+  await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => { const rows = [...document.querySelectorAll<HTMLElement>('[dir="auto"]')].map(e => ({ e, size: parseFloat(getComputedStyle(e).fontSize) })); for (const { e, size } of rows) { e.style.setProperty('font-size', size * 2 + 'px', 'important'); e.style.setProperty('line-height', '1.5', 'important'); } }); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true); await page.screenshot({ path: resolve(app.directory, 'checkout-rnw-narrow-enlarged.png'), fullPage: true });
+  expect((await app.purchaseState(checkout.id)).orders).toHaveLength(1); expect((await app.purchaseState(checkout.id)).orders[0]!.expiresAt!.toISOString()).toBe(state.orders[0]!.expiresAt!.toISOString());
+});
+
+test('unavailable journal prevents a new capture and stale account headers reject address access before parsing', async ({ page, app, scenario }) => {
+  const checkout = await reserve(page, app, scenario.customer, scenario.data.main); await accept(page); await confirm(page); let captures = 0; page.on('request', r => { if (r.url().endsWith('/simulated-card-payments') && r.method() === 'POST') captures++; });
+  await page.evaluate(() => { const original = Storage.prototype.setItem; (window as unknown as { restorePurchaseStorage: () => void }).restorePurchaseStorage = () => { Storage.prototype.setItem = original; }; Storage.prototype.setItem = function(key, value) { if (key.startsWith('garimpo.purchase.')) throw new Error('Isolated storage failure.'); original.call(this, key, value); }; });
+  await page.getByRole('button', { name: 'Simular cartão', exact: true }).click(); await expect(page.getByRole('alert')).toContainText('tentativa salva'); expect(captures).toBe(0); expect((await app.purchaseState(checkout.id)).attempts).toHaveLength(0);
+  await page.evaluate(() => (window as unknown as { restorePurchaseStorage: () => void }).restorePurchaseStorage());
+  const other = await app.customer(), signed = await send(app, '/auth/login', 'POST', JSON.stringify(other.input)); expect(signed.status).toBe(200);
+  const rejected = await send<{ code: string }>(app, '/me/addresses', 'POST', '{bad', { Cookie: signed.cookie, 'X-CSRF-Token': signed.csrf, 'X-Garimpo-Account': scenario.customer.user.id }); expect(rejected.status).toBe(403); expect(rejected.body.code).toBe('ACCOUNT_CONTEXT_CHANGED');
+  const another = await session(app, other.input.email, other.input.password); expect((await another.call<unknown[]>('/me/addresses')).body).toEqual([]);
+  await expect(page.locator('input[autocomplete="cc-number"], input[autocomplete="cc-csc"]')).toHaveCount(0);
+});

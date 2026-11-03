@@ -13,6 +13,10 @@ import { MessageProtection } from '../../../apps/api/src/modules/messaging/prote
 import { AccessMessages } from '../../../apps/api/src/modules/messaging/service.ts';
 import { consumeRegistration, deliverNext } from '../../../apps/api/src/modules/messaging/worker.ts';
 import { fixtureClock } from './clock.mjs';
+import { Payments } from '../../../apps/api/src/modules/payments/service.ts';
+import { LocalGateway } from '../../../apps/api/src/modules/payments/gateway.ts';
+import { AutomaticRefunds } from '../../../apps/api/src/modules/refunds/automatic.ts';
+import { expireOrders } from '../../../apps/api/src/jobs/order-expiry.ts';
 
 /** @param {{ realtime?: boolean, configureWeb?: (app: import('express').Express) => void, reviewPurchases?: import('../../../apps/api/src/modules/reviews/purchases.ts').ReviewPurchases, pendingOrders?: import('../../../apps/api/src/modules/checkout/pending-orders.ts').PendingOrders }} [options] */
 export async function startHarness({ realtime = false, configureWeb, reviewPurchases, pendingOrders } = {}) {
@@ -63,7 +67,10 @@ export async function startHarness({ realtime = false, configureWeb, reviewPurch
   const address = server.address(); if (!address || typeof address === 'string') throw new Error('TCP listener required.');
   const origin = `https://${publicHost}:${address.port}`;
   const config = { db, clock, webOrigin: origin };
-  web.use(createApp(config, { ...config, mode: 'local-test', encryptionKey, technicalSecret }, { ...config, mediaRoot: resolve(directory, 'public-products') }, { ...config, ...(reviewPurchases ? { purchases: reviewPurchases } : {}) }, { ...config, ...(pendingOrders ? { pendingOrders } : {}) }));
+  const localGateway = new LocalGateway(db, clock);
+  let captureGate;
+  const gateway = { async capture(id) { const gate = captureGate; if (gate) { captureGate = undefined; gate.enter(); await gate.wait; } await localGateway.capture(id); }, refund: id => localGateway.refund(id) };
+  web.use(createApp(config, { ...config, mode: 'local-test', encryptionKey, technicalSecret }, { ...config, mediaRoot: resolve(directory, 'public-products') }, { ...config, ...(reviewPurchases ? { purchases: reviewPurchases } : {}) }, { ...config, ...(pendingOrders ? { pendingOrders } : {}) }, { ...config, gateway }));
   configureWeb?.(web);
   web.use((request, response, next) => {
     response.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; media-src 'self' https:; base-uri 'none'; frame-ancestors 'none'");
@@ -77,6 +84,21 @@ export async function startHarness({ realtime = false, configureWeb, reviewPurch
   return {
     origin, directory, caPath, schema, credentials,
     advance,
+    pauseNextCapture() {
+      if (captureGate) throw new Error('A capture barrier is already armed.');
+      let enter, release; const reached = new Promise(resolve => { enter = resolve; }), wait = new Promise(resolve => { release = resolve; }); captureGate = { enter, wait };
+      return { reached, release };
+    },
+    async paymentEvent(id, result, eventId = randomUUID()) { await localGateway.event(id, result, eventId); await new Payments(accounts, gateway).apply(id); },
+    async expirePayments() { return expireOrders(db, clock); },
+    async retryAutomaticRefund(id) { return new AutomaticRefunds(accounts, gateway).run(id, randomUUID(), 'SUCCEEDED'); },
+    async purchaseState(checkoutId) {
+      const checkout = await db.checkout.findUniqueOrThrow({ where: { id: checkoutId } });
+      const orders = await db.order.findMany({ where: { checkoutId }, include: { charges: true } });
+      const attempts = await db.paymentAttempt.findMany({ where: { checkoutId }, include: { refunds: { include: { attempts: true } } } });
+      const events = await db.financialEvent.findMany({ where: { paymentAttempt: { checkoutId } } });
+      return { checkout, orders, attempts, events };
+    },
     async customer() {
       const input = { name: 'Titular de teste', email: `${randomUUID()}@example.invalid`, password: randomBytes(24).toString('base64url') };
       return { input, user: await accounts.register(input) };
