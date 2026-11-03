@@ -52,11 +52,11 @@ export class Orders {
       const accepted = checkout.freightSnapshot as unknown as AcceptedFreight | null;
       if (!accepted || !checkout.freightRevision || checkout.addressId !== input.addressId || accepted.address.id !== input.addressId || checkout.freightRevision !== input.freightRevision) throw new FreightError(409, 'FREIGHT_CONFIRMATION_REQUIRED', 'Escolha um endereço próprio, confira a cotação e aceite o frete.');
       const address = await ownAddress(tx, user.id, input.addressId), freight = await new Freight(this.accounts).quote(tx, address.zip, true);
-      if (!freight.served) throw new FreightError(422, 'ZIP_NOT_SERVED', 'Este CEP não é atendido. Corrija o endereço antes de vencer a finalização.');
-      if (freightRevision(freight, address) !== input.freightRevision) throw new FreightError(409, 'FREIGHT_CONFIRMATION_REQUIRED', 'O endereço ou o frete mudou. Confira e aceite a nova cotação.');
       // Re-read time after the final potentially blocking configuration lock.
       now = this.accounts.clock.now();
       if (checkout.expiresAt <= now) { await closeCheckout(tx, checkout, 'EXPIRED', this.accounts.clock, 'ORDER_AFTER_FREIGHT_LOCK_DEADLINE'); return { error: new CartError(409, 'CHECKOUT_EXPIRED', 'O prazo da finalização terminou. Confira o carrinho para iniciar outra.') }; }
+      if (!freight.served) throw new FreightError(422, 'ZIP_NOT_SERVED', 'Este CEP não é atendido. Corrija o endereço antes de vencer a finalização.');
+      if (freightRevision(freight, address) !== input.freightRevision) throw new FreightError(409, 'FREIGHT_CONFIRMATION_REQUIRED', 'O endereço ou o frete mudou. Confira e aceite a nova cotação.');
       requirePendingCapacity(await orderPendingCount(this.accounts.clock).inspect(tx, user.id));
       const snapshot = checkout.quoteSnapshot as unknown as CheckoutSnapshot;
       const otherHolds = await reservedQuantities(tx, checkout.items.map(item => item.offerId), now, checkout.id), offers = await tx.offer.findMany({ where: { id: { in: checkout.items.map(item => item.offerId) } } });

@@ -9,7 +9,8 @@ import { Pricing } from '../pricing/service.ts';
 import { unitIdentity } from '../cart/rules.ts';
 import { json } from '../cart/quote.ts';
 import { CartError, missing } from '../cart/errors.ts';
-import { expireOwn, lockCustomer, checkoutInclude } from './lifecycle.ts';
+import { expireOwn, lockCustomer, checkoutInclude, lockCoupons, closeCheckout } from './lifecycle.ts';
+import { lockOffers } from '../inventory/reservations.ts';
 import { Checkouts } from './service.ts';
 import type { QuoteInput, AddressInput } from '../orders/validation.ts';
 import * as validate from '../orders/validation.ts';
@@ -39,7 +40,9 @@ export class CheckoutQuotes {
     const result = await serializable(this.accounts.db, async tx => {
       const user = await lockCustomer(this.accounts, tx, access), row = await expireOwn(tx, user.id, this.accounts.clock); if (!row || row.id !== id) return { error: missing() };
       if (row.version !== input.version) throw new CartError(409, 'CHECKOUT_VERSION_CONFLICT', 'A finalização mudou. Atualize antes de aceitar o frete.');
+      await lockOffers(tx, row.items.map(item => item.offerId)); await lockCoupons(tx, [row.couponUsage?.couponId]);
       const address = await ownAddress(tx, user.id, input.addressId), freight = await new Freight(this.accounts).quote(tx, address.zip, true), revision = freightRevision(freight, address);
+      if (row.expiresAt <= this.accounts.clock.now()) { await closeCheckout(tx, row, 'EXPIRED', this.accounts.clock, 'FREIGHT_ACCEPTANCE_AFTER_LOCK_DEADLINE'); return { error: new CartError(409, 'CHECKOUT_EXPIRED', 'O prazo da finalização terminou. Confira o carrinho para iniciar outra.') }; }
       if (!freight.served) throw new FreightError(422, 'ZIP_NOT_SERVED', 'Este CEP não é atendido. Escolha outro endereço antes de vencer a finalização.');
       if (revision !== input.freightRevision) throw new FreightError(409, 'FREIGHT_CONFIRMATION_REQUIRED', 'O endereço ou o frete mudou. Confira a nova cotação antes de aceitar.');
       const accepted: AcceptedFreight = { address, freight, revision };

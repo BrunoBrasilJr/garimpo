@@ -203,3 +203,10 @@ test('customer bearer creates only the owned initial order without web cookies o
   const ready = await f.ready(buyer), result = await f.server.call<OrderCreationView>('/orders', 'POST', ready.body, { 'X-Garimpo-Client': 'mobile', Authorization: 'Bearer ' + buyer.accessToken, 'X-Garimpo-Account': buyer.user.id, 'Idempotency-Key': ready.key });
   expect(result.status).toBe(201); expect(result.headers['set-cookie']).toBeUndefined(); expect(result.body.status).toBe('PENDING'); expect(result.body.charges[0]!.status).toBe('ACTIVE');
 });
+
+test('freight acceptance also revalidates expiry after a contended configuration lock and leaves the old address untouched', async () => {
+  const ready = await f.ready(buyer), destination = await f.address(buyer, ready.rate.zip), quote = await f.quotes.quote(buyer.accessToken, { checkoutId: ready.checkout.id, addressId: destination.id });
+  await f.control.query('BEGIN'); await f.control.query('SELECT id FROM "FreightRate" WHERE id=$1 FOR UPDATE', [ready.rate.id]); const result = f.quotes.accept(buyer.accessToken, ready.checkout.id, { version: ready.checkout.version, addressId: destination.id, freightRevision: quote.freightRevision }).catch(cause => cause); let observed: boolean;
+  try { observed = await waiting(1); f.advance(Date.parse(ready.checkout.expiresAt) - f.clock.now().getTime()); } finally { await f.control.query('ROLLBACK'); }
+  expect(observed).toBe(true); expect(await result).toMatchObject({ code: 'CHECKOUT_EXPIRED' }); const row = await f.db.checkout.findUniqueOrThrow({ where: { id: ready.checkout.id } }); expect(row.status).toBe('EXPIRED'); expect(row.addressId).toBe(ready.address.id);
+});
