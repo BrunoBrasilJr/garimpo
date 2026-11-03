@@ -12,6 +12,7 @@ const PublicCatalog = lazy(() => import('../features/catalog/Catalog'));
 const Saved = lazy(() => import('../features/engagement/Engagement'));
 const ReviewModeration = lazy(() => import('../features/admin/reviews/Reviews'));
 const PricingAdmin = lazy(() => import('../features/admin/pricing/Pricing'));
+const FreightAdmin = lazy(() => import('../features/admin/freight/Freight'));
 const Cart = lazy(() => import('../features/cart/Cart'));
 
 export default function App() {
@@ -39,12 +40,12 @@ export default function App() {
     try { await request('/auth/logout', 'POST', {}, false); setNotice('Você saiu da sua conta.'); setUser(null); setCartReady(''); navigate('login'); }
     catch (cause) { setNotice(readableError(cause)); }
   }
-  const accountRoute = route.name === 'profile' || route.name === 'staff' || route.name === 'catalog-admin' || route.name === 'saved' || route.name === 'reviews-admin' || route.name === 'pricing-admin';
+  const accountRoute = route.name === 'profile' || route.name === 'staff' || route.name === 'catalog-admin' || route.name === 'saved' || route.name === 'reviews-admin' || route.name === 'pricing-admin' || route.name === 'freight-admin';
   const publicRoute = route.name === 'catalog' || route.name === 'edition';
   return <div className="account-site">
     <a className="account-skip" href="#account-main" onClick={event => { event.preventDefault(); document.getElementById('account-main')?.focus(); }}>Pular para o conteúdo</a>
     <header className="account-header"><a href="#/catalog" className="account-brand"><span aria-hidden="true">◉</span> Garimpo</a>
-      <nav aria-label="Navegação principal"><a href="#/catalog">Explorar discos</a>{!user || user.context === 'CUSTOMER' ? <a href="#/cart">Carrinho</a> : null}{user ? <><a href="#/profile">Minha conta</a>{user.context === 'STAFF' ? <><a href="#/catalog-admin">Catálogo</a><a href="#/reviews-admin">Avaliações</a></> : null}{user.context === 'STAFF' && user.role === 'ADMIN' ? <><a href="#/staff">Equipe</a><a href="#/pricing-admin">Descontos</a></> : null}<button className="secondary" onClick={() => { void logout(); }}>Sair</button></> : <><a href="#/login">Entrar</a><a href="#/register">Criar conta</a></>}</nav>
+      <nav aria-label="Navegação principal"><a href="#/catalog">Explorar discos</a>{!user || user.context === 'CUSTOMER' ? <a href="#/cart">Carrinho</a> : null}{user ? <><a href="#/profile">Minha conta</a>{user.context === 'STAFF' ? <><a href="#/catalog-admin">Catálogo</a><a href="#/reviews-admin">Avaliações</a></> : null}{user.context === 'STAFF' && user.role === 'ADMIN' ? <><a href="#/staff">Equipe</a><a href="#/pricing-admin">Descontos</a><a href="#/freight-admin">Frete</a></> : null}<button className="secondary" onClick={() => { void logout(); }}>Sair</button></> : <><a href="#/login">Entrar</a><a href="#/register">Criar conta</a></>}</nav>
     </header>
     <main id="account-main" className={'account-shell' + (route.name === 'catalog-admin' ? ' catalog-layout' : publicRoute ? ' public-layout' : '')} tabIndex={-1}>
       <aside className="account-intro"><p className="eyebrow">DISCOS E DESCOBERTAS</p><h1 ref={heading} tabIndex={-1}>Sua próxima<br />boa história.</h1><p>Um lugar para quem gosta de descobrir música e guardar boas histórias em vinil.</p><div className="account-record" aria-hidden="true"><span>g.</span></div><p className="account-caption">Encontre novas histórias.<br /><a href="#/catalog">Explore nosso catálogo.</a></p></aside>
@@ -54,6 +55,7 @@ export default function App() {
           route.name === 'cart' ? user?.context === 'CUSTOMER' && cartReady !== user.id ? <p role="status">Conferindo carrinho deste aparelho…</p> : <Suspense fallback={<p role="status">Carregando carrinho…</p>}><Cart key={user?.id ?? 'visitor'} user={user} /></Suspense> :
           route.name === 'catalog-admin' && user ? user.context === 'STAFF' ? <Suspense fallback={<p role="status">Carregando catálogo…</p>}><CatalogAdmin /></Suspense> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente a equipe pode administrar o catálogo.</p></section> :
           route.name === 'staff' && user ? user.context === 'STAFF' && user.role === 'ADMIN' ? <Staff user={user} onUser={setUser} notify={setNotice} /> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente administradores podem gerenciar a equipe.</p></section> :
+          route.name === 'freight-admin' && user ? user.context === 'STAFF' && user.role === 'ADMIN' ? <Suspense fallback={<p role="status">Carregando frete…</p>}><FreightAdmin /></Suspense> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente administradores podem configurar frete e cobertura.</p></section> :
           route.name === 'pricing-admin' && user ? user.context === 'STAFF' && user.role === 'ADMIN' ? <Suspense fallback={<p role="status">Carregando descontos…</p>}><PricingAdmin /></Suspense> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente administradores podem configurar cupons e promoções.</p></section> :
           route.name === 'reviews-admin' && user ? user.context === 'STAFF' ? <Suspense fallback={<p role="status">Carregando avaliações…</p>}><ReviewModeration /></Suspense> : <section className="account-card"><h2>Acesso restrito</h2><p>Somente a equipe pode moderar avaliações.</p></section> :
           route.name === 'saved' && user ? user.context === 'CUSTOMER' ? <Suspense fallback={<p role="status">Carregando desejos…</p>}><Saved /></Suspense> : <section className="account-card"><h2>Acesso de cliente</h2><p>Desejos e alertas pertencem à conta de compra.</p></section> :

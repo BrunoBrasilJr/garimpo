@@ -1,0 +1,8 @@
+.freight-panel { min-width: 0; overflow-wrap: anywhere; }
+.freight-panel form, .freight-panel label, .freight-panel fieldset { display: grid; gap: 10px; min-width: 0; }
+.freight-panel form { margin-block: 24px; gap: 18px; }
+.freight-panel fieldset, .freight-panel article { border: 1px solid #c9cbbd; border-radius: 10px; padding: 16px; margin-block: 12px; min-width: 0; }
+.freight-panel .freight-check { display: flex; align-items: flex-start; }
+.freight-panel .freight-check input { width: 22px; min-height: 22px; flex: 0 0 22px; }
+.freight-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; min-width: 0; }
+.freight-panel button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
