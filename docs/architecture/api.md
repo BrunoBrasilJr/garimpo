@@ -305,6 +305,15 @@ vazia significa não atendimento; pedido criado conserva snapshots anteriores.
 | API-012.01 | POST | /orders/{id}/simulated-payments | chargeId ativo, resultado simulado, chave | tentativa, pedido e eventual estorno | 200; 409 estado; 403 sem permissão |
 | API-012.02 | POST | /checkouts/{id}/simulated-card-payments | cenário simulado, chave | recusa sem pedido ou pedido pago; tardio gera estorno | 200; 409 estado/versão; 422 dados |
 | API-012.03 | LOCAL | simulator payment-event | chargeId ou attemptId, eventId, resultado | efeito idempotente; estorno se tardio/invalidado | sucesso/falha auditados |
+| API-012.04 | GET | /me/payment-attempts | page, pageSize (máximo 30) | tentativas próprias, inclusive cartão sem pedido e estorno pendente/falho | 200; 403 contexto |
+| API-012.05 | GET | /me/payment-attempts/{id} | tentativa própria | resultado persistido, pedido e obrigações/tentativas de estorno | 200; 404 alheia/ausente |
+| API-012.06 | POST | /admin/automatic-refunds/{id}/retry | scenario SUCCEEDED/FAILED, Idempotency-Key | nova tentativa automática ou retomada da já iniciada; somente ADMIN web | 200; 403 sem papel; 409 chave conflitante |
+
+Wire do simulador local: API-012.01 recebe `{chargeId,scenario}`; API-012.02 recebe `{version,addressId,freightRevision,scenario}`. Ambas exigem `Idempotency-Key`, conta CUSTOMER ativa, HTTPS, autorização e proteção CSRF/origem na web; mobile usa bearer sem cookies. `X-Garimpo-Account` opcional restringe a conta esperada. Valores, aprovação booleana, relógio e campos extras são rejeitados. Cenários: APPROVED, DECLINED, PENDING e APPROVED_REFUND_FAIL (captura aprovada; eventual estorno automático falha). Apenas dados sintéticos; nenhum número de cartão real.
+
+PENDING conserva os prazos originais e permanece consultável pela tentativa. API-012.03 é o comando técnico de terminal `npm run simulator -- payment-event <attemptId> APPROVED|DECLINED <eventId>`; a tentativa já referencia a cobrança quando aplicável. Não há callback HTTP público nem cenário que avance relógio. Confirmação realmente recebida/aplicada após o prazo estorna sem criar/reativar pedido. Um eventId não pode apontar para outra tentativa/resultado. `npm run simulator -- resume <attemptId>` retoma a intenção ou recibo persistido; `npm run simulator -- refund-retry <refundId> SUCCEEDED|FAILED <key>` é repetição técnica, sem papel comercial e sem autorização de pós-venda. Acesso ao host/ambiente protegido é necessário; CLI recusa produção e banco não local, sem revelar credenciais em erro.
+
+As respostas de simulação retornam PaymentView com result PENDING/APPROVED/DECLINED, outcome nulo/PAID/DECLINED/REFUND_REQUIRED, serverTime, pedido quando existente e refunds com status e tentativas. Falha de provedor/aplicação pode retornar erro temporário mantendo a mesma chave retomável, sem nova captura. Após pagamento ou estorno a consulta retorna estado persistido, sem renovar prazo. API-012.06 trata exclusivamente obrigações AUTOMATIC_PAYMENT; USER/OPERATOR não podem repetir e o núcleo não autoriza pós-venda.
 
 ## RF-013 Acompanhar pedidos
 

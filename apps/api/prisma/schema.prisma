@@ -243,6 +243,8 @@ model User {
   couponUsages    CouponUsage[]
   reviewRevisions ReviewRevision[]
   orders          Order[]
+  paymentAttempts PaymentAttempt[]
+  refundAttempts RefundAttempt[]
 }
 
 model Session {
@@ -796,6 +798,7 @@ enum RefundStatus {
 model PaymentAttempt {
   id String @id @default(uuid()) @db.Uuid
   userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
   checkoutId String @db.Uuid
   checkout Checkout @relation(fields: [checkoutId], references: [id], onDelete: Restrict)
   orderId String? @db.Uuid
@@ -846,6 +849,7 @@ model RefundAttempt {
   refund Refund @relation(fields: [refundId], references: [id], onDelete: Restrict)
   attemptKey String @unique @db.VarChar(200)
   actorId String? @db.Uuid
+  actor User? @relation(fields: [actorId], references: [id], onDelete: Restrict)
   scenario String @db.VarChar(30)
   result RefundStatus @default(PENDING)
   createdAt DateTime @default(now()) @db.Timestamptz(3)

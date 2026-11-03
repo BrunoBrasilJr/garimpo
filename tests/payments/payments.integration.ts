@@ -103,7 +103,7 @@ test('approval exactly at the original card deadline refunds without creating an
 });
 
 test('an early receipt applied only after restart past expiry cannot reacquire released stock', async () => {
-  const { ready, result } = await pending(); await f.gateway.event(result.id, 'APPROVED', randomUUID()); f.advance(16 * 60000); await expireReservations(f.db, f.clock); await f.secondPayments.apply(result.id);
+  const { result } = await pending(); await f.gateway.event(result.id, 'APPROVED', randomUUID()); f.advance(16 * 60000); await expireReservations(f.db, f.clock); await f.secondPayments.apply(result.id);
   expect((await f.payments.view(result.id)).order).toBeNull(); expect((await f.payments.view(result.id)).refunds[0]!.status).toBe('SUCCEEDED');
   expect(await f.db.financialEvent.count({ where: { paymentAttemptId: result.id, type: 'SALE' } })).toBe(0);
 });

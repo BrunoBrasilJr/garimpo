@@ -74,3 +74,21 @@ CREATE FUNCTION protect_payment_receipt() RETURNS trigger LANGUAGE plpgsql AS $$
  RETURN NEW;
 END $$;
 CREATE TRIGGER protect_payment_receipt BEFORE UPDATE OR DELETE ON "PaymentAttempt" FOR EACH ROW EXECUTE FUNCTION protect_payment_receipt();
+CREATE FUNCTION protect_refund_obligation() RETURNS trigger LANGUAGE plpgsql AS $$ DECLARE captured BIGINT; allocated BIGINT; BEGIN
+ IF TG_OP='DELETE' THEN RAISE EXCEPTION 'refund history is immutable'; END IF;
+ IF TG_OP='INSERT' THEN
+  UPDATE "PaymentAttempt" SET outcome=outcome WHERE id=NEW."paymentAttemptId" AND result='APPROVED' RETURNING "amountCents" INTO captured;
+  SELECT COALESCE(sum("productCents"+"shippingCents"),0) INTO allocated FROM "Refund" WHERE "paymentAttemptId"=NEW."paymentAttemptId";
+  IF captured IS NULL OR allocated+NEW."productCents"+NEW."shippingCents">captured THEN RAISE EXCEPTION 'refund exceeds captured payment'; END IF;
+ ELSE
+  IF ROW(NEW.id,NEW."paymentAttemptId",NEW."orderId",NEW.origin,NEW."originKey",NEW."productCents",NEW."shippingCents",NEW."createdAt") IS DISTINCT FROM ROW(OLD.id,OLD."paymentAttemptId",OLD."orderId",OLD.origin,OLD."originKey",OLD."productCents",OLD."shippingCents",OLD."createdAt") OR (OLD.status='SUCCEEDED' AND NEW IS DISTINCT FROM OLD) THEN RAISE EXCEPTION 'refund obligation and completed result are immutable'; END IF;
+ END IF;
+ RETURN NEW;
+END $$;
+CREATE TRIGGER protect_refund_obligation BEFORE INSERT OR UPDATE OR DELETE ON "Refund" FOR EACH ROW EXECUTE FUNCTION protect_refund_obligation();
+CREATE FUNCTION protect_refund_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+ IF TG_OP='DELETE' THEN RAISE EXCEPTION 'refund attempts are immutable'; END IF;
+ IF ROW(NEW.id,NEW."refundId",NEW."attemptKey",NEW."actorId",NEW.scenario,NEW."createdAt") IS DISTINCT FROM ROW(OLD.id,OLD."refundId",OLD."attemptKey",OLD."actorId",OLD.scenario,OLD."createdAt") OR (OLD.result<>'PENDING' AND ROW(NEW.result,NEW."receivedAt") IS DISTINCT FROM ROW(OLD.result,OLD."receivedAt")) OR (OLD."appliedAt" IS NOT NULL AND NEW IS DISTINCT FROM OLD) THEN RAISE EXCEPTION 'refund intent and terminal receipt are immutable'; END IF;
+ RETURN NEW;
+END $$;
+CREATE TRIGGER protect_refund_receipt BEFORE UPDATE OR DELETE ON "RefundAttempt" FOR EACH ROW EXECUTE FUNCTION protect_refund_receipt();

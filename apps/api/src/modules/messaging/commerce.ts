@@ -20,7 +20,7 @@ export async function consumeCommerce(messages: AccessMessages): Promise<'EMPTY'
       const id = randomUUID(), dedupKey = 'commerce:' + event.id;
       if (!await tx.demoMessage.findUnique({ where: { dedupKey } })) await tx.demoMessage.create({ data: { id, userId: user.id, eventId: event.id, type: 'COMMERCE.' + event.type, dedupKey, restrictedBody: messages.protection.seal(id, JSON.stringify({ recipient: user.emailNormalized, purpose: event.type, ...value, notice: 'Simulação acadêmica; nenhuma movimentação financeira real.', link: `${messages.webOrigin}/#/payments` })), createdAt: clock.now() } });
       await tx.domainEvent.update({ where: { id: event.id }, data: { processedAt: clock.now(), lastErrorCode: null } }); await tx.$executeRawUnsafe('RELEASE SAVEPOINT commerce_message'); return 'PROCESSED';
-    } catch { await tx.$executeRawUnsafe('ROLLBACK TO SAVEPOINT commerce_message'); await tx.domainEvent.update({ where: { id: event.id }, data: { lastErrorCode: 'COMMERCE_PREPARATION_FAILED' } }); await tx.$executeRawUnsafe('RELEASE SAVEPOINT commerce_message'); return 'FAILED'; }
+    } catch { await tx.$executeRawUnsafe('ROLLBACK TO SAVEPOINT commerce_message'); await tx.domainEvent.update({ where: { id: event.id }, data: { lastErrorCode: 'COMMERCE_PREPARATION_FAILED' } }); await appendAudit(tx, { action: 'COMMERCE.PREPARE_FAILED', targetType: 'EVENT', targetId: event.id, result: 'FAILURE', reason: 'LOCAL_PREPARATION_FAILED', changes: {} }, clock); await tx.$executeRawUnsafe('RELEASE SAVEPOINT commerce_message'); return 'FAILED'; }
   });
 }
 export async function deliverCommerce(messages: AccessMessages, localCheck: (id: string) => void = () => {}): Promise<'EMPTY' | 'DELIVERED' | 'FAILED'> {
