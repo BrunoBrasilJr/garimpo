@@ -252,6 +252,46 @@ retém intenção para replay, erro confirmado de revisão exige nova conferênc
 | API-011.02 | POST | /orders | checkoutId, método PIX/BOLETO, endereço e frete aceitos, chave | pedido pendente; Pix 30min/boleto 2 dias; cobrança ativa | 201; 403 e-mail não confirmado; 409 prazo/saldo |
 | API-011.03 | PATCH | /checkouts/{id}/address | endereço próprio e revisão de frete aceita | frete recalculado; prazo original preservado | 200; 422 não atendido |
 
+Detalhamento RF-011/RF-029 (TASK-018): POST /checkout/quote aceita exatamente
+`{items:[{offerId,quantity}],zip,couponCode?}` público ou `{checkoutId,addressId}`
+próprio autenticado. Até 100 ofertas distintas/1000 unidades e JSON 32KiB. Público
+não cria carrinho/reserva nem garante utilização de cupom/saldo/preço. Privado
+usa produtos/descontos congelados. Retorna quote/freight/freightRevision/totalCents/
+serverTime/checkout (id/version/expiresAt, null no público). Frete servido contém
+served=true, zip/rateId/rateVersion/region/amountCents/deliveryDays; não servido
+contém served=false, zip/reason NO_RATE ou NOT_SERVED/region, totalCents=null,
+sem valor/prazo fictício. Revisão SHA-256 canônica vincula configuração e endereço
+completo; revisão pública por CEP não aceita endereço privado.
+
+PATCH /checkouts/{id}/address recebe `{version,addressId,freightRevision}` e
+retorna CheckoutView com freight aceito e versão incrementada. Mantém os produtos,
+preços e deadline original. 409 FREIGHT_CONFIRMATION_REQUIRED ou
+CHECKOUT_VERSION_CONFLICT; 422 ZIP_NOT_SERVED conserva checkout vivo. Prazo é
+revalidado após lock; vencido encerra sem trocar endereço nem criar pedido.
+
+POST /orders recebe `{checkoutId,version,addressId,freightRevision,method}`
+PIX/BOLETO e Idempotency-Key no cabeçalho. Retorna OrderCreationView com snapshots,
+unidades/líquidos e cobrança inicial ACTIVE, sem aprovação ou código de pagamento
+fictício. Simulador é TASK-019. Mesmo corpo/chave recupera o mesmo pedido após
+reinício; outra chave não reconverte checkout usado. Conta apta/e-mail confirmado
+antes do primeiro pedido, endereço próprio/aceite atual e limite real de três
+pendentes são verificados na transação. Transferência, consumo de cupom, unidades,
+cobrança, limpeza de carrinho, auditoria/outbox e recibo são atômicos. Prazo novo:
+Pix 30 minutos, boleto 48 horas da criação. Cartão/approved/valores do cliente
+são rejeitados. Preservar as guardas cookie/CSRF/origem e bearer sem cookies,
+incluindo X-Garimpo-Account opcional restritivo. Cotação pública é leitura;
+variante privada requer guardas de cliente autenticado.
+
+GET /admin/freight-rates pagina page/pageSize (máximo 100). POST recebe
+`{region,served,amountCents,deliveryDays,ranges:[{startZip,endZip}]}`; PATCH
+parcial exige version. Somente ADMIN/web, revalidado em transação e antes do
+parser. Até 100 faixas inclusivas por configuração, CEP oito dígitos ou
+NNNNN-NNN normalizado. Atendido exige preço positivo e prazo inteiro 0–3650
+informado pelo ADMIN; não atendido exige ambos null. São limites de recurso,
+não preço/prazo de operação presumido. Interseção retorna 409
+FREIGHT_RANGE_CONFLICT; versão obsoleta 409 FREIGHT_VERSION_CONFLICT. Tabela
+vazia significa não atendimento; pedido criado conserva snapshots anteriores.
+
 ## RF-012 Simular pagamentos
 
 **Atores:** Cliente e simulador. **Pré-condição:** Checkout para cartão; cobrança ativa para Pix/boleto.

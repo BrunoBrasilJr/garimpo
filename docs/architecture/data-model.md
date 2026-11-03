@@ -1,5 +1,40 @@
 # Modelo inicial de dados
 
+## Precisões de frete e pedido inicial — TASK-018
+
+FreightRate/CepRange são configuração versionada/auditada de ADMIN, sem seed de
+operação. Faixas inclusivas têm CHECK de CEP/ordem e EXCLUDE GiST sobre int4range,
+sem extensão adicional. Interseção é proibida inclusive para região não atendida;
+alterar cobertura exige editar a configuração existente. Preço/prazo são null
+para não atendido, positivos/inteiros conforme contrato para atendido. Índices
+de FKs, região e busca por faixa complementam a constraint concorrente.
+
+Checkout acrescenta freightSnapshot/freightRevision, mutáveis somente como aceite
+de endereço. Sua quoteSnapshot e seu deadline de 15 minutos continuam protegidos
+pelo trigger original. Alteração interna de metadado de endereço invalida revisão
+de frete anterior. Revisão aceita contém o endereço completo e a cotação versionada.
+
+Order tem checkoutId único, User/Checkout RESTRICT, snapshot de produtos/descontos,
+endereço e frete históricos, totais BigInt exatos e deadline próprio imutável.
+CHECK conserva subtotal menos desconto mais frete igual total, dentro da precisão
+JSON. OrderItem guarda edição/oferta/quantidade e metadado histórico. OrderUnit
+materializa o ID estável já congelado no checkout, índice lógico e líquido exato,
+inclusive zero; trigger protege identidade/preço. Seus estados logísticos futuros
+não reescrevem a venda. FKs preservam oferta/edição; não apagar histórico.
+
+Reservation mantém a referência original CheckoutItem e ganha orderItemId único
+opcional; transferência muda vínculo e vencimento sem liberar/reobter saldo nem
+baixar físico. CouponUsage ganha orderId único e torna-se CONSUMED na criação,
+mesmo com pagamento pendente. Limpeza do carrinho garante novas identidades
+comerciais em compras futuras. PaymentCharge inicial ACTIVE é Pix/boleto, valor
+igual ao pedido e mesmo prazo; índice parcial admite uma ativa por pedido.
+Status estruturais de pagamento/logística não autorizam antecipar seus fluxos.
+Simulador/expiração de pedido são TASK-019; cancelamento/liberação definitiva e
+atendimento ficam nas tarefas correspondentes. Valores e snapshots históricos
+são protegidos no banco, não apenas por convenção da interface.
+
+## Modelo planejado e histórico documental
+
 Proposta documental relacional, sem schema executável. PKs geradas pelo servidor, FKs explícitas, dinheiro em centavos e datas com fuso. Entidades mutáveis usam createdAt/updatedAt; eventos/tentativas são append-only. Índices e constraints locais complementam transações, não garantem sozinhos somas entre linhas. Tecnologia concreta depende de ADR-001.
 
 | Tabela | Campos e chaves principais | Cardinalidade/restrições/índices |
