@@ -11,10 +11,11 @@ const failure = (cause: unknown) => cause instanceof FormError || cause instance
 export default function FreightAdmin() {
   const [data, setData] = useState<FreightPage>(), [page, setPage] = useState(1), [revision, setRevision] = useState(0), [draft, setDraft] = useState<Draft>(blank), [editing, setEditing] = useState<FreightRateView>(), [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const alive = useRef(true), saveController = useRef<AbortController | null>(null), heading = useRef<HTMLHeadingElement>(null);
+  const [loading, setLoading] = useState(true);
   useEffect(() => { alive.current = true; return () => { alive.current = false; saveController.current?.abort(); }; }, []);
   useEffect(() => {
-    const controller = new AbortController(); setData(undefined);
-    request<FreightPage>('/admin/freight-rates?page=' + page, 'GET', undefined, true, controller.signal).then(value => { if (!controller.signal.aborted) setData(value); }).catch(cause => { if (!controller.signal.aborted) setError(failure(cause)); });
+    const controller = new AbortController(); setData(undefined); setLoading(true);
+    request<FreightPage>('/admin/freight-rates?page=' + page, 'GET', undefined, true, controller.signal).then(value => { if (!controller.signal.aborted) setData(value); }).catch(cause => { if (!controller.signal.aborted) setError(failure(cause)); }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [page, revision]);
   const changeRange = useCallback((index: number, field: 'startZip' | 'endZip', value: string) => setDraft(draft => ({ ...draft, ranges: draft.ranges.map((range, at) => at === index ? { ...range, [field]: value } : range) })), []);
@@ -46,7 +47,7 @@ export default function FreightAdmin() {
       <div className="freight-actions"><button type="button" className="secondary" disabled={busy || draft.ranges.length >= 100} onClick={() => setDraft({ ...draft, ranges: [...draft.ranges, { startZip: '', endZip: '' }] })}>Adicionar faixa de CEP</button><button disabled={busy}>{busy ? 'Salvando…' : 'Salvar configuração'}</button>{editing ? <button type="button" className="secondary" disabled={busy} onClick={() => { setEditing(undefined); setDraft(blank()); setError(''); }}>Cancelar edição</button> : null}</div>
     </form>
     <h3>Regiões cadastradas</h3><button type="button" className="secondary" disabled={busy} onClick={() => { setError(''); setRevision(value => value + 1); }}>Atualizar lista de frete</button>
-    {!data ? <p role="status">Conferindo regiões…</p> : !data.items.length ? <p>Nenhuma faixa cadastrada. Sem tabela, nenhum CEP é atendido.</p> : data.items.map(row => <article aria-label={row.region} key={row.id}><h4>{row.region}</h4><p>{row.served ? `${price(row.amountCents!)} · prazo informado: ${row.deliveryDays} dias` : 'Região não atendida'} · versão {row.version}</p>{row.ranges.map(range => <p key={range.id}>{zip(range.startZip)} até {zip(range.endZip)}</p>)}<button type="button" disabled={busy} onClick={() => edit(row)}>Editar frete de {row.region}</button></article>)}
+    {!data ? loading ? <p role="status">Conferindo regiões…</p> : <p>Lista indisponível. Use Atualizar lista de frete para conferir novamente.</p> : !data.items.length ? <p>Nenhuma faixa cadastrada. Sem tabela, nenhum CEP é atendido.</p> : data.items.map(row => <article aria-label={row.region} key={row.id}><h4>{row.region}</h4><p>{row.served ? `${price(row.amountCents!)} · prazo informado: ${row.deliveryDays} dias` : 'Região não atendida'} · versão {row.version}</p>{row.ranges.map(range => <p key={range.id}>{zip(range.startZip)} até {zip(range.endZip)}</p>)}<button type="button" disabled={busy} onClick={() => edit(row)}>Editar frete de {row.region}</button></article>)}
     {data ? <div className="freight-actions" aria-label="Páginas de regiões"><button type="button" className="secondary" disabled={busy || page <= 1} onClick={() => setPage(page - 1)}>Página anterior</button><p>Página {page} · {data.total} regiões</p><button type="button" className="secondary" disabled={busy || page * data.pageSize >= data.total} onClick={() => setPage(page + 1)}>Próxima página</button></div> : null}
   </section>;
 }

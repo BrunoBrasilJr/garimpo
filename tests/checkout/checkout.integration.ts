@@ -210,3 +210,11 @@ test('freight acceptance also revalidates expiry after a contended configuration
   try { observed = await waiting(1); f.advance(Date.parse(ready.checkout.expiresAt) - f.clock.now().getTime()); } finally { await f.control.query('ROLLBACK'); }
   expect(observed).toBe(true); expect(await result).toMatchObject({ code: 'CHECKOUT_EXPIRED' }); const row = await f.db.checkout.findUniqueOrThrow({ where: { id: ready.checkout.id } }); expect(row.status).toBe('EXPIRED'); expect(row.addressId).toBe(ready.address.id);
 });
+
+test('freight configuration and all its coverage ranges roll back together when its required audit cannot be written', async () => {
+  const before = { rates: await f.db.freightRate.count(), ranges: await f.db.cepRange.count() }, input = { region: 'Falha de auditoria sintética', served: true, amountCents: 1500, deliveryDays: 5, ranges: [{ startZip: '40000000', endZip: '40999999' }] };
+  await f.control.query(`CREATE FUNCTION fail_task018_freight_audit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW."targetType" = 'FREIGHT_RATE' THEN RAISE EXCEPTION 'isolated freight audit failure'; END IF; RETURN NEW; END $$`); await f.control.query('CREATE TRIGGER fail_task018_freight_audit BEFORE INSERT ON "AuditLog" FOR EACH ROW EXECUTE FUNCTION fail_task018_freight_audit()');
+  try { await expect(f.freight.create(f.admin.accessToken, input)).rejects.toThrow(); }
+  finally { await f.control.query('DROP TRIGGER fail_task018_freight_audit ON "AuditLog"'); await f.control.query('DROP FUNCTION fail_task018_freight_audit()'); }
+  expect({ rates: await f.db.freightRate.count(), ranges: await f.db.cepRange.count() }).toEqual(before); expect((await f.freight.create(f.admin.accessToken, input)).version).toBe(1);
+});
