@@ -13,8 +13,8 @@ if (url.pathname !== '/garimpo_test' || !['localhost', '127.0.0.1'].includes(url
   throw new Error('Integration tests require a separate loopback/garimpo_test database. No development fallback.');
 }
 const suite = process.argv[2] ?? 'core';
-if (!['core', 'accounts', 'messaging', 'catalog', 'inventory', 'engagement', 'reviews', 'pricing', 'cart', 'checkout'].includes(suite)) throw new Error('Unknown integration suite.');
-const schema = `task${suite === 'core' ? '003' : suite === 'accounts' ? '004' : suite === 'messaging' ? '005' : suite === 'catalog' ? '008' : suite === 'inventory' ? '009' : suite === 'engagement' ? '012' : suite === 'reviews' ? '013' : suite === 'pricing' ? '014' : suite === 'cart' ? '016' : '018'}_${randomUUID().replaceAll('-', '')}`;
+if (!['core', 'accounts', 'messaging', 'catalog', 'inventory', 'engagement', 'reviews', 'pricing', 'cart', 'checkout', 'payments'].includes(suite)) throw new Error('Unknown integration suite.');
+const schema = `task${suite === 'core' ? '003' : suite === 'accounts' ? '004' : suite === 'messaging' ? '005' : suite === 'catalog' ? '008' : suite === 'inventory' ? '009' : suite === 'engagement' ? '012' : suite === 'reviews' ? '013' : suite === 'pricing' ? '014' : suite === 'cart' ? '016' : suite === 'checkout' ? '018' : '019'}_${randomUUID().replaceAll('-', '')}`;
 url.searchParams.set('schema', schema);
 const admin = new Client({ connectionString: value });
 try {

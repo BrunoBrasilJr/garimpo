@@ -9,8 +9,7 @@ import { createDatabase } from '../../persistence/client.ts';
 import { publicError } from '../../core/errors.ts';
 import { CartError } from '../cart/errors.ts';
 import { PricingError } from '../pricing/errors.ts';
-import { FreightError } from './errors.ts';
-import { Freight } from './service.ts';
+import { FreightError } from '../freight/errors.ts';
 import * as input from './validation.ts';
 import { Payments } from './service.ts';
 import { AutomaticRefunds } from '../refunds/automatic.ts';
@@ -53,7 +52,7 @@ export function createPaymentsRouter(options: PaymentOptions = {}) {
     if (req.get('x-garimpo-client') && !mobile(req)) throw new AccountError(422, 'INVALID_CLIENT'); const values = cookies(req);
     if (mobile(req) && values.size || !mobile(req) && req.get('authorization')) throw new AccountError(422, 'AMBIGUOUS_CREDENTIALS');
     if (req.path.startsWith('/admin/')) {
-      if (mobile(req)) throw new AccountError(403, 'STAFF_WEB_ONLY'); await new Freight(service()).admin(service().db, access(req));
+      if (mobile(req)) throw new AccountError(403, 'STAFF_WEB_ONLY'); await new AutomaticRefunds(service(), gateway()).admin(service().db, access(req));
       if (!['GET', 'HEAD'].includes(req.method)) { if (supplied !== origin) throw new AccountError(403, 'ORIGIN_REQUIRED'); const proof = req.get('x-csrf-token') ?? ''; if (!proof || proof !== values.get('__Host-garimpo-csrf')) throw new AccountError(403, 'CSRF_INVALID'); await service().csrf(access(req), proof); }
     } else await customer(req);
     next();
