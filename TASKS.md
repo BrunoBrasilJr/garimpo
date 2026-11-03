@@ -28,7 +28,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | DONE |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | DONE |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | DONE |
-| 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | BLOCKED |
+| 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | IN_PROGRESS |
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | BLOCKED |
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | BLOCKED |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | BLOCKED |
@@ -2686,7 +2686,7 @@ TASK-021 candidata (019 DONE), própria DoR/Scope Guard antes da promoção. Est
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2725,6 +2725,23 @@ Criar consulta própria e administração de etapas incluindo PREPARING, uma rem
 - TASKS.md — somente estado/evidência desta TASK e prontidão comprovada de dependentes
 - apps/api/src/modules/messaging/** eventos de pedido/logística
 - apps/api/prisma/** somente Shipment ORIGINAL
+
+Precisão PRIMARY e decisão de escopo antes da implementação, sob a delegação contínua explícita do responsável: contratos em packages/contracts/src/orders/**; schema/migration somente Shipment ORIGINAL, OrderStatusEvent já previsto no modelo e suas FKs/inversas de Order/User. OrderStatusEvent é necessário para cumprir o histórico append-only com transição atômica; omiti-lo ou usar log operacional mutável como substituto não atende RN-015/TEST-013. apps/api/src/modules/payments/service.ts somente emissão do evento de mudança PENDING→PAID na transação existente; orders/service.ts/expiry.ts somente eventos de criação/expiração junto aos efeitos atuais. Nenhuma regra financeira nova. Apps/api/src/app.ts somente roteador protegido de consultas/logística; navegação web/mobile somente entradas e guardas de histórico/painel. features/checkout/useFlow.ts de ambos somente leitura do histórico próprio recém-disponível para acompanhar pedidos pendentes também em outro aparelho, conservando retomada da intenção original; Checkout.tsx de ambos somente link/callback para histórico completo. docs/architecture/{api,data-model,parametros}.md somente wire/histórico/datas manuais compatíveis com o PDF. tests/orders/** inclui integração/API/migration e E2E com renderizador nativo; tests/e2e/account/harness.mjs somente composição/consultas técnicas necessárias. Exports mínimos, scripts e seleção de suite são candidatos INCIDENTAL, sujeitos aos nove critérios. Não materializar Shipment RETURN/SUBSTITUTE/REJECTED_RESEND, ExternalInteraction de pós-venda, cancelamento/estorno novo ou autorização de exceção.
+
+## SCOPE ESCALATION
+TASK: TASK-021
+Necessidade identificada: materializar OrderStatusEvent e conectar os eventos de pagamento já implementados, além do Shipment ORIGINAL originalmente listado.
+Motivo: o próprio objetivo/critério exige eventos persistentes e datas reais, previstos em data-model.md/RN-015; criação/expiração/pagamento precisam constar no mesmo histórico sem inventar fatos.
+Arquivos/módulos afetados: schema/migration de OrderStatusEvent e inversas; orders/service.ts/expiry.ts; payments/service.ts somente gravação do evento.
+Allowed Changes atual: consultas/logística de orders e migration Shipment ORIGINAL; precisão adicional documentada acima.
+Forbidden Changes relacionado: nenhum dos itens novos é pós-venda, regra financeira, refatoração alheia ou arquitetura divergente.
+Por que não é uma Incidental Change: persistência de histórico comercial e atomicidade são responsabilidade primária, não mero ajuste de import/configuração.
+Impacto se não realizada: histórico incompleto ou reconstruído com datas presumidas, incompatível com o resultado exigido.
+Alternativas: ampliar PRIMARY mínimo; guardar somente Shipment e deixar objetivo incompleto; usar auditoria técnica como substituto inadequado de histórico.
+Recomendação: ampliar PRIMARY mínimo preservando as regras e modelos já planejados.
+Decisão: adotar a ampliação delimitada acima sob a delegação expressa posterior do responsável para prosseguir e tomar decisões sem novas permissões rotineiras; não atribuir essa decisão ao PDF nem tratá-la como incidental. Não existe violação de Forbidden Changes.
+
+DoR 2026-11-03: TASK-019 DONE/9093c8e e TASK-020 DONE/86bac77 no main remoto; artefatos reais e gates pertinentes preservados (32 integrações financeiras, 116 unitários, seis E2E de compra por recortes e regressões de contas/carrinho). AGENTS/conciliação, README, tarefa/índice, ADR-001/002/003 ACCEPTED, API/modelo/testes e respostas finais R03-P1/R11-P4/R13-P3/R14-P5 relidos. Nenhuma PD impede logística original. Branch real feature/TASK-021-historico-logistica, base 86bac77; BLOCKED → READY → IN_PROGRESS. ZIP/dados originais preservados. Datas manuais de postagem/entrega são fatos efetivos em UTC, nunca futuras/estimadas; entrega não anterior à postagem, postagem não anterior ao pagamento. Registro tem timestamp próprio separado da data efetiva. Administração somente web por ADMIN/OPERATOR; conta de compra própria ativa nas consultas. Pagos continuam operacionalmente atendíveis mesmo se o cliente ficar bloqueado/encerrado. Concorrência revalidará identidade/papel/revisão, uma remessa original e entrega das unidades restantes. Mensagens de envio/entrega usam outbox; intermediárias internas não notificam. Backfill só poderá usar fatos/datas efetivamente persistidos, sem fabricar estágio/ator. Gates próprios e regressões financeiras após integrar histórico; nenhum aceite antecipado.
 
 #### Incidental Changes Policy
 
