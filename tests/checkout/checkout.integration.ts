@@ -154,7 +154,7 @@ async function waiting(expected: number) {
   } return false;
 }
 async function overlap<T, U>(table: 'User' | 'Offer' | 'FreightRate', id: string, one: () => Promise<T>, two: () => Promise<U>) {
-  await f.control.query('BEGIN'); await f.control.query(`SELECT id FROM "${table}" WHERE id=$1 FOR UPDATE`, [id]); const results = Promise.allSettled([one(), two()]); let observed = false;
+  await f.control.query('BEGIN'); await f.control.query(`SELECT id FROM "${table}" WHERE id=$1 FOR UPDATE`, [id]); const results = Promise.allSettled([one(), two()]); let observed: boolean;
   try { observed = await waiting(2); } finally { await f.control.query('ROLLBACK'); }
   const settled = await results; expect(observed, 'Both independent DB sessions must actually wait before release.').toBe(true); return settled;
 }
@@ -176,7 +176,7 @@ test('reservation-to-order transfer never exposes the same unique used copy to a
 
 test('concurrent overlapping postal ranges are rejected by the database rather than passing two independent prechecks', async () => {
   const common = { served: true, amountCents: 1500, deliveryDays: 5 }, one = { ...common, region: 'Disputa sintética A', ranges: [{ startZip: '30000000', endZip: '30999999' }] }, two = { ...common, region: 'Disputa sintética B', ranges: [{ startZip: '30500000', endZip: '31500000' }] };
-  await f.control.query('BEGIN'); await f.control.query('LOCK TABLE "CepRange" IN SHARE MODE'); const results = Promise.allSettled([f.freight.create(f.admin.accessToken, one), f.secondFreight.create(f.admin.accessToken, two)]); let observed = false;
+  await f.control.query('BEGIN'); await f.control.query('LOCK TABLE "CepRange" IN SHARE MODE'); const results = Promise.allSettled([f.freight.create(f.admin.accessToken, one), f.secondFreight.create(f.admin.accessToken, two)]); let observed: boolean;
   try { observed = await waiting(2); } finally { await f.control.query('ROLLBACK'); }
   const settled = await results; expect(observed).toBe(true); expect(settled.filter(value => value.status === 'fulfilled')).toHaveLength(1); expect(settled.find(value => value.status === 'rejected')).toMatchObject({ reason: { status: 409, code: 'FREIGHT_RANGE_CONFLICT' } });
 });
@@ -188,7 +188,7 @@ test('concurrent edits of the same freight version have one winner and one expli
 });
 
 test('waiting for freight lock cannot authorize an order after the checkout deadline has passed', async () => {
-  const ready = await f.ready(buyer); await f.control.query('BEGIN'); await f.control.query('SELECT id FROM "FreightRate" WHERE id=$1 FOR UPDATE', [ready.rate.id]); const result = f.orders.create(buyer.accessToken, ready.body, ready.key).catch(cause => cause); let observed = false;
+  const ready = await f.ready(buyer); await f.control.query('BEGIN'); await f.control.query('SELECT id FROM "FreightRate" WHERE id=$1 FOR UPDATE', [ready.rate.id]); const result = f.orders.create(buyer.accessToken, ready.body, ready.key).catch(cause => cause); let observed: boolean;
   try { observed = await waiting(1); f.advance(Date.parse(ready.checkout.expiresAt) - f.clock.now().getTime()); } finally { await f.control.query('ROLLBACK'); }
   expect(observed).toBe(true); expect(await result).toMatchObject({ code: 'CHECKOUT_EXPIRED' }); expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0); expect((await f.db.checkout.findUniqueOrThrow({ where: { id: ready.checkout.id } })).status).toBe('EXPIRED');
 });
