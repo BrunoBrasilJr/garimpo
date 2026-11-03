@@ -2493,6 +2493,8 @@ DoR 2026-11-02: TASK-018 DONE/009333a e artefatos existentes; gates relevantes d
 
 Gate inicial d01e7d4: build FAIL por imports relativos do roteador de pagamentos recém-composto (apontavam para freight no caminho local). Estado operacional IN_PROGRESS → FAILED, correção no escopo PRIMARY vigente e retorno a IN_PROGRESS para repetir build/tipos/lint. Nenhum teste financeiro aprovado antecipadamente; log local test-results/payments/build.log.
 Gate 0f5adcd: build PASS, typecheck abortado pelo limite de heap de 512 MiB no compilador dos testes; nenhuma alteração de validação/segurança. bbfc76e: build/tipos PASS com heap de processo 1536 MiB, lint FAIL por variável não usada em teste novo. FAILED → IN_PROGRESS com correção mínima do próprio teste. Logs build2.log/acceptance.log preservados; repetir os gates antes de concluir.
+Gate 11b879f: build/tipos/lint e 111 unitários PASS; migration nova aplicada em schema isolado task019_d578465e50534b07a975b1cdf0cde8f8. Integração 22/28 PASS, seis FAIL em asserções de movimentação que contavam também a entrada inicial do catálogo. FAILED → IN_PROGRESS: distinguir saídas (delta negativo) da entrada sintética preexistente, conservando asserções de saldo, venda única e rollback. Reexecutar suite completa; resultado anterior não é aprovação. acceptance2.log preservado.
+
 
 
 

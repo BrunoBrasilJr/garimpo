@@ -44,7 +44,7 @@ test('declined card leaves no order, sale or stock movement and preserves the or
   expect(result).toMatchObject({ result: 'DECLINED', outcome: 'DECLINED', orderId: null, refunds: [] });
   expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0);
   expect((await f.db.checkout.findUniqueOrThrow({ where: { id: ready.checkout.id } })).expiresAt.toISOString()).toBe(ready.checkout.expiresAt);
-  expect(await f.db.stockMovement.count({ where: { offerId: ready.offer.id } })).toBe(0);
+  expect(await f.db.stockMovement.count({ where: { offerId: ready.offer.id, deltaOnHand: { lt: 0 } } })).toBe(0);
   const retry = await f.payments.card(buyer.accessToken, ready.checkout.id, card(ready), randomUUID()); expect(retry.order?.status).toBe('PAID');
 });
 
@@ -66,7 +66,7 @@ test('approved card atomically creates a paid order, consumes the hold and decre
   expect((await f.db.reservation.findFirstOrThrow({ where: { offerId: product.id } })).status).toBe('CONSUMED');
   expect(await f.db.financialEvent.findMany({ where: { paymentAttemptId: result.id } })).toMatchObject([{ type: 'SALE', productCents: 10000n, shippingCents: 1500 }]);
   const replay = await f.secondPayments.card(buyer.accessToken, ready.checkout.id, card(ready), key); expect(replay.id).toBe(result.id);
-  expect(await f.db.stockMovement.count({ where: { offerId: product.id } })).toBe(1);
+  expect(await f.db.stockMovement.count({ where: { offerId: product.id, deltaOnHand: { lt: 0 } } })).toBe(1);
   await expect(f.payments.card(buyer.accessToken, ready.checkout.id, card(ready, 'DECLINED'), key)).rejects.toMatchObject({ code: 'IDEMPOTENCY_CONFLICT' });
 });
 
@@ -128,7 +128,7 @@ for (const method of ['PIX', 'BOLETO'] as const) test(method + ' expiry releases
   await f.gateway.event(attempt.id, 'APPROVED', randomUUID()); await f.payments.apply(attempt.id); const result = await f.payments.view(attempt.id);
   expect(result.order?.status).toBe('CANCELLED'); expect(result.refunds[0]).toMatchObject({ status: 'SUCCEEDED', productCents: 9900, shippingCents: 1500 });
   expect((await f.db.couponUsage.findUniqueOrThrow({ where: { orderId: order.id } })).status).toBe('RELEASED');
-  expect(await f.db.financialEvent.count({ where: { orderId: order.id, type: 'SALE' } })).toBe(0); expect(await f.db.stockMovement.count({ where: { offerId: ready.offer.id } })).toBe(0);
+  expect(await f.db.financialEvent.count({ where: { orderId: order.id, type: 'SALE' } })).toBe(0); expect(await f.db.stockMovement.count({ where: { offerId: ready.offer.id, deltaOnHand: { lt: 0 } } })).toBe(0);
 });
 
 test('blocked customers cannot initiate payment, but technical receipts still produce the necessary automatic refund', async () => {
@@ -183,7 +183,7 @@ test('two independent sessions applying one receipt wait on the customer and com
   await f.control.query('BEGIN'); await f.control.query('SELECT id FROM "User" WHERE id=$1 FOR UPDATE', [buyer.user.id]); const running = Promise.allSettled([f.payments.apply(result.id), f.secondPayments.apply(result.id)]); let observed: boolean;
   try { observed = await waiting(2); } finally { await f.control.query('ROLLBACK'); }
   expect(observed).toBe(true); expect((await running).every(value => value.status === 'fulfilled')).toBe(true);
-  expect(await f.db.financialEvent.count({ where: { paymentAttemptId: result.id, type: 'SALE' } })).toBe(1); expect(await f.db.stockMovement.count({ where: { offerId: ready.offer.id } })).toBe(1);
+  expect(await f.db.financialEvent.count({ where: { paymentAttemptId: result.id, type: 'SALE' } })).toBe(1); expect(await f.db.stockMovement.count({ where: { offerId: ready.offer.id, deltaOnHand: { lt: 0 } } })).toBe(1);
 });
 
 test('expiry and approval contend on two real sessions; reaching the boundary while locked cannot commit a sale', async () => {
@@ -209,8 +209,16 @@ test('application audit failure rolls back order, stock and sale while retaining
   const { ready, result } = await pending(); await f.gateway.event(result.id, 'APPROVED', randomUUID());
   await f.control.query(`CREATE FUNCTION fail_payment_audit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.action='PAYMENT.PAID' THEN RAISE EXCEPTION 'isolated failure'; END IF; RETURN NEW; END $$`); await f.control.query('CREATE TRIGGER fail_payment_audit BEFORE INSERT ON "AuditLog" FOR EACH ROW EXECUTE FUNCTION fail_payment_audit()');
   try { await expect(f.payments.apply(result.id)).rejects.toThrow(); } finally { await f.control.query('DROP TRIGGER fail_payment_audit ON "AuditLog"'); await f.control.query('DROP FUNCTION fail_payment_audit()'); }
-  expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0); expect((await f.db.paymentAttempt.findUniqueOrThrow({ where: { id: result.id } })).result).toBe('APPROVED'); expect(await f.db.stockMovement.count({ where: { offerId: ready.offer.id } })).toBe(0);
+  expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0); expect((await f.db.paymentAttempt.findUniqueOrThrow({ where: { id: result.id } })).result).toBe('APPROVED'); expect(await f.db.stockMovement.count({ where: { offerId: ready.offer.id, deltaOnHand: { lt: 0 } } })).toBe(0);
   await f.secondPayments.apply(result.id); expect((await f.payments.view(result.id)).outcome).toBe('PAID');
+});
+
+test('lost capture response after a durable approval resumes the same intent through the original client key', async () => {
+  const ready = await f.ready(buyer), key = randomUUID(); let lost = true;
+  const gateway = { capture: async (id: string) => { await f.gateway.capture(id); if (lost) { lost = false; throw new Error('Lost capture response after receipt.'); } }, refund: (id: string) => f.gateway.refund(id) };
+  await expect(new Payments(f.accounts, gateway).card(buyer.accessToken, ready.checkout.id, card(ready), key)).rejects.toThrow();
+  const original = await f.db.paymentAttempt.findFirstOrThrow({ where: { checkoutId: ready.checkout.id } }); expect(original.result).toBe('APPROVED'); expect(original.appliedAt).toBeNull(); expect(await f.db.order.count({ where: { checkoutId: ready.checkout.id } })).toBe(0);
+  const resumed = await f.secondPayments.card(buyer.accessToken, ready.checkout.id, card(ready), key); expect(resumed.id).toBe(original.id); expect(resumed.outcome).toBe('PAID'); expect(await f.db.paymentAttempt.count({ where: { checkoutId: ready.checkout.id } })).toBe(1);
 });
 
 test('lost refund response resumes the original successful provider attempt rather than issuing another credit', async () => {
@@ -265,4 +273,16 @@ test('source and built CLI reject missing or malformed protected database config
     const run = spawnSync(process.execPath, [entry, 'expire'], { env: { ...process.env, DATABASE_URL: 'postgres://secret-user:do-not-print@/broken' }, encoding: 'utf8' });
     expect(run.status).toBe(1); expect(run.stdout + run.stderr).not.toContain('do-not-print'); expect(run.stderr).toContain('Local simulator could not complete');
   }
+});
+
+test('a separate source CLI process resolves and replays a genuinely late pending capture using its persisted reference', async () => {
+  const previous = f.clock.now().getTime(); f.advance(Date.now() - 20 * 60000 - previous);
+  try {
+    const ready = await f.ready(buyer), attempt = await f.payments.card(buyer.accessToken, ready.checkout.id, card(ready, 'PENDING'), randomUUID()), event = randomUUID();
+    for (const entry of ['apps/api/src/modules/payments/cli.ts', 'apps/api/dist/modules/payments/cli.js']) {
+      const run = spawnSync(process.execPath, [entry, 'payment-event', attempt.id, 'APPROVED', event], { env: { ...process.env, DATABASE_URL: process.env.TEST_DATABASE_URL! }, encoding: 'utf8' });
+      expect(run.status, run.stderr).toBe(0); expect(run.stdout).toContain('No real charge');
+    }
+    const stored = await f.payments.view(attempt.id); expect(stored.outcome).toBe('REFUND_REQUIRED'); expect(stored.orderId).toBeNull(); expect(stored.refunds[0]!.status).toBe('SUCCEEDED'); expect(stored.refunds[0]!.attempts).toHaveLength(1);
+  } finally { f.advance(previous - f.clock.now().getTime()); }
 });
