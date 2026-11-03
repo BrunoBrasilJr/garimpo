@@ -1,3 +1,4 @@
+BEGIN;
 CREATE TABLE "OrderStatusEvent" (
  id UUID PRIMARY KEY, "orderId" UUID NOT NULL REFERENCES "Order"(id) ON DELETE RESTRICT,
  version INTEGER NOT NULL CHECK (version>0), "fromStatus" "OrderStatus", "toStatus" "OrderStatus" NOT NULL,
@@ -34,3 +35,4 @@ CREATE FUNCTION protect_original_shipment() RETURNS trigger LANGUAGE plpgsql AS 
 END $$;
 CREATE TRIGGER protect_original_shipment BEFORE UPDATE OR DELETE ON "Shipment" FOR EACH ROW EXECUTE FUNCTION protect_original_shipment();
 CREATE TRIGGER shipment_no_truncate BEFORE TRUNCATE ON "Shipment" FOR EACH STATEMENT EXECUTE FUNCTION deny_order_history_mutation();
+COMMIT;

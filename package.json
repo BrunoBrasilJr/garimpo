@@ -32,6 +32,7 @@
     "test:cart": "node tests/core/run-integration.mjs cart",
     "test:checkout": "node tests/core/run-integration.mjs checkout",
     "test:payments": "node tests/core/run-integration.mjs payments",
+    "test:orders": "node tests/core/run-integration.mjs orders",
     "simulator": "node --experimental-strip-types apps/api/src/modules/payments/cli.ts",
     "orders:expire": "node --experimental-strip-types apps/api/src/modules/payments/cli.ts expire",
     "reservations:expire": "node --experimental-strip-types apps/api/src/jobs/reservations-cli.ts",
@@ -44,7 +45,7 @@
     "test": "vitest run --config tests/vitest.config.ts",
     "bundle:android": "npm run bundle:android --workspace @garimpo/mobile",
     "audit:toolchain": "node tests/bootstrap/security/check-audit.mjs",
-    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run test:catalog && npm run test:inventory && npm run test:engagement && npm run test:reviews && npm run test:pricing && npm run test:cart && npm run test:checkout && npm run test:payments && npm run audit:toolchain"
+    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run test:catalog && npm run test:inventory && npm run test:engagement && npm run test:reviews && npm run test:pricing && npm run test:cart && npm run test:checkout && npm run test:payments && npm run test:orders && npm run audit:toolchain"
   },
   "overrides": {
     "node-forge": "1.4.2",
