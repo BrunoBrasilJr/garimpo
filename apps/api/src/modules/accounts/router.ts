@@ -74,12 +74,18 @@ export function createAccountsRouter(options: AccountsOptions = {}) {
     if (request.method === 'OPTIONS') {
       if (suppliedOrigin !== origin) throw new AccountError(403, 'ORIGIN_INVALID');
       response.set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-      response.set('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-CSRF-Token,X-Garimpo-Client');
+      response.set('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-CSRF-Token,X-Garimpo-Client,X-Garimpo-Account');
       response.sendStatus(204); return;
     }
     if (mobile(request) && cookies(request).size) throw new AccountError(422, 'AMBIGUOUS_CREDENTIALS');
     if (request.get('x-garimpo-client') && !mobile(request)) throw new AccountError(422, 'INVALID_CLIENT');
     if (!mobile(request) && !['GET', 'HEAD'].includes(request.method) && suppliedOrigin !== origin) throw new AccountError(403, 'ORIGIN_REQUIRED');
+    next();
+  });
+  // Address selection for checkout must stay bound to the account that owns the visible flow.
+  router.use('/me/addresses', async (request, _response, next) => {
+    const expected = request.get('x-garimpo-account');
+    if (expected) { const { user } = await service().authorize(service().db, access(request), true); if (validate.parse(validate.idInput, expected).toLowerCase() !== user.id) throw new AccountError(403, 'ACCOUNT_CONTEXT_CHANGED'); }
     next();
   });
   router.use(express.json({ limit: '32kb', strict: true }));

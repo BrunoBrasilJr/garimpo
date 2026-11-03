@@ -27,7 +27,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 17 | TASK-017 Criar carrinho e reserva nas interfaces | PHASE-03 | HIGH | TASK-016 | DONE |
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | DONE |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | DONE |
-| 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | BLOCKED |
+| 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | IN_PROGRESS |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | BLOCKED |
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | BLOCKED |
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | BLOCKED |
@@ -2567,7 +2567,7 @@ TASK-020 candidata, dependências 017/018/019 DONE, exige própria DoR/Scope Gua
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2601,6 +2601,10 @@ Entregar endereço/frete, cupom, métodos, resultados simulados e acompanhamento
 - apps/mobile/src/features/checkout/**
 - tests/e2e/checkout/**
 - TASKS.md — somente estado/evidência desta TASK e prontidão comprovada de dependentes
+
+Precisão PRIMARY antes da implementação, sob a autorização contínua/delegação de decisões do responsável: apps/web/src/navigation/{App.tsx,route.ts} e apps/mobile/src/navigation/App.tsx somente entrada/guardas do checkout/pagamentos; features/cart/Cart.tsx de ambos somente ligação da reserva ao checkout e exibição correta do frete já aceito. packages/contracts/src/checkout/journal.ts somente diário local tipado de referências/chaves/corpos originais por dono, sem credenciais/endereço textual/dados financeiros reais; implementações de storage nos módulos checkout. Apps/api/src/modules/accounts/router.ts somente restrição opcional X-Garimpo-Account nas rotas de endereço, antes do parser, e declaração do cabeçalho CORS. Necessidade identificada: checkout usa a lista de endereços existente e deve rejeitar cookies/bearer de uma conta diferente da tela, como os demais comandos comerciais já fazem; isso é segurança PRIMARY, não incidental. docs/architecture/api.md somente esse vínculo compatível e sem alterar autorização ou CRUD. tests/e2e/account/harness.mjs somente porta técnica controlada de resolução do simulador/expiração e consulta sintética necessárias aos testes deste fluxo; nenhum endpoint/relógio de produção. Registro de export mínimo no índice de contracts é candidato INCIDENTAL sujeito aos nove critérios.
+
+DoR 2026-11-03: dependências 017/018/019 DONE, main 9093c8e enviado ao GitHub; regras/ADRs ACCEPTED/contratos e código/testes pertinentes relidos. Validação vigente 019: 111 unitários, 32 integrações financeiras, 16 mensagens e regressões 24 checkout/22 carrinho/12 preços PASS, sem regressão impeditiva. Autorizações posteriores já rastreadas prevalecem sobre a etapa documental histórica, sem apagá-la. Branch real feature/TASK-020-checkout-clientes, base 9093c8e. BLOCKED → READY → IN_PROGRESS. Fluxo usará somente serviços existentes e simulados, sem nova migration/regra financeira nem dependência. Diário por conta preservará a mesma tentativa em perda de resposta/reabertura, e a recuperação não renovará prazos. RNW/exportações não serão reportadas como execução física, escala nativa ou leitor de tela; TalkBack recusado pelo responsável permanece sem validação. ZIP original preservado.
 
 #### Incidental Changes Policy
 

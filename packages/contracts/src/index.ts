@@ -18,3 +18,5 @@ export type { CepRangeInput, FreightRateInput, FreightRateView, FreightPage, Fre
 export { GuestCartStore, GuestDataError, decodeGuest, guestTag } from './cart/guest.js';
 export type { GuestLine, GuestMergeIntent, GuestCartState, GuestStorage, GuestExclusive } from './cart/guest.js';
 export type { PaymentScenario, PaymentView, PaymentPage, RefundView, CommerceMessageContent } from './payments/index.js';
+export { PurchaseJournal, PurchaseJournalError, decodePurchaseJournal } from './checkout/journal.js';
+export type { PurchaseIntent, OrderIntent, PurchaseJournalState, PurchaseStorage } from './checkout/journal.js';
