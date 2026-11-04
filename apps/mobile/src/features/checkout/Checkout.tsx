@@ -18,12 +18,12 @@ type Scenario = typeof scenarios[number]['value'];
 function Choice({ label, checked, disabled, check = false, choose }: { label: string; checked: boolean; disabled: boolean; check?: boolean; choose: () => void }) {
   return <Pressable accessibilityRole={check ? 'checkbox' : 'radio'} accessibilityLabel={label} accessibilityState={{ checked, disabled }} disabled={disabled} onPress={choose} style={[s.button, s.secondary, disabled ? s.disabled : null]}><Text allowFontScaling style={[s.buttonText, s.secondaryText]}>{checked ? '☑' : '☐'} {label}</Text></Pressable>;
 }
-export function Checkout({ user, client, mode = 'checkout', login, cart, addresses }: { user: AccountView | null; client: MobileAccountClient | null; mode?: 'checkout' | 'payments'; login: () => void; cart: () => void; addresses: () => void }) {
+export function Checkout({ user, client, mode = 'checkout', login, cart, addresses, history }: { user: AccountView | null; client: MobileAccountClient | null; mode?: 'checkout' | 'payments'; login: () => void; cart: () => void; addresses: () => void; history?: () => void }) {
   if (!user) return <View style={s.card}><Text allowFontScaling accessibilityRole="header" style={s.heading}>Entre para continuar a compra</Text><Button title="Entrar na conta de compra" onPress={login} /></View>;
   if (user.context !== 'CUSTOMER' || !client) return <Text allowFontScaling accessibilityRole="alert" style={s.alert}>Use uma conta de cliente com conexão segura para finalizar compras.</Text>;
-  return <Flow key={user.id} user={user} client={client} mode={mode} cart={cart} addresses={addresses} />;
+  return <Flow key={user.id} user={user} client={client} mode={mode} cart={cart} addresses={addresses} history={history} />;
 }
-function Flow({ user, client, mode, cart, addresses }: { user: AccountView; client: MobileAccountClient; mode: 'checkout' | 'payments'; cart: () => void; addresses: () => void }) {
+function Flow({ user, client, mode, cart, addresses, history }: { user: AccountView; client: MobileAccountClient; mode: 'checkout' | 'payments'; cart: () => void; addresses: () => void; history?: () => void }) {
   const request = useMemo<PurchaseRequest>(() => (path, method, body, signal, key) => cartRequest(client, user.id, path, method, body, signal, key), [client, user.id]);
   const journal = useMemo(() => new PurchaseJournal({ get: key => AsyncStorage.getItem(key), set: (key, value) => AsyncStorage.setItem(key, value) }, user.id), [user.id]);
   const flow = useFlow(request, journal, errorMessage), { data, quote } = flow, now = useServerNow(data?.serverTime);
@@ -53,7 +53,7 @@ function Flow({ user, client, mode, cart, addresses }: { user: AccountView; clie
     <Text allowFontScaling accessibilityRole="header" style={s.heading}>Pedidos e cobranças</Text>{!orders.size ? <Text allowFontScaling style={s.text}>Nenhum pedido vinculado aos pagamentos desta página.</Text> : [...orders.values()].map(order => <Order key={order.id} order={order} now={now} blocked={disabled || Boolean(data.payments.items.find(p => p.chargeId === order.charges.find(c => c.status === 'ACTIVE')?.id && p.result === 'PENDING'))} simulate={flow.simulate} />)}
     <Text allowFontScaling accessibilityRole="header" style={s.heading}>Tentativas e estornos</Text><Text allowFontScaling style={s.text}>Uma pendência aguarda evento técnico do simulador. Confirmação tardia não reativa pedido. Falha de estorno permanece visível; sistema/administrador podem repetir o automático.</Text>{!data.payments.items.length ? <Text allowFontScaling style={s.text}>Nenhuma tentativa nesta página.</Text> : data.payments.items.map(p => <Payment key={p.id} payment={p} />)}<Text allowFontScaling style={s.text}>Página {data.payments.page} de {Math.max(1, data.payments.totalPages)} · {data.payments.total} tentativas.</Text>
     <Button title="Pagamentos anteriores nesta lista" secondary disabled={disabled || flow.page <= 1} onPress={() => flow.setPage(p => p - 1)} /><Button title="Próxima página de pagamentos" secondary disabled={disabled || flow.page >= data.payments.totalPages} onPress={() => flow.setPage(p => p + 1)} />
-    </> : null}<Button title="Voltar ao carrinho" secondary onPress={cart} /><Button title="Minha conta e endereços" secondary onPress={addresses} />
+    </> : null}<Button title="Voltar ao carrinho" secondary onPress={cart} /><Button title="Minha conta e endereços" secondary onPress={addresses} />{history ? <Button title="Ver histórico completo de pedidos" secondary onPress={history} /> : null}
   </View>;
 }
 function Order({ order, now, blocked, simulate }: { order: OrderCreationView; now: number; blocked: boolean; simulate: (order: OrderCreationView, scenario: Scenario) => void }) {

@@ -1,5 +1,6 @@
 import type { Accounts } from '../accounts/service.ts';
 import type { OrderDetail } from '@garimpo/contracts';
+import { ORIGINAL_LOGISTICS_NEXT } from '@garimpo/contracts';
 import { serializable } from '../../persistence/transaction.ts';
 import { payloadHash } from '../../core/idempotency.ts';
 import { appendAudit } from '../../core/audit.ts';
@@ -9,7 +10,7 @@ import { OrderHistory, historyInclude } from './history.ts';
 import { orderEvent } from './events.ts';
 import * as validate from './history-validation.ts';
 import type { LogisticsInput } from './history-validation.ts';
-export const nextLogistics: Record<string, string> = { PAID: 'PREPARING', PREPARING: 'SEPARATED', SEPARATED: 'SHIPPED', SHIPPED: 'DELIVERED' };
+export const nextLogistics = ORIGINAL_LOGISTICS_NEXT;
 export class Logistics {
   readonly accounts: Accounts; readonly history: OrderHistory;
   constructor(accounts: Accounts) { this.accounts = accounts; this.history = new OrderHistory(accounts); }

@@ -52,7 +52,7 @@ function Flow({ user, mode }: { user: AccountView; mode: 'checkout' | 'payments'
     <section aria-label="Resultados dos pagamentos"><h3>Tentativas e estornos</h3><p>Uma pendência aguarda evento técnico do simulador. Confirmação tardia não reativa pedido. Falha de estorno permanece visível; sistema/administrador podem repetir o automático.</p>
       {!data.payments.items.length ? <p>Nenhuma tentativa nesta página.</p> : data.payments.items.map(p => <Payment key={p.id} payment={p} />)}<p>Página {data.payments.page} de {Math.max(1, data.payments.totalPages)} · {data.payments.total} tentativas.</p>
       <button type="button" className="secondary" disabled={disabled || flow.page <= 1} onClick={() => flow.setPage(p => p - 1)}>Pagamentos anteriores nesta lista</button><button type="button" className="secondary" disabled={disabled || flow.page >= data.payments.totalPages} onClick={() => flow.setPage(p => p + 1)}>Próxima página de pagamentos</button>
-    </section></> : null}<a href="#/cart">Voltar ao carrinho</a><a href="#/profile">Minha conta e endereços</a>
+    </section></> : null}<a href="#/cart">Voltar ao carrinho</a><a href="#/orders">Ver histórico completo de pedidos</a><a href="#/profile">Minha conta e endereços</a>
   </section>;
 }
 function Order({ order, now, blocked, simulate }: { order: OrderCreationView; now: number; blocked: boolean; simulate: (order: OrderCreationView, scenario: Scenario) => void }) {

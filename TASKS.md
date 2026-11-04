@@ -2769,7 +2769,9 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+2026-11-03: retomada da execução contínua expressamente determinada pelo responsável após a conferência do texto antigo de AGENTS §1. Esta instrução posterior de desenvolvimento até pelo menos 28/37 prevalece sobre a restrição documental histórica, sem dispensar gates, checkpoints ou Scope Guard. Não atribuir essa decisão ao PDF nem alterar o histórico de autorizações anteriores.
+
+Branch real feature/TASK-021-historico-logistica, base 86bac77; commits d34950f, 9dc493b, 3431da7 e 8553bf4. API/schema e testes do incremento já materializados; telas web/mobile, leitura entre aparelhos e validação final ainda em andamento. api-acceptance.log registra build/tipos/lint, 121 unitários, 16 integrações de pedidos e regressões de 32 pagamentos/24 checkout PASS no commit 8553bf4. Auditoria bruta continua FAIL com sete low conhecidos; política/patch/hash PASS. Esses resultados não aprovam os arquivos de interface posteriores nem tornam a TASK DONE. Pendem testes E2E, compatibilidade da migration com fatos legados, bundles e revisão final. ZIP e dados originais preservados.
 
 ### TASK-022 Implementar bloqueio, encerramento e reativação de contas
 

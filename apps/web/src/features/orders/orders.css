@@ -1,0 +1,9 @@
+.order-history, .order-details { display: grid; gap: 1rem; min-width: 0; overflow-wrap: anywhere; }
+.order-history section, .order-history article { display: grid; gap: .65rem; border-top: 1px solid #c9cbbd; padding-block: 1rem; min-width: 0; }
+.order-history form { display: grid; gap: .8rem; }
+.order-history label { display: grid; gap: .4rem; }
+.order-history input, .order-history select, .order-history textarea { font: inherit; min-height: 3rem; min-width: 0; width: 100%; max-width: 100%; padding: .5rem; border: 1px solid #829183; border-radius: .4rem; background: #fffef9; color: #173c32; }
+.order-history button { white-space: normal; overflow-wrap: anywhere; }
+.order-history :focus-visible { outline: 3px solid #a25322; outline-offset: 3px; }
+.order-history ol { padding-left: 1.5rem; display: grid; gap: .8rem; }
+.order-history fieldset { min-width: 0; border: 1px solid #829183; border-radius: .5rem; padding: 1rem; }

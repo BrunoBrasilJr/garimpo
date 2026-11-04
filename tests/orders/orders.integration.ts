@@ -130,3 +130,9 @@ test('customer bearer reads actual owned history across a fresh client without e
   const { order } = await purchase('BOLETO', false), headers = { 'X-Garimpo-Client': 'mobile', Authorization: 'Bearer ' + buyer.accessToken, 'X-Garimpo-Account': buyer.user.id };
   const list = await f.server.call<OrderPage>('/me/orders?status=PENDING', 'GET', undefined, headers), detail = await f.server.call<OrderDetail>('/me/orders/' + order.id, 'GET', undefined, headers); expect(list.body.items.some(o => o.id === order.id)).toBe(true); expect(detail.body.status).toBe('PENDING'); expect(detail.body.customer).toBeUndefined(); expect(detail.headers['set-cookie']).toBeUndefined();
 });
+
+test('payable-only lookup finds pending orders across devices without extending expired ones or depending on the expiry worker', async () => {
+  const old = await purchase('PIX', false); f.advance(31 * 60000); buyer = await f.accounts.renew(buyer.refreshToken, buyer.csrfToken); const active = await purchase('BOLETO', false);
+  const all = await f.history.list(buyer.accessToken, { page: 1, pageSize: 10, status: 'PENDING' }), payable = await f.history.list(buyer.accessToken, { page: 1, pageSize: 10, payableOnly: 'true' });
+  expect(all.total).toBe(2); expect(payable.items.map(o => o.id)).toEqual([active.order.id]); expect((await f.db.order.findUniqueOrThrow({ where: { id: old.order.id } })).status).toBe('PENDING');
+});

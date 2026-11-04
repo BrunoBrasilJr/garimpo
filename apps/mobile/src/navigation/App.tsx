@@ -13,8 +13,9 @@ import { Cart } from '../features/cart/Cart';
 import { AddToCart } from '../features/cart/Add';
 import { MergeNotice } from '../features/cart/MergeNotice';
 import { Checkout } from '../features/checkout/Checkout';
+import { Orders } from '../features/orders/Orders';
 
-type Screen = 'login' | 'register' | 'reset' | 'confirm' | 'change-confirm' | 'profile' | 'addresses' | 'catalog' | 'saved' | 'cart' | 'checkout' | 'payments';
+type Screen = 'login' | 'register' | 'reset' | 'confirm' | 'change-confirm' | 'profile' | 'addresses' | 'catalog' | 'saved' | 'cart' | 'checkout' | 'payments' | 'orders';
 interface Address { id: string; recipient: string; zip: string; region: string; city: string; neighborhood: string; street: string; number: string; complement?: string | null }
 const email: MobileField = { name: 'email', label: 'E-mail', email: true };
 const password: MobileField = { name: 'password', label: 'Senha', secret: true };
@@ -77,7 +78,8 @@ export default function App() {
     if (loading) return <Text accessibilityRole="alert" style={styles.body}>Preparando seu acesso…</Text>;
     if (exitFailed) return <Button title="Tentar sair novamente" onPress={() => { void logout(); }} />;
     if (screen === 'cart') return user && cartReady !== user.id ? <Text allowFontScaling accessibilityLiveRegion="polite" style={styles.body}>Conferindo carrinho deste aparelho…</Text> : <Cart key={user?.id ?? 'visitor'} user={user} client={client} origin={process.env.EXPO_PUBLIC_API_ORIGIN ?? ''} login={() => setScreen('login')} browse={() => setScreen('catalog')} checkout={() => setScreen('checkout')} />;
-    if (screen === 'checkout' || screen === 'payments') return user && cartReady !== user.id ? <Text allowFontScaling style={styles.body}>Conferindo carrinho deste aparelho…</Text> : <Checkout key={user?.id ?? 'visitor'} user={user} client={client} mode={screen} login={() => setScreen('login')} cart={() => setScreen('cart')} addresses={() => setScreen('addresses')} />;
+    if (screen === 'checkout' || screen === 'payments') return user && cartReady !== user.id ? <Text allowFontScaling style={styles.body}>Conferindo carrinho deste aparelho…</Text> : <Checkout key={user?.id ?? 'visitor'} user={user} client={client} mode={screen} login={() => setScreen('login')} cart={() => setScreen('cart')} addresses={() => setScreen('addresses')} history={() => setScreen('orders')} />;
+    if (screen === 'orders' && user && client) return <Orders key={user.id} user={user} client={client} payments={() => setScreen('payments')} />;
     if (screen === 'register') return <AccountForm {...formProps} title="Crie sua conta" fields={[{ name: 'name', label: 'Nome completo' }, email, { ...password, newPassword: true }]} submit="Criar conta" onSubmit={async values => {
       await call('/auth/register', 'POST', values, false); setNotice('Conta criada! Confirme seu e-mail pelo link recebido e entre para continuar.'); setScreen('login');
     }} />;
@@ -141,7 +143,7 @@ export default function App() {
       <Text style={styles.brand} accessibilityRole="header">◉ Garimpo</Text><Text style={styles.eyebrow}>DISCOS E DESCOBERTAS</Text>
       <Text style={styles.title} accessibilityRole="header">Sua próxima boa história.</Text>
       <Text style={styles.body}>Um lugar para quem gosta de descobrir música e guardar boas histórias em vinil.</Text>
-      <View style={styles.navigation}><Button title="Explorar discos" onPress={() => { setCatalogEdition(''); setScreen('catalog'); }} /><Button title="Carrinho" onPress={() => setScreen('cart')} />{user ? <><Button title="Minha conta" onPress={() => setScreen('profile')} /><Button title="Endereços" onPress={() => setScreen('addresses')} /><Button title="Pagamentos" onPress={() => setScreen('payments')} /><Button title="Meus desejos e alertas" onPress={() => setScreen('saved')} /><Button title="Sair" onPress={() => { void logout(); }} /></> :
+      <View style={styles.navigation}><Button title="Explorar discos" onPress={() => { setCatalogEdition(''); setScreen('catalog'); }} /><Button title="Carrinho" onPress={() => setScreen('cart')} />{user ? <><Button title="Minha conta" onPress={() => setScreen('profile')} /><Button title="Endereços" onPress={() => setScreen('addresses')} /><Button title="Pagamentos" onPress={() => setScreen('payments')} /><Button title="Meus pedidos" onPress={() => setScreen('orders')} /><Button title="Meus desejos e alertas" onPress={() => setScreen('saved')} /><Button title="Sair" onPress={() => { void logout(); }} /></> :
         <><Button title="Entrar" onPress={() => setScreen('login')} /><Button title="Criar conta" onPress={() => setScreen('register')} /><Button title="Recuperar acesso" onPress={() => setScreen('reset')} /><Button title="Confirmar e-mail" onPress={() => setScreen('confirm')} /></>}</View>
       {notice ? <Text style={styles.notice} accessibilityRole="alert" accessibilityLiveRegion="polite">{notice}</Text> : null}
       {!loading && !exitFailed && user?.context === 'CUSTOMER' && client ? <MergeNotice key={user.id + ':' + loginEpoch} user={user} client={client} open={() => setScreen('cart')} settled={setCartReady} /> : null}

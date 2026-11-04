@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { AcceptedFreight, CartView, CheckoutView, CheckoutQuote, DeliveryAddressSnapshot, OrderCreationView, PaymentPage, PaymentView, PurchaseIntent, PurchaseJournalState } from '@garimpo/contracts';
+import type { AcceptedFreight, CartView, CheckoutView, CheckoutQuote, DeliveryAddressSnapshot, OrderCreationView, PaymentPage, PaymentView, OrderPage, PurchaseIntent, PurchaseJournalState } from '@garimpo/contracts';
 import { PurchaseJournal, PurchaseJournalError, guestTag } from '@garimpo/contracts';
 export type PurchaseRequest = <T>(path: string, method?: string, body?: unknown, signal?: AbortSignal, key?: string) => Promise<T>;
 interface FlowData { checkout: CheckoutView | null; addresses: DeliveryAddressSnapshot[]; orders: OrderCreationView[]; payments: PaymentPage; serverTime: string }
@@ -14,15 +14,14 @@ export function useFlow(request: PurchaseRequest, journal: PurchaseJournal, mess
     const version = ++generation.current; controller.current?.abort(); const operation = new AbortController(); controller.current = operation; setLoading(true);
     try {
       const stored = await journal.read();
-      const [checkout, addresses, payments, cart] = await Promise.all([
+      const [checkout, addresses, payments, cart, pendingOrders] = await Promise.all([
         request<CheckoutView>('/me/checkout', 'GET', undefined, operation.signal).catch(cause => { if (cause && typeof cause === 'object' && 'status' in cause && cause.status === 404) return null; throw cause; }),
-        request<DeliveryAddressSnapshot[]>('/me/addresses', 'GET', undefined, operation.signal), request<PaymentPage>('/me/payment-attempts?page=' + page + '&pageSize=10', 'GET', undefined, operation.signal), request<CartView>('/me/cart', 'GET', undefined, operation.signal)
+        request<DeliveryAddressSnapshot[]>('/me/addresses', 'GET', undefined, operation.signal), request<PaymentPage>('/me/payment-attempts?page=' + page + '&pageSize=10', 'GET', undefined, operation.signal), request<CartView>('/me/cart', 'GET', undefined, operation.signal), request<OrderPage>('/me/orders?payableOnly=true&pageSize=10', 'GET', undefined, operation.signal)
       ]);
-      const orders: OrderCreationView[] = [], removable = new Set<string>();
-      // Only replay references to already acknowledged orders; pending intent always requires an explicit resume.
-      for (const ref of stored.orders) { const order = await request<OrderCreationView>('/orders', 'POST', ref.body, operation.signal, ref.key); orders.push(order); if (order.status !== 'PENDING' || !order.expiresAt || Date.parse(order.expiresAt) <= Date.parse(cart.serverTime)) removable.add(ref.key); }
+      // The server history now supplies actionable orders across devices. Original pending intents still require explicit replay.
+      const orders = await Promise.all(pendingOrders.items.map(order => request<OrderCreationView>('/me/orders/' + order.id, 'GET', undefined, operation.signal)));
       if (!alive.current || version !== generation.current) return;
-      const current = removable.size ? await journal.update(value => ({ ...value, orders: value.orders.filter(ref => !removable.has(ref.key)) })) : await journal.read();
+      const current = stored.orders.length ? await journal.update(value => ({ ...value, orders: [] })) : await journal.read();
       if (alive.current && version === generation.current) { setSaved(current); setData({ checkout, addresses, payments, orders, serverTime: cart.serverTime }); setQuote(null); }
     } catch (cause) { if (alive.current && version === generation.current && !operation.signal.aborted) { setError(readable(cause)); setData(undefined); setQuote(null); } }
     finally { if (alive.current && version === generation.current) setLoading(false); }
