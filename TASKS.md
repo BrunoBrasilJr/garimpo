@@ -29,7 +29,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | DONE |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | DONE |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | DONE |
-| 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | BLOCKED |
+| 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | IN_PROGRESS |
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | BLOCKED |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | BLOCKED |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | BLOCKED |
@@ -2822,7 +2822,7 @@ TASK-022 candidata, dependências 019/021 DONE; própria DoR, retenção/anonimi
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2871,6 +2871,16 @@ Implementar gestão de clientes, bloqueio ADMIN e encerramento voluntário com c
 - apps/api/src/modules/checkout/** encerramento por bloqueio/fechamento de conta
 - packages/contracts/accounts/** encerramento/reativação e estado de conta
 
+Precisões PRIMARY antes da edição, sob execução contínua explicitamente delegada: contratos em packages/contracts/src/accounts/lifecycle*; accounts/blocking* inclui consulta/edição ADMIN de cliente, roteador protegido e validação do ciclo. accounts/closure*/reactivation* implementam somente operações previstas; messaging/service.ts acrescenta propósito REACTIVATE e link de 24h já ratificado, router/worker somente entrega apropriada de reativação sem liberar acesso geral. orders/account-lifecycle.ts cancela apenas PENDING por bloqueio/encerramento, com evento/auditoria/outbox e liberação de Reservation/CouponUsage/PaymentCharge; OrderUnit correspondente CANCELLED sem mexer no saldo físico, vendas ou pagos. orders/history.ts somente tradução dos motivos do ciclo; messaging/commerce.ts somente aviso de cancelamento real. app.ts registra o novo roteador, preserva assinatura e demais composições. Navigation/App web/mobile e route web somente entradas/guardas/limpeza da sessão para ciclo e painel. accounts/client mobile somente método de limpar credenciais locais após encerramento confirmado, se necessário; não usar logout remoto revogado para simular sucesso. docs/architecture/{api,parametros}.md somente contratos/limites deste incremento, incluindo pendência de retenção preservada. tests/catalog/http.ts somente parâmetro opcional de composição de mensagens no fixture; tests/e2e/account/harness.mjs somente consulta técnica/clock/banco quando necessária; testes próprios em tests/accounts/{blocking,lifecycle}/**, incluindo E2E/RNW. Export/configuração mínima de runner/comando são candidatos INCIDENTAIS sujeitos aos nove critérios. Nenhuma migration/modelo novo, reescrita financeira, cancelamento voluntário de pedido pago, pós-venda ou apagamento/anonimização/backup.
+
+DoR 2026-11-03: dependências 019/021 DONE com artefatos e gates reais; main 65f8621 enviado ao GitHub. Última validação 121 unitários, 18 integrações de histórico, três E2E de histórico, seis E2E de checkout, 16 mensagens e bundles Android/iOS PASS; regressões financeiras 32 e checkout 24 preservadas após os eventos. ADR-003/005 ACCEPTED; prazos de reativação/alteração 24h ratificados em TASK-001. AGENTS/conciliação → README/pendências/estruturas → índice/TASK/dependências/Scope Guard → ADR/API/testes/PDF → código/testes pertinentes relidos. Branch real feature/TASK-022-ciclo-contas, base 65f8621. BLOCKED → READY → IN_PROGRESS. ZIP/dados originais preservados.
+
+PD-008 não é declarada resolvida: R12-P5/R13-P2 e TEST-033 explicitamente permitem manter retenção pendente sem apagar histórico. Esta entrega não implementa comportamento dependente de prazo de retenção/anonimização, não presume retenção eterna e não afirma conformidade legal/backup. Reativação aplica-se apenas a registro efetivamente retido, encerrado voluntariamente e sem bloqueio/inativação; eventual política futura exigirá seu próprio contrato e validação antes de descarte ou restrição por idade. Esse limite segue o PDF, não constitui aprovação de prazo inexistente e não bloqueia o ciclo operacional independente (AGENTS §13).
+
+Contratos de execução: alterações de cliente ADMIN exigem revisão opaca calculada do estado persistido e chave idempotente, motivo obrigatório para bloquear/desbloquear; OPERATOR apenas consulta. Identidades da equipe/cliente são travadas em ordem estável e revalidadas antes do efeito; depois ofertas/cupom afetados em ordem global. Bloqueio/encerramento revogam sessões, links/reset anteriores e encerram checkout/PENDING no mesmo commit com auditoria/eventos; pagos e pagamentos ainda recebidos/aplicados são conciliados pelo simulador/estorno automático já existente, sem chamada de provedor dentro da transação. Desbloquear não reativa encerramento nem restaura reservas/sessões; reativar não remove bloqueio nem restaura sessões/tokens/compromissos antigos. Reativação pública emite resposta genérica com limites existentes de IP/conta, token REACTIVATE com hash/propósito, 24h e uso único; confirma e-mail cadastrado, sem login automático. ADMIN pode corrigir nome/e-mail do cliente ativo, mantendo e-mail atual até confirmar o proposto. Confirmação não contorna bloqueio. Encerramento próprio exige confirmação explícita e chave, não apaga registros nem encerra conta interna.
+
+Gates planejados: build/tipos/lint/unitários; API/DB reais para papéis, transporte, CSRF/bearer/dono, revisão/chave, revogação completa, coexistência bloqueio/encerramento, token usado/expirado/propósito, concorrência real com pagamento/checkout/reativação e rollback conjunto; regressões contas/mensagens/pagamentos/checkout/logística afetadas; E2E ADMIN/OPERATOR, encerramento/reativação web e RNW, exports Android/iOS. Nada aprovado antecipadamente; TalkBack/VoiceOver/aparelhos não serão afirmados por renderizador/bundle.
+
 #### Incidental Changes Policy
 
 MINIMAL_DIRECTLY_CAUSED_CHANGES_ALLOWED
@@ -2897,7 +2907,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR e escopo registrados acima. Implementação/validação desta TASK ainda não concluídas; nenhuma aprovação de gate próprio presumida.
 
 ### TASK-023 Integrar regras comerciais e validar fronteiras
 
