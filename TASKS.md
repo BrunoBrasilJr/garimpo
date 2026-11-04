@@ -34,7 +34,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
-| 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | IN_PROGRESS |
+| 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | BLOCKED |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | BLOCKED |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | BLOCKED |
@@ -3231,7 +3231,7 @@ Escopo e DoD PASS. PRIMARY: README, TASKS, persistência, contratos de devoluç�
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3299,6 +3299,12 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 DoR em 2026-11-04. TASK-026 DONE publicada em ed42747, com testes verificados. RN-020/022/023/040, RF-016, API-016 e ADR-003/004/006 aceitos conferidos. Autorização contínua até TASK-028. BLOCKED → READY → IN_PROGRESS em feature/TASK-027-exchanges. Escopo PRIMARY em troca, oferta, remessas, reserva, conversão vinculada, pós-venda compartilhado, persistência, mensagens e testes próprios. Interfaces na TASK-028.
+
+Fechamento em 2026-11-04. Troca por unidade entregue, com reserva real compartilhada com compras, oferta equivalente por 48h, decisão do cliente ou registro de interação externa, inspeção e remessas distintas. Após conferência favorável, espera de 30 dias. Oferta ativa prolonga somente o prazo necessário para as 48h completas. Conversão vincula devolução e nunca autoriza estorno. Expiração de postagem, recusa, rejeição ou cancelamento liberam reserva. Entrega do substituto atualiza a janela da mesma unidade e preserva a venda e o histórico original. GET /orders/:id/aftersales e GET /admin/orders/:id/aftersales expõem grupos por unidade e referências de casos para retomada segura. Reconciliação local via npm run reconcile:exchanges. Evidências reaproveitam os controles privados da devolução.
+
+Gates 01 a 08 PASS. Build, tipos, lint, 126 unitários e 132 integrações em recheck.log no commit b1cf1bc, saída 0. Trocas 3, devoluções 5, cancelamentos 6, carrinho 22, checkout 24, pagamentos 32, pedidos 18, comércio 6, mensagens 16. Em 3bcf806, tipos, lint e 4/4 trocas passaram em contention.log, saída 0. PostgreSQL observou as duas requisições concorrentes na trava, com apenas uma solicitação ativa. A liberação da oferta disparou alerta persistido. Schemas isolados, Node 24.22.1, PostgreSQL 17. Auditoria bruta com sete alertas baixos, política passou. Falhas anteriores de sintaxe e inferência de parâmetro registradas em build.log e verify.log, corrigidas em 5eac921 e b1cf1bc.
+
+Scope Guard e DoD PASS. PRIMARY em persistência de trocas, serviço, contratos, estoque, mensagens, atendimento compartilhado e testes. INCIDENTAL em exports, comandos/runner e fixture de testes, e nos pontos de chamada do atendimento de devolução para registrar rotas compartilhadas e usar o guard de unidade comum. Nenhuma mudança proibida. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. 27/37 concluídas. Próxima candidata TASK-028.
 
 ### TASK-028 Criar interfaces de pós-venda
 
