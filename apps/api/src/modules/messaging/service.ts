@@ -52,6 +52,7 @@ export class AccessMessages {
       ...(eventId ? { eventId } : {}), restrictedBody, dedupKey: `access:${id}`, createdAt: now } });
     await appendAudit(tx, { actorId: user.id, action: `ACCESS.${purpose}_QUEUED`, targetType: 'MESSAGE', targetId: messageId,
       result: 'SUCCESS', reason: 'LOCAL_DELIVERY_QUEUED', changes: {} }, this.accounts.clock);
+    return { tokenRef: id, messageId };
   }
   async mailbox(id?: string, filter: { recipient?: string; type?: string; page?: number; pageSize?: number } = {}) {
     const page = filter.page ?? 1, pageSize = filter.pageSize ?? 20;

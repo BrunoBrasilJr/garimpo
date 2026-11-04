@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { email } from './validation.ts';
 export { parse } from './validation.ts';
-export const id = z.string().uuid(), key = z.string().min(1).max(128).regex(/^[\w.:-]+$/);
+export const id = z.string().uuid().transform(value => value.toLowerCase()), key = z.string().min(1).max(128).regex(/^[\w.:-]+$/);
 export const revision = z.string().regex(/^[a-f0-9]{64}$/);
 export const restriction = z.object({ revision, reason: z.string().trim().min(3).max(500).refine(v => !v.includes('\0')) }).strict();
 export const correction = z.object({ revision, name: z.string().trim().min(1).max(160).optional(), email: email.optional() }).strict().refine(v => v.name !== undefined || v.email !== undefined);

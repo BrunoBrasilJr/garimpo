@@ -17,7 +17,7 @@ export async function staff(accounts: Accounts, tx: Prisma.TransactionClient | A
   return user;
 }
 export async function lockIdentities(tx: Prisma.TransactionClient, ids: string[]) {
-  for (const id of [...new Set(ids)].sort()) await tx.$queryRaw`UPDATE "User" SET "updatedAt"="updatedAt" WHERE id=${id}::uuid RETURNING id`;
+  for (const id of [...new Set(ids.map(id => id.toLowerCase()))].sort()) await tx.$queryRaw`UPDATE "User" SET "updatedAt"="updatedAt" WHERE id=${id}::uuid RETURNING id`;
 }
 export function checkRevision(user: User, revision: string) { if (customerView(user).revision !== revision) throw new AccountError(409, 'CUSTOMER_VERSION_CONFLICT'); }
 export async function receipt(tx: Prisma.TransactionClient, actor: string, operation: string, key: string, payload: unknown) {

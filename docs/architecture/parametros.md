@@ -275,3 +275,24 @@ Pagamentos e estornos no detalhe têm páginas independentes de 20 itens; prazo
 original e obrigações não são escondidos por troca de aparelho. Diário local
 continua indispensável à retomada de comando cuja resposta é desconhecida;
 pedidos já reconhecidos são consultados por GET, sem replay de criação.
+
+### Ciclo operacional da conta e retenção pendente
+
+R12-P5/R13-P2 permitem implementar encerramento reversível preservando histórico
+enquanto retenção permanece pendente. Não interpretar falta de prazo como
+autorização de descarte, anonimização, conformidade legal ou retenção definitiva.
+Não há job de descarte/expiração de dados nesta etapa. Reativação atende registro
+efetivamente retido e não permite contornar bloqueio/inativação. Uma futura
+política com prazo/anonimização deverá especificar e testar os comportamentos
+dependentes antes de ativá-los; PD-008 continua aberta também para backup.
+
+Dados de revisão de cadastro são hashes opacos do estado persistido, usados para
+recusar correção administrativa obsoleta; não são credenciais de autorização.
+Mutações revalidam ADMIN e comprador sob travas de identidade em ordem estável,
+antes de ofertas/cupom. Recibo idempotente e efeitos permanecem atômicos.
+Correção de e-mail de cliente restrito exige prova ADMIN imutável, vinculada à
+referência interna do link e aos flags observados; nenhum token em claro fica
+na auditoria e a prova não remove restrição. Confirmação própria antiga não ganha
+autoridade administrativa. Reativação permanece um propósito separado com 24h,
+sem login automático. Falha de mensagem não desfaz bloqueio/encerramento ou
+cancelamento de pendente; a entrega conserva tentativas para repetição.

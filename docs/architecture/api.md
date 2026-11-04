@@ -540,6 +540,31 @@ pós-venda. API-020.04 permanece planejada para os módulos de atendimento.
 | API-021.04 | POST | /admin/customers/{id}/unblock | motivo | estado desbloqueado | 200 |
 | API-021.05 | PATCH | /admin/customers/{id} | campos permitidos; ADMIN | perfil corrigido; novo e-mail gera confirmação | 200; 409 estado/versão; 422 dados |
 
+Wire do ciclo de conta: listagem aceita `page` (padrão 1), `pageSize` (padrão
+10, máximo 30), `search` (nome/e-mail, até 160 caracteres) e `state`
+ACTIVE/BLOCKED/CLOSED. Contas internas não entram nos resultados. Detalhe traz
+cadastro limitado, estado de bloqueio/encerramento, revisão opaca, endereços
+atuais e até dez pedidos recentes com `orderCount`; histórico completo continua
+na API-020. Não retorna hash de senha, sessões ou links.
+
+Mutação exige `Idempotency-Key` e revisão retornada pelo cadastro. Bloquear e
+desbloquear recebem `{revision,reason}`; correção recebe `{revision,name?,email?}`.
+OPERATOR consulta, ADMIN ativo altera pela web; autenticação/papel/CSRF/dono
+esperado são conferidos antes do parser. Revisão antiga ou chave com outro
+payload retorna 409. Bloqueio cancela checkout e pedidos PENDING e libera
+reservas/usos de cupom/cobranças ativas junto à revogação de sessões/links,
+auditoria e eventos; não altera pagos, saldo físico ou venda histórica.
+Desbloquear retira somente blockedAt, sem desfazer closedAt nem restaurar acesso
+antigo. Pagamento em disputa concilia por identidade travada: pago antes do
+bloqueio é preservado, recebimento sem compra válida segue estorno automático.
+
+Correção ADMIN de cliente retido pode ocorrer bloqueado/encerrado. Novo e-mail
+continua pendente de prova; confirmar não muda blockedAt/closedAt e não emite
+sessão. Link CHANGE restrito exige prova ADMIN append-only específica do link e
+do estado observado na emissão. Links próprios antigos não adquirem essa
+permissão. Alteração de status que invalida links continua prevalecendo; conta
+interna mantém o fluxo de disponibilidade já existente.
+
 ## RF-022 Moderar avaliações
 
 **Atores:** ADMIN/OPERATOR. **Pré-condição:** Avaliação existente.
@@ -636,6 +661,24 @@ não pede UUID técnico ao usuário nem inventa compra para liberar publicação
 | API-027.01 | POST | /me/closure | confirmação e chave | conta encerrada, pendências liberadas | 200; 409 estado/versão; 422 dados |
 | API-027.02 | POST | /auth/reactivation | e-mail | resposta genérica e link se elegível | 202 |
 | API-027.03 | POST | /auth/reactivation/confirm | token | conta reativada se sem bloqueio | 200; 409 estado/versão; 422 dados |
+
+Encerramento recebe exatamente `{confirm:true}` e `Idempotency-Key`, com sessão
+própria CUSTOMER e vínculo opcional `X-Garimpo-Account`. Cancela apenas pendências,
+revoga sessões e links/reset no mesmo commit e preserva dados/pagos/históricos.
+Resposta confirma `{closed:true,message}`; cookies web são removidos. Mobile
+limpa o acesso local após confirmação, sem tentar logout remoto com credencial
+revogada; falha de remoção segura permanece visível para repetição. Resposta de
+rede desconhecida não é apresentada como encerramento comprovado.
+
+Reativação recebe `{email}` com resposta 202 genérica para elegível, desconhecido,
+ativo, interno ou bloqueado; somente CUSTOMER encerrado sem bloqueio/inativação,
+com registro retido, recebe link. Usa limites de IP/conta do canal de acesso,
+propósito REACTIVATE, hash de token, prazo ratificado de 24h e consumo único.
+Confirmação recebe `{token}`, trava/reconsulta o estado atual, confirma endereço
+cadastrado e retira apenas closedAt; não recria reservas/pedidos/sessões nem
+autentica automaticamente. Bloqueio simultâneo prevalece quando efetivamente
+persistido. Retenção/anonimização e backup continuam PD-008; este fluxo não cria
+prazo de descarte nem apaga histórico por suposição.
 
 ## RF-028 Confirmar e alterar e-mail
 

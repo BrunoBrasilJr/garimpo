@@ -1,7 +1,6 @@
 import type { CustomerDetail, CustomerPage, CustomerRecord } from '@garimpo/contracts';
 import type { Accounts } from './service.ts';
 import type { AccessMessages } from '../messaging/service.ts';
-import { available } from '../messaging/service.ts';
 import { serializable } from '../../persistence/transaction.ts';
 import { appendAudit } from '../../core/audit.ts';
 import { AccountError } from './errors.ts';
@@ -52,11 +51,12 @@ export class Customers {
         const first = await staff(this.accounts, tx, access, true); await lockIdentities(tx, [first.id, id]); const actor = await staff(this.accounts, tx, access, true);
         const user = await tx.user.findFirst({ where: { id, context: 'CUSTOMER' } }); if (!user) throw new AccountError(404, 'CUSTOMER_NOT_FOUND');
         const record = await receipt(tx, actor.id, 'CUSTOMER.CORRECT', key, { id, command }); if (record.replayed) return customerView(user);
-        checkRevision(user, command.revision); if (!available(user)) throw new AccountError(409, 'CUSTOMER_UNAVAILABLE');
+        checkRevision(user, command.revision); if (user.inactiveAt) throw new AccountError(409, 'CUSTOMER_UNAVAILABLE');
         if (command.email !== undefined) {
           if (!messages) throw new AccountError(503, 'MESSAGE_CHANNEL_UNAVAILABLE');
           if (command.email === user.emailNormalized || await tx.user.findUnique({ where: { emailNormalized: command.email } })) throw new AccountError(409, 'ACCOUNT_CONFLICT');
-          await messages.issue(tx, user, 'CHANGE', command.email);
+          const proof = await messages.issue(tx, user, 'CHANGE', command.email);
+          await appendAudit(tx, { actorId: actor.id, action: 'CUSTOMER.EMAIL_CHANGE_AUTHORIZED', targetType: 'EMAIL_CHANGE_PROOF', targetId: proof.tokenRef, result: 'SUCCESS', reason: 'NEW_ADDRESS_CONFIRMATION_ONLY', changes: { customerId: user.id, issuerRole: actor.role, blockedAt: user.blockedAt?.toISOString() ?? null, closedAt: user.closedAt?.toISOString() ?? null } }, this.accounts.clock);
         }
         const result = command.name !== undefined ? await tx.user.update({ where: { id }, data: { name: command.name } }) : user;
         await appendAudit(tx, { actorId: actor.id, action: 'CUSTOMER.CORRECT', targetType: 'USER', targetId: id, result: 'SUCCESS', reason: 'ADMIN_PROFILE_CORRECTION', changes: { nameChanged: command.name !== undefined, emailConfirmationQueued: command.email !== undefined } }, this.accounts.clock); await record.save(id, this.accounts.clock.now());
