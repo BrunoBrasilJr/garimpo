@@ -1,3 +1,4 @@
+BEGIN;
 CREATE TABLE "CancellationRequest" (
   id UUID PRIMARY KEY,
   "orderId" UUID NOT NULL REFERENCES "Order"(id) ON DELETE RESTRICT,
@@ -24,3 +25,4 @@ BEGIN
   RETURN NEW;
 END $$;
 CREATE TRIGGER protect_refund_retry_reason BEFORE UPDATE ON "RefundAttempt" FOR EACH ROW EXECUTE FUNCTION protect_refund_retry_reason();
+COMMIT;

@@ -108,7 +108,8 @@ export class Cancellations {
         refundId: refund?.id ?? null, replacementChargeId, createdAt: now
       } });
       await appendAudit(tx, { actorId: actor.id, action: 'ORDER.CANCELLATION.' + kind, targetType: 'ORDER', targetId: id,
-        result: 'SUCCESS', reason: input.reason, changes: { cancellationId, unitIds: record.unitIds, unavailableUnitIds: record.unavailableUnitIds, replacementChargeId, refundId: record.refundId } }, clock);
+        result: 'SUCCESS', reason: loss ? 'UNAVAILABLE_UNITS' : 'CUSTOMER_REQUEST',
+        changes: { cancellationId, unitIds: record.unitIds, unavailableUnitIds: record.unavailableUnitIds, replacementChargeId, refundId: record.refundId } }, clock);
       await enqueue(tx, { type: full ? 'ORDER.CANCELLED_DIRECT' : 'ORDER.PARTIAL_CANCELLATION', aggregateId: id, payload: { orderId: id, userId: order.userId } }, clock);
       await publishAvailability(tx, availability, clock);
       await tx.idempotencyRecord.create({ data: { ...identity, requestHash, resultRef: cancellationId, createdAt: now } });

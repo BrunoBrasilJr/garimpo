@@ -60,7 +60,7 @@ export class AutomaticRefunds {
       if (command && reason) {
         await tx.idempotencyRecord.create({ data: { ...command, requestHash, resultRef: attempt?.id ?? 'COMPLETE', createdAt: this.accounts.clock.now() } });
         await appendAudit(tx, { actorId: command.actorScope, action: 'REFUND.RETRY_REQUESTED', targetType: 'REFUND', targetId: id,
-          result: 'SUCCESS', reason, changes: { attemptId: attempt?.id ?? null } }, this.accounts.clock);
+          result: 'SUCCESS', reason: 'ADMIN_RETRY_REQUEST', changes: { attemptId: attempt?.id ?? null } }, this.accounts.clock);
       }
       return attempt;
     });
@@ -76,7 +76,7 @@ export class AutomaticRefunds {
           const sold = await tx.financialEvent.count({ where: { paymentAttemptId: first.paymentAttemptId, type: 'SALE' } });
           await tx.financialEvent.create({ data: { orderId: row.orderId, paymentAttemptId: row.paymentAttemptId, refundId: id, type: sold ? 'REFUND' : 'LATE_REFUND', productCents: row.productCents, shippingCents: row.shippingCents, occurredAt: attempt.receivedAt!, eventKey: 'REFUND:' + id } });
         }
-        await appendAudit(tx, { ...(attempt.actorId ? { actorId: attempt.actorId } : {}), action: 'REFUND.' + attempt.result, targetType: 'REFUND', targetId: id, result: attempt.result === 'SUCCEEDED' ? 'SUCCESS' : 'FAILURE', reason: attempt.reason ?? 'LOCAL_SIMULATOR_AUTOMATIC_REFUND', changes: { attemptId: attempt.id } }, this.accounts.clock);
+        await appendAudit(tx, { ...(attempt.actorId ? { actorId: attempt.actorId } : {}), action: 'REFUND.' + attempt.result, targetType: 'REFUND', targetId: id, result: attempt.result === 'SUCCEEDED' ? 'SUCCESS' : 'FAILURE', reason: 'LOCAL_SIMULATOR_AUTOMATIC_REFUND', changes: { attemptId: attempt.id } }, this.accounts.clock);
         await enqueue(tx, { type: 'REFUND.' + attempt.result, aggregateId: id, payload: { refundId: id, userId: first.paymentAttempt.userId, orderId: row.orderId } }, this.accounts.clock);
       });
     }
