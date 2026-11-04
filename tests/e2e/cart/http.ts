@@ -16,6 +16,8 @@ export async function send<T = Record<string, unknown>>(app: Harness, path: stri
 }
 export async function session(app: Harness, email: string, password: string) {
   const login = await send(app, '/auth/login', 'POST', JSON.stringify({ email, password })); if (login.status !== 200) throw new Error('Isolated role login rejected: ' + login.status);
-  return { call: <T = Record<string, unknown>>(path: string, method = 'GET', body?: unknown) => send<T>(app, path, method, body === undefined ? undefined : JSON.stringify(body), { Cookie: login.cookie, 'X-CSRF-Token': login.csrf }) };
+  return { call: <T = Record<string, unknown>>(path: string, method = 'GET', body?: unknown, key?: string) => send<T>(app, path, method, body === undefined ? undefined : JSON.stringify(body), {
+    Cookie: login.cookie, 'X-CSRF-Token': login.csrf, ...(key ? { 'Idempotency-Key': key } : {})
+  }) };
 }
 export function forwarded(headers: Record<string, string>) { return Object.fromEntries(Object.entries(headers).filter(([key]) => ['origin', 'cookie', 'x-csrf-token', 'content-type', 'idempotency-key', 'x-garimpo-account', 'x-garimpo-client', 'authorization'].includes(key.toLowerCase()))); }

@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 import type { CustomerRecord, ExchangeView, OrderDetail } from '@garimpo/contracts';
 import sharp from 'sharp';
 import { test, expect, reserve, accept, confirm, signIn } from '../../orders/fixtures-ui';
-import { send, session } from '../cart/http';
+import { session } from '../cart/http';
 import type { startHarness } from '../account/harness.mjs';
 
 type Harness = Awaited<ReturnType<typeof startHarness>>;
@@ -14,12 +14,6 @@ type Scenario = {
   buyer: Awaited<ReturnType<typeof session>>;
   admin: Awaited<ReturnType<typeof session>>;
 };
-
-async function adminCommand<T>(app: Harness, path: string, method: 'POST' | 'PATCH', body: unknown) {
-  const login = await send(app, '/auth/login', 'POST', JSON.stringify({ email: app.credentials.adminEmail, password: app.credentials.adminPassword }));
-  expect(login.status).toBe(200);
-  return send<T>(app, path, method, JSON.stringify(body), { Cookie: login.cookie, 'X-CSRF-Token': login.csrf, 'Idempotency-Key': randomUUID() });
-}
 
 async function purchase(page: Page, app: Harness, scenario: Scenario, delivered = true) {
   const checkout = await reserve(page, app, scenario.customer, scenario.data.main);
@@ -34,7 +28,7 @@ async function purchase(page: Page, app: Harness, scenario: Scenario, delivered 
     const body = { version: detail.version, status, reason: 'Logística sintética conferida' };
     const command = status === 'SHIPPED' ? { ...body, trackingCode: 'AFTERSALE-ORIGINAL', postedAt: detail.serverTime }
       : status === 'DELIVERED' ? { ...body, deliveredAt: detail.serverTime } : body;
-    const result = await adminCommand<OrderDetail>(app, '/admin/orders/' + id + '/status', 'PATCH', command);
+    const result = await scenario.admin.call<OrderDetail>('/admin/orders/' + id + '/status', 'PATCH', command, randomUUID());
     expect(result.status).toBe(200);
     detail = result.body;
   }
@@ -46,7 +40,6 @@ async function openSupport(page: Page, app: Harness, orderId: string, internal =
   await page.getByRole('button', { name: 'Abrir pós-venda', exact: true }).click();
   await expect(support(page).getByRole('heading', { name: 'Atendimentos registrados', exact: true })).toBeVisible();
 }
-const local = (iso: string) => iso.slice(0, 23);
 const loginAs = async (page: Page, app: Harness, email: string, password: string) => {
   await page.getByRole('button', { name: 'Sair', exact: true }).click();
   await signIn(page, app, email, password);
@@ -67,8 +60,8 @@ test('customer evidence, operator email posting for blocked account and admin re
   await expect(panel.getByRole('img', { name: 'Evidência privada selecionada' })).toBeVisible();
 
   const record = (await scenario.admin.call<CustomerRecord>('/admin/customers/' + scenario.customer.user.id)).body;
-  const blocked = await adminCommand(app, '/admin/customers/' + scenario.customer.user.id + '/block', 'POST',
-    { revision: record.revision, reason: 'Bloqueio sintético para verificar atendimento externo' });
+  const blocked = await scenario.admin.call('/admin/customers/' + scenario.customer.user.id + '/block', 'POST',
+    { revision: record.revision, reason: 'Bloqueio sintético para verificar atendimento externo' }, randomUUID());
   expect(blocked.status).toBe(200);
   await page.goto('about:blank');
   await signIn(page, app, app.credentials.operatorEmail, app.credentials.operatorPassword);
@@ -79,16 +72,20 @@ test('customer evidence, operator email posting for blocked account and admin re
   await panel.getByRole('button', { name: 'Aprovar solicitação', exact: true }).click();
   await expect(panel.getByText('Aguardando postagem', { exact: true })).toBeVisible();
   const actual = (await scenario.admin.call<OrderDetail>('/admin/orders/' + order.id)).body.serverTime;
+  const local = await page.evaluate(iso => {
+    const date = new Date(iso);
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 23);
+  }, actual);
   await panel.getByLabel('Operação do atendimento').selectOption('posting');
   await panel.getByLabel('Código de rastreamento', { exact: true }).fill('AFTERSALE-RETURN');
-  await panel.getByLabel('Data e hora efetivas', { exact: true }).fill(local(actual));
+  await panel.getByLabel('Data e hora efetivas', { exact: true }).fill(local);
   await panel.getByLabel('Referência do contato por e-mail').fill('Protocolo sintético do contato externo');
-  await panel.getByLabel('Data e hora do contato por e-mail').fill(local(actual));
+  await panel.getByLabel('Data e hora do contato por e-mail').fill(local);
   await panel.getByRole('button', { name: 'Registrar postagem informada por e-mail', exact: true }).click();
   await expect(panel.getByText('Retorno em trânsito', { exact: true })).toBeVisible();
   await panel.getByLabel('Operação do atendimento').selectOption('receipt');
   await panel.getByLabel('Justificativa da operação').fill('Unidade recebida e conferida');
-  await panel.getByLabel('Data e hora efetivas', { exact: true }).fill(local(actual));
+  await panel.getByLabel('Data e hora efetivas', { exact: true }).fill(local);
   await panel.getByLabel(/^Inspeção da unidade /).selectOption('FIT');
   await panel.getByRole('button', { name: 'Registrar inspeção', exact: true }).click();
   await expect(panel.getByText('Aguardando autorização do estorno', { exact: true })).toBeVisible();
@@ -103,8 +100,8 @@ test('customer evidence, operator email posting for blocked account and admin re
   await panel.getByRole('button', { name: 'Autorizar estorno', exact: true }).click();
   await expect(panel.getByRole('heading', { name: 'Estorno com falha', exact: true })).toBeVisible();
   const restricted = (await scenario.admin.call<CustomerRecord>('/admin/customers/' + scenario.customer.user.id)).body;
-  expect((await adminCommand(app, '/admin/customers/' + scenario.customer.user.id + '/unblock', 'POST',
-    { revision: restricted.revision, reason: 'Atendimento sintético concluído' })).status).toBe(200);
+  expect((await scenario.admin.call('/admin/customers/' + scenario.customer.user.id + '/unblock', 'POST',
+    { revision: restricted.revision, reason: 'Atendimento sintético concluído' }, randomUUID())).status).toBe(200);
   await loginAs(page, app, scenario.customer.input.email, scenario.customer.input.password);
   await openSupport(page, app, order.id);
   await panel.getByRole('button', { name: /^Devolução .*Devolução concluída/ }).click();
