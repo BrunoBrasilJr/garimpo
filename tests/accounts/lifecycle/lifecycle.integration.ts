@@ -29,6 +29,7 @@ test('operator can only consult limited customers; transport, owner and CSRF gua
   await expect(customers.detail(f.operator.accessToken, f.admin.user.id)).rejects.toMatchObject({ status: 404 });
 });
 test('block cancels checkout and pending orders atomically, preserves paid history and never restores old sessions on unblock', async () => {
+  const mobileSession = await f.accounts.login(buyer.user.email, f.password, 'mobile');
   const first = await f.ready(buyer), pending = await f.orders.create(buyer.accessToken, first.body, first.key), second = await f.ready(buyer);
   const card = await f.payments.card(buyer.accessToken, second.checkout.id, { version: second.body.version, addressId: second.address.id, freightRevision: second.body.freightRevision, scenario: 'APPROVED' }, randomUUID());
   const active = await f.ready(buyer), before = await customers.detail(f.admin.accessToken, buyer.user.id), key = randomUUID();
@@ -40,7 +41,7 @@ test('block cancels checkout and pending orders atomically, preserves paid histo
   await expect(f.accounts.login(buyer.user.email, f.password)).rejects.toMatchObject({ status: 401 }); await expect(f.accounts.renew(buyer.refreshToken)).rejects.toMatchObject({ status: 401 });
   const blocked = await customers.detail(f.admin.accessToken, buyer.user.id);
   await customers.restrict(f.admin.accessToken, buyer.user.id, 'UNBLOCK', { revision: blocked.revision, reason: 'Desbloqueio sintético' }, randomUUID());
-  await expect(f.accounts.authorize(f.db, buyer.accessToken)).rejects.toMatchObject({ status: 401 }); expect(await f.db.orderStatusEvent.count({ where: { orderId: pending.id, toStatus: 'CANCELLED' } })).toBe(1);
+  await expect(f.accounts.authorize(f.db, buyer.accessToken)).rejects.toMatchObject({ status: 401 }); await expect(f.accounts.renew(mobileSession.refreshToken)).rejects.toMatchObject({ status: 401 }); expect(await f.db.orderStatusEvent.count({ where: { orderId: pending.id, toStatus: 'CANCELLED' } })).toBe(1);
 });
 test('closure revokes all links and sessions, preserves data, and requires fresh registered-email confirmation to reactivate once', async () => {
   const ready = await f.ready(buyer), order = await f.orders.create(buyer.accessToken, ready.body, ready.key);
@@ -86,6 +87,7 @@ test('a real payment application and administrative block serialize to a preserv
 
 test('audit failure rolls restriction, sessions, links, reservation, order, event, receipt and message back before retry', async () => {
   const ready = await f.ready(buyer), order = await f.orders.create(buyer.accessToken, ready.body, ready.key), active = await f.ready(buyer);
+  const user = await f.db.user.findUniqueOrThrow({ where: { id: buyer.user.id } }); await f.messages.issue(f.db, user, 'RESET'); await f.messages.issue(f.db, user, 'CHANGE', randomUUID() + '@example.invalid');
   const before = await customers.detail(f.admin.accessToken, buyer.user.id), key = randomUUID(), command = { revision: before.revision, reason: 'Auditoria sintética indisponível' };
   await f.control.query(`CREATE FUNCTION fail_lifecycle_audit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.action='CUSTOMER.BLOCK' THEN RAISE EXCEPTION 'isolated audit failure'; END IF; RETURN NEW; END $$`);
   await f.control.query('CREATE TRIGGER fail_lifecycle_audit BEFORE INSERT ON "AuditLog" FOR EACH ROW EXECUTE FUNCTION fail_lifecycle_audit()');
@@ -93,10 +95,11 @@ test('audit failure rolls restriction, sessions, links, reservation, order, even
   finally { await f.control.query('DROP TRIGGER fail_lifecycle_audit ON "AuditLog"'); await f.control.query('DROP FUNCTION fail_lifecycle_audit()'); }
   expect((await customers.detail(f.admin.accessToken, buyer.user.id)).blockedAt).toBeNull();
   await expect(f.accounts.authorize(f.db, buyer.accessToken)).resolves.toBeDefined();
+  expect(await f.db.passwordReset.count({ where: { userId: buyer.user.id, usedAt: null } })).toBe(1); expect(await f.db.emailToken.count({ where: { userId: buyer.user.id, purpose: 'CHANGE', usedAt: null } })).toBe(1);
   expect((await f.db.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe('PENDING'); expect((await f.db.checkout.findUniqueOrThrow({ where: { id: active.checkout.id } })).status).toBe('ACTIVE');
   expect(await f.db.orderStatusEvent.count({ where: { orderId: order.id, toStatus: 'CANCELLED' } })).toBe(0); expect(await f.db.domainEvent.count({ where: { aggregateId: order.id, type: 'ORDER.CANCELLED' } })).toBe(0);
   expect(await f.db.idempotencyRecord.count({ where: { actorScope: f.admin.user.id, operation: 'CUSTOMER.BLOCK', key } })).toBe(0);
-  await customers.restrict(f.admin.accessToken, buyer.user.id, 'BLOCK', command, key); expect((await f.db.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe('CANCELLED');
+  await customers.restrict(f.admin.accessToken, buyer.user.id, 'BLOCK', command, key); expect((await f.db.order.findUniqueOrThrow({ where: { id: order.id } })).status).toBe('CANCELLED'); expect(await f.db.passwordReset.count({ where: { userId: buyer.user.id, usedAt: null } })).toBe(0); expect(await f.db.emailToken.count({ where: { userId: buyer.user.id, usedAt: null } })).toBe(0);
 });
 
 test('reactivation links are superseded, expire at their actual boundary and cannot be replaced by verification tokens', async () => {
@@ -117,7 +120,7 @@ test('a live checkout creation racing an administrative block cannot leave any a
   expect([201, 401, 403]).toContain(reservation.status); expect(blocked.blockedAt).not.toBeNull();
   expect(await f.db.checkout.count({ where: { userId: buyer.user.id, status: 'ACTIVE' } })).toBe(0);
   expect(await f.db.reservation.count({ where: { checkoutItem: { checkout: { userId: buyer.user.id } }, status: 'ACTIVE' } })).toBe(0);
-  expect((await f.db.offer.findUniqueOrThrow({ where: { id: offer.id } })).onHand).toBe(20);
+  expect((await f.db.offer.findUniqueOrThrow({ where: { id: offer.id } })).stockOnHand).toBe(20);
 });
 
 test('a block committed while a second connection waits for reactivation is revalidated even before token invalidation', async () => {
@@ -160,7 +163,7 @@ test('restriction releases consumed and reserved coupons together without changi
   const consumed = await coupon(), reserved = await coupon(), ready = await f.ready(buyer, { couponCode: consumed }), order = await f.orders.create(buyer.accessToken, ready.body, ready.key), active = await f.ready(buyer, { couponCode: reserved });
   const before = await customers.detail(f.admin.accessToken, buyer.user.id); await customers.restrict(f.admin.accessToken, buyer.user.id, 'BLOCK', { revision: before.revision, reason: 'Liberar compromissos sintéticos' }, randomUUID());
   const usages = await f.db.couponUsage.findMany({ where: { userId: buyer.user.id } }); expect(usages).toHaveLength(2); expect(usages.every(u => u.status === 'RELEASED')).toBe(true);
-  for (const id of [ready.offer.id, active.offer.id]) expect((await f.db.offer.findUniqueOrThrow({ where: { id } })).onHand).toBe(20);
+  for (const id of [ready.offer.id, active.offer.id]) expect((await f.db.offer.findUniqueOrThrow({ where: { id } })).stockOnHand).toBe(20);
   expect((await f.db.orderUnit.findMany({ where: { orderItem: { orderId: order.id } } })).every(unit => unit.commercialState === 'CANCELLED')).toBe(true);
   const another = await f.customer(); await expect(f.ready(another, { couponCode: consumed })).resolves.toBeDefined();
 });
