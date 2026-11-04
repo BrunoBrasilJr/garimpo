@@ -26,3 +26,4 @@ export { ORIGINAL_LOGISTICS_NEXT } from './orders/index.js';
 export type { CancellationResult } from './aftersales/cancellations.js';
 export type { ReturnState, ReturnView } from './aftersales/returns.js';
 export type { ExchangeState, ExchangeView } from './aftersales/exchanges.js';
+export type { AftersalesOverview } from './aftersales/overview.js';

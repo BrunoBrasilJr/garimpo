@@ -17,10 +17,11 @@ import { addEvidence, readEvidence } from '../shared/evidence.ts';
 import { Exchanges } from '../exchanges/service.ts';
 import type { ExchangeCommand } from '../exchanges/model.ts';
 import { registerExchangeRoutes } from '../exchanges/routes.ts';
+import { aftersalesOverview } from '../shared/overview.ts';
 import { Returns } from './service.ts';
 import * as input from './validation.ts';
 
-const prefix = /^\/(?:orders\/[^/]+\/(?:returns|exchanges)\/?$|(?:me\/|admin\/)?(?:returns|exchanges)\/[^/]+(?:\/|$)|(?:admin\/)?aftersales\/[^/]+(?:\/|$))/;
+const prefix = /^\/(?:orders\/[^/]+\/(?:returns|exchanges|aftersales)\/?$|admin\/orders\/[^/]+\/aftersales\/?$|(?:me\/|admin\/)?(?:returns|exchanges)\/[^/]+(?:\/|$)|(?:admin\/)?aftersales\/[^/]+(?:\/|$))/;
 const empty = z.object({}).strict();
 const mobile = (request: Request) => request.get('x-garimpo-client') === 'mobile';
 const guardedCookies = new Set(['__Host-garimpo-access', '__Host-garimpo-refresh', '__Host-garimpo-csrf']);
@@ -92,6 +93,11 @@ export function createReturnsRouter(options: AccountsOptions = {}, gateway?: Pay
   const exchangeCase = async (caseId: string) => Boolean(await accounts!.db.exchangeRequest.findUnique({ where: { id: caseId }, select: { id: true } }));
   const json = express.json({ limit: '1mb', strict: true });
   registerExchangeRoutes(router, exchanges, req => auth.get(req)!);
+  router.get(['/orders/:id/aftersales', '/admin/orders/:id/aftersales'], async (req, res) => {
+    orderInput.parse(empty, req.query);
+    const { access, internal } = auth.get(req)!;
+    res.json(await aftersalesOverview(accounts!, access, id(req), internal));
+  });
   router.post('/orders/:id/returns', json, async (req, res) => {
     orderInput.parse(empty, req.query);
     res.status(201).json(await service!.open(auth.get(req)!.access, id(req), orderInput.parse(input.request, req.body), key(req)));

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, expect, test } from 'vitest';
-import type { CatalogEdition, ExchangeView, ReturnView } from '@garimpo/contracts';
+import type { AftersalesOverview, CatalogEdition, ExchangeView, ReturnView } from '@garimpo/contracts';
 import { Exchanges } from '../../../apps/api/src/modules/aftersales/exchanges/service.ts';
 import { credentials, foundation } from '../../accounts/lifecycle/fixtures.ts';
 
@@ -80,6 +80,11 @@ test('an offer on day 29 keeps all 48 hours, then converts without authorizing a
 
 test('acceptance reserves before inspection and replacement delivery starts a fresh seven-day window', async () => {
   const p = await setup();
+  const overviewPath = '/orders/' + p.order.id + '/aftersales';
+  const overview = await fixture.server.call<AftersalesOverview>(overviewPath, 'GET', undefined, credentials(p.buyer));
+  expect(overview).toMatchObject({ status: 200, body: { exchanges: [{ id: p.row.id }], groups: [{ units: [{ available: false }] }] } });
+  const outsider = await fixture.customer();
+  expect((await fixture.server.call(overviewPath, 'GET', undefined, credentials(outsider))).status).toBe(404);
   expect((await call('/orders/' + p.order.id + '/returns', p.input, p.buyer)).status).toBe(409);
   const offered = await offerSubstitute(p.row, p.offer.id);
   const accepted = await call('/exchanges/' + p.row.id + '/substitute-offers/' + offered.substitutes[0]!.id + '/response',

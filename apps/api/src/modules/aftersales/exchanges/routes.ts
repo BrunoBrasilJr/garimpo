@@ -37,7 +37,7 @@ export function registerExchangeRoutes(router: Router, service: Exchanges | null
       validate.parse(empty, req.query);
       const parsed = schema.safeParse(req.body);
       if (!parsed.success) throw new CartError(422, 'INVALID_EXCHANGE_INPUT', 'Confira os dados da troca.');
-      const substitute = type === 'response' ? { substituteId: validate.parse(validate.id, req.params.substituteId) } : {};
+      const substitute = 'substituteId' in req.params ? { substituteId: validate.parse(validate.id, req.params.substituteId) } : {};
       const command = { type, data: parsed.data, ...substitute } as ExchangeCommand;
       const { access, internal } = credentials(req);
       res.json(await service!.change(access, id(req), command, internal, type === 'cancel' ? key(req) : undefined));
