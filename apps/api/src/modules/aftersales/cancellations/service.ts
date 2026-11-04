@@ -19,7 +19,13 @@ import { cancellationRefund } from '../../refunds/cancellation.ts';
 import type { CancellationInput } from './validation.ts';
 
 export class Cancellations {
-  constructor(readonly accounts: Accounts, readonly refunds: AutomaticRefunds) {}
+  readonly accounts: Accounts;
+  readonly refunds: AutomaticRefunds;
+
+  constructor(accounts: Accounts, refunds: AutomaticRefunds) {
+    this.accounts = accounts;
+    this.refunds = refunds;
+  }
 
   async apply(access: string, id: string, input: CancellationInput, key: string): Promise<CancellationResult> {
     const { db, clock } = this.accounts;

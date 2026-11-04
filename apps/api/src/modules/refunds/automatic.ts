@@ -37,13 +37,32 @@ export class AutomaticRefunds {
       if (access !== undefined) await this.admin(tx, access);
       const row = await tx.refund.findUniqueOrThrow({ where: { id }, include: { paymentAttempt: true } });
       if (!['AUTOMATIC_PAYMENT', 'AUTOMATIC_CANCELLATION'].includes(row.origin)) throw new AccountError(403, 'POST_SALE_AUTHORIZATION_REQUIRED');
-      const attemptKey = 'REFUND:' + payloadHash({ id, key, actor: actor?.id ?? 'SYSTEM' });
+      const command = actor && reason ? { actorScope: actor.id, operation: 'REFUND.RETRY', key } : null;
+      const requestHash = payloadHash({ id, scenario: scenario ?? null, reason: reason ?? null });
+      if (command) {
+        const prior = await tx.idempotencyRecord.findUnique({ where: { actorScope_operation_key: command } });
+        if (prior) {
+          if (prior.requestHash !== requestHash) throw new CartError(409, 'IDEMPOTENCY_CONFLICT', 'Esta repetição já foi usada com outros dados.');
+          return prior.resultRef === 'COMPLETE' ? null : tx.refundAttempt.findUniqueOrThrow({ where: { id: prior.resultRef } });
+        }
+      }
+      const attemptKey = (command ? 'REFUND_RETRY:' : 'REFUND:') + payloadHash({ id, key, actor: actor?.id ?? 'SYSTEM' });
       const replay = await tx.refundAttempt.findUnique({ where: { attemptKey } });
       if (replay) { if ((scenario && replay.scenario !== scenario) || replay.reason !== (reason ?? null)) throw new CartError(409, 'IDEMPOTENCY_CONFLICT', 'Esta repetição já foi usada com outros dados.'); return replay; }
-      if (row.status === 'SUCCEEDED') return null;
       // Reuse a durable unfinished provider request, including a successful receipt not applied after a crash.
-      const unfinished = await tx.refundAttempt.findFirst({ where: { refundId: id, appliedAt: null } }); if (unfinished) return unfinished;
-      return tx.refundAttempt.create({ data: { refundId: id, attemptKey, actorId: actor?.id ?? null, reason: reason ?? null, scenario: scenario ?? (actor && reason ? 'SUCCEEDED' : row.paymentAttempt.scenario === 'APPROVED_REFUND_FAIL' ? 'FAILED' : 'SUCCEEDED'), createdAt: this.accounts.clock.now() } });
+      const attempt = row.status === 'SUCCEEDED' ? null
+        : await tx.refundAttempt.findFirst({ where: { refundId: id, appliedAt: null } })
+          ?? await tx.refundAttempt.create({ data: {
+            refundId: id, attemptKey, actorId: actor?.id ?? null, reason: reason ?? null,
+            scenario: scenario ?? (command || row.paymentAttempt.scenario !== 'APPROVED_REFUND_FAIL' ? 'SUCCEEDED' : 'FAILED'),
+            createdAt: this.accounts.clock.now()
+          } });
+      if (command && reason) {
+        await tx.idempotencyRecord.create({ data: { ...command, requestHash, resultRef: attempt?.id ?? 'COMPLETE', createdAt: this.accounts.clock.now() } });
+        await appendAudit(tx, { actorId: command.actorScope, action: 'REFUND.RETRY_REQUESTED', targetType: 'REFUND', targetId: id,
+          result: 'SUCCESS', reason, changes: { attemptId: attempt?.id ?? null } }, this.accounts.clock);
+      }
+      return attempt;
     });
     if (prepared) {
       await this.gateway.refund(prepared.id);

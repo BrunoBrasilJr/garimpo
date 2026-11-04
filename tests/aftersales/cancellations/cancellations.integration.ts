@@ -7,13 +7,48 @@ let fixture: Awaited<ReturnType<typeof foundation>>;
 beforeAll(async () => { fixture = await foundation(undefined, '025'); });
 afterAll(async () => { await fixture?.close(); });
 
-async function pending(quantity = 2) {
+async function pending(quantity = 2, couponCode?: string) {
   const buyer = await fixture.customer();
-  const held = await fixture.ready(buyer, { quantity });
+  const held = await fixture.ready(buyer, { quantity, ...(couponCode ? { couponCode } : {}) });
   const order = await fixture.orders.create(buyer.accessToken, held.body, held.key);
   const units = await fixture.db.orderUnit.findMany({ where: { orderItem: { orderId: order.id } }, orderBy: { logicalIndex: 'asc' } });
   return { buyer, order, units, offer: held.offer };
 }
+
+test('paid partial cancellation preserves coupon and freight until all remaining units are cancelled', async () => {
+  const now = fixture.clock.now();
+  const coupon = await fixture.pricing.createCoupon(fixture.admin.accessToken, {
+    code: 'C' + randomUUID().slice(0, 8).toUpperCase(), type: 'FIXED', amount: 1000, totalLimit: 1,
+    allowPromotional: true, startsAt: new Date(now.getTime() - 1000).toISOString(), endsAt: new Date(now.getTime() + 86400000).toISOString()
+  });
+  const { buyer, order, units, offer } = await pending(2, coupon.code);
+  const paid = await fixture.payments.charge(buyer.accessToken, order.id, { chargeId: order.charges[0]!.id, scenario: 'APPROVED' }, randomUUID());
+  const path = '/admin/orders/' + order.id + '/unavailable-units';
+  const partial = await fixture.server.call<CancellationResult>(path, 'POST', { unitIds: [units[0]!.id], version: paid.order!.version, reason: 'Unidade avariada' },
+    { ...credentials(fixture.operator), 'Idempotency-Key': randomUUID() });
+  expect(partial).toMatchObject({ status: 200, body: { orderStatus: 'PAID' } });
+  expect(await fixture.db.couponUsage.findUnique({ where: { orderId: order.id } })).toMatchObject({ status: 'CONSUMED' });
+  expect(await fixture.db.refund.findUnique({ where: { id: partial.body.refundId! } })).toMatchObject({ status: 'SUCCEEDED', productCents: BigInt(units[0]!.netPaidCents), shippingCents: 0 });
+
+  const final = await fixture.server.call<CancellationResult>(path, 'POST', { unitIds: [units[1]!.id], version: partial.body.orderVersion, reason: 'Segunda unidade avariada' },
+    { ...credentials(fixture.operator), 'Idempotency-Key': randomUUID() });
+  expect(final).toMatchObject({ status: 200, body: { orderStatus: 'CANCELLED' } });
+  expect(await fixture.db.couponUsage.findUnique({ where: { orderId: order.id } })).toMatchObject({ status: 'RELEASED' });
+  expect(await fixture.db.refund.findUnique({ where: { id: final.body.refundId! } })).toMatchObject({ status: 'SUCCEEDED', productCents: BigInt(units[1]!.netPaidCents), shippingCents: 1500 });
+  expect(await fixture.db.offer.findUnique({ where: { id: offer.id } })).toMatchObject({ stockOnHand: offer.stockOnHand - 2 });
+});
+
+test('loss reported at the payment deadline cancels the whole order without discarding healthy stock', async () => {
+  const { order, units, offer } = await pending();
+  fixture.advance(30 * 60000);
+  await fixture.freshRoles();
+  const result = await fixture.server.call<CancellationResult>('/admin/orders/' + order.id + '/unavailable-units', 'POST',
+    { unitIds: [units[0]!.id], version: order.version, reason: 'Avaria no vencimento' }, { ...credentials(fixture.operator), 'Idempotency-Key': randomUUID() });
+  expect(result).toMatchObject({ status: 200, body: { orderStatus: 'CANCELLED', replacementChargeId: null, unavailableUnitIds: [units[0]!.id] } });
+  expect(result.body.unitIds).toHaveLength(2);
+  expect(await fixture.db.offer.findUnique({ where: { id: offer.id } })).toMatchObject({ stockOnHand: offer.stockOnHand - 1 });
+  expect(await fixture.db.paymentCharge.findMany({ where: { orderId: order.id } })).toMatchObject([{ status: 'CANCELLED' }]);
+});
 
 test('partial loss replaces a pending charge without extending its deadline and old approval is returned', async () => {
   const { buyer, order, units, offer } = await pending();
