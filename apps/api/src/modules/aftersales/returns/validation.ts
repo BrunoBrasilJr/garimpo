@@ -4,7 +4,7 @@ import { id } from '../../freight/validation.ts';
 const reason = z.string().trim().min(3).max(500).refine(value => !value.includes('\0'));
 const version = z.number().int().min(1).max(2147483647);
 const date = z.string().datetime().transform(value => new Date(value));
-const trackingCode = z.string().trim().min(1).max(120).refine(value => !/[\u0000-\u001f\u007f]/.test(value));
+const trackingCode = z.string().trim().min(1).max(120).refine(value => Array.from(value).every(char => char.charCodeAt(0) >= 32 && char.charCodeAt(0) !== 127));
 const unique = (ids: string[]) => new Set(ids).size === ids.length;
 export const request = z.object({
   reason, items: z.array(z.object({ orderItemId: id, quantity: z.number().int().min(1).max(1000) }).strict()).min(1).max(1000)

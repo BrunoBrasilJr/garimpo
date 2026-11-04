@@ -25,7 +25,7 @@ import { Logistics } from '../../../apps/api/src/modules/orders/logistics.ts';
 import { Pricing } from '../../../apps/api/src/modules/pricing/service.ts';
 import { openCatalogServer, web } from '../../catalog/http.ts';
 export const credentials = (session: SessionBundle) => web({ cookie: `__Host-garimpo-access=${session.accessToken}; __Host-garimpo-refresh=${session.refreshToken}; __Host-garimpo-csrf=${session.csrfToken}`, csrf: session.csrfToken });
-export async function foundation(wrap?: (gateway: LocalGateway) => PaymentGateway, task: '022' | '023' | '025' = '022') {
+export async function foundation(wrap?: (gateway: LocalGateway) => PaymentGateway, task: '022' | '023' | '025' | '026' = '022') {
   const value = process.env.TEST_DATABASE_URL; if (!value) throw new Error('Separate test database required.');
   const url = new URL(value), schema = url.searchParams.get('schema'); if (url.pathname !== '/garimpo_test' || !['localhost', '127.0.0.1'].includes(url.hostname) || !new RegExp('^task' + task + '_[a-f0-9]{32}$').test(schema ?? '')) throw new Error('Only the isolated schema for this task is accepted.');
   let current = Date.now(), nextZip = 10000000; const clock = { now: () => new Date(current) }, advance = (milliseconds: number) => { current += milliseconds; };
