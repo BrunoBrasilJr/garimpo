@@ -34,7 +34,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
-| 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | BLOCKED |
+| 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | IN_PROGRESS |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | BLOCKED |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | BLOCKED |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | BLOCKED |
@@ -3231,7 +3231,7 @@ Escopo e DoD PASS. PRIMARY: README, TASKS, persistência, contratos de devoluç�
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -3298,7 +3298,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR em 2026-11-04. TASK-026 DONE publicada em ed42747, com testes verificados. RN-020/022/023/040, RF-016, API-016 e ADR-003/004/006 aceitos conferidos. Autorização contínua até TASK-028. BLOCKED → READY → IN_PROGRESS em feature/TASK-027-exchanges. Escopo PRIMARY em troca, oferta, remessas, reserva, conversão vinculada, pós-venda compartilhado, persistência, mensagens e testes próprios. Interfaces na TASK-028.
 
 ### TASK-028 Criar interfaces de pós-venda
 
