@@ -1,7 +1,7 @@
 import type { AccountView } from '@garimpo/contracts';
 export interface TokenStore { get(): Promise<string | null>; set(value: string): Promise<void>; clear(): Promise<void> }
 export class MobileError extends Error { constructor(readonly status: number, readonly fields: Record<string, string[]>, message: string, readonly code = 'REQUEST_FAILED') { super(message); } }
-export interface CommandContext { idempotencyKey?: string; accountId?: string; signal?: AbortSignal }
+export interface CommandContext { idempotencyKey?: string; accountId?: string; signal?: AbortSignal; mediaType?: string; responseBlob?: boolean }
 export const errorMessage = (cause: unknown) => cause instanceof MobileError ? cause.message : 'Não foi possível concluir. Confira sua conexão e tente novamente.';
 interface Session { accessToken: string; refreshToken: string; user: AccountView }
 export class MobileAccountClient {
@@ -20,10 +20,11 @@ export class MobileAccountClient {
     let response: Response;
     try {
       response = await this.transport(this.base + path, { method, credentials: 'omit', ...(context?.signal ? { signal: context.signal } : {}), headers: { 'X-Garimpo-Client': 'mobile',
-        ...(access ? { Authorization: `Bearer ${access}` } : {}), ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        ...(access ? { Authorization: `Bearer ${access}` } : {}), ...(body === undefined ? {} : { 'Content-Type': context?.mediaType ?? 'application/json' }),
         ...(context?.idempotencyKey ? { 'Idempotency-Key': context.idempotencyKey } : {}), ...(context?.accountId ? { 'X-Garimpo-Account': context.accountId } : {}) },
-        ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+        ...(body === undefined ? {} : { body: context?.mediaType && body instanceof ArrayBuffer ? body : JSON.stringify(body) }) });
     } catch { throw new MobileError(0, {}, 'Não foi possível conectar. Confira sua conexão e tente novamente.'); }
+    if (response.ok && context?.responseBlob) return await response.blob() as T;
     const value = response.status === 204 ? undefined : await response.json() as { message?: string; fieldErrors?: Record<string, string[]>; code?: string };
     if (!response.ok) throw new MobileError(response.status, value?.fieldErrors ?? {}, value?.code === 'INVALID_ACCESS_LINK' ? 'Este código é inválido, expirou ou já foi usado. Solicite outro link.' : value?.message ?? 'Não foi possível concluir.', value?.code ?? 'REQUEST_FAILED');
     return value as T;

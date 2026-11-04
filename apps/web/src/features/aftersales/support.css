@@ -1,0 +1,8 @@
+.order-support { display: grid; gap: .75rem; min-width: 0; }
+.order-support form, .order-support section { display: grid; gap: .6rem; min-width: 0; }
+.order-support label { display: grid; gap: .25rem; min-width: 0; }
+.order-support input, .order-support select, .order-support textarea { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; }
+.order-support figure { margin: 0; max-width: 100%; }
+.order-support img { display: block; max-width: 100%; height: auto; }
+.order-support button { white-space: normal; overflow-wrap: anywhere; }
+.order-support p { overflow-wrap: anywhere; }

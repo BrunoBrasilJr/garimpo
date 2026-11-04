@@ -6,7 +6,10 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "platforms": ["android", "ios"],
-    "plugins": [["expo-audio", { "microphonePermission": false, "recordAudioAndroid": false, "enableBackgroundRecording": false, "enableBackgroundPlayback": false }]],
+    "plugins": [
+      ["expo-audio", { "microphonePermission": false, "recordAudioAndroid": false, "enableBackgroundRecording": false, "enableBackgroundPlayback": false }],
+      ["expo-image-picker", { "cameraPermission": false, "microphonePermission": false, "photosPermission": "Permitir que o Garimpo use as imagens selecionadas como evidência privada de pós-venda." }]
+    ],
     "android": { "package": "br.com.garimpo.app" },
     "ios": { "bundleIdentifier": "br.com.garimpo.app", "supportsTablet": true }
   }

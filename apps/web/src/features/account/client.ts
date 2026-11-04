@@ -25,7 +25,7 @@ async function renew(previous: string) {
   }
   return renewing;
 }
-export interface CommandContext { idempotencyKey?: string; accountId?: string }
+export interface CommandContext { idempotencyKey?: string; accountId?: string; responseBlob?: boolean }
 export async function request<T = Record<string, unknown>>(path: string, method = 'GET', body?: unknown, authenticated = true, signal?: AbortSignal, context?: CommandContext): Promise<T> {
   if ((path === '/auth/login' || path === '/auth/logout') && navigator.locks) {
     return navigator.locks.request('garimpo-session-renewal', () => perform<T>(path, method, body, authenticated, signal, context));
@@ -35,10 +35,12 @@ export async function request<T = Record<string, unknown>>(path: string, method 
 async function perform<T>(path: string, method: string, body: unknown, authenticated: boolean, signal?: AbortSignal, context?: CommandContext): Promise<T> {
   if (location.protocol !== 'https:') throw new ClientError(0, 'HTTPS_REQUIRED', 'Abra a conexão segura do Garimpo para acessar sua conta.');
   const proof = csrf();
+  const file = body instanceof Blob ? body : null;
   const execute = () => fetch('/api/v1' + path, { method, credentials: 'include', cache: 'no-store',
-    ...(signal ? { signal } : {}), headers: { ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+    ...(signal ? { signal } : {}), headers: { ...(body === undefined ? {} : { 'Content-Type': file?.type || 'application/json' }),
       ...(method !== 'GET' && csrf() ? { 'X-CSRF-Token': csrf() } : {}),
-      ...(context?.idempotencyKey ? { 'Idempotency-Key': context.idempotencyKey } : {}), ...(context?.accountId ? { 'X-Garimpo-Account': context.accountId } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+      ...(context?.idempotencyKey ? { 'Idempotency-Key': context.idempotencyKey } : {}), ...(context?.accountId ? { 'X-Garimpo-Account': context.accountId } : {}) },
+    ...(body === undefined ? {} : { body: file ?? JSON.stringify(body) }) });
   let response: Response;
   try {
     response = await execute();
@@ -47,6 +49,7 @@ async function perform<T>(path: string, method: string, body: unknown, authentic
     if (error instanceof ClientError || (error instanceof DOMException && error.name === 'AbortError')) throw error;
     throw new ClientError(0, 'NETWORK_UNAVAILABLE', 'Não foi possível conectar. Confira a conexão e tente novamente.');
   }
+  if (response.ok && context?.responseBlob) return await response.blob() as T;
   const value = response.status === 204 ? undefined : await response.json() as { code?: string; message?: string; fieldErrors?: Record<string, string[]> };
   if (!response.ok) throw new ClientError(response.status, value?.code ?? 'REQUEST_FAILED', messages[value?.code ?? ''] ?? value?.message ?? 'Não foi possível concluir.', value?.fieldErrors ?? {});
   return value as T;
