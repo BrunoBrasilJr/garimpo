@@ -330,6 +330,25 @@ As respostas de simulação retornam PaymentView com result PENDING/APPROVED/DEC
 | API-013.01 | GET | /me/orders | paginação, filtros de estado | pedidos próprios | 200 |
 | API-013.02 | GET | /me/orders/{id} | id próprio | snapshots, tentativas, etapas e solicitações | 200 |
 
+Contrato materializado de histórico: `page` (1–1000000, padrão 1), `pageSize`
+(1–30, padrão 10), `status`, `fromDate` e `throughDate` são opcionais. Datas
+AAAA-MM-DD filtram criação pelo calendário America/Sao_Paulo, incluindo os dois
+dias; o servidor converte o fim para início exclusivo do dia seguinte. A lista
+retorna `{items,total,page,pageSize,totalPages,serverTime}` em ordem decrescente
+de criação/ID. `payableOnly=true` restringe a PENDING com prazo ainda futuro,
+inclusive quando o job de expiração está atrasado; não altera estado nem prazo.
+Esse filtro permite encontrar pagamentos pendentes em outro aparelho sem diário
+local. Filtros de outro cliente são rejeitados na rota própria.
+
+Detalhe aceita `paymentPage` e `refundPage` independentes (padrão 1, 20 itens por
+página). Retorna snapshots originais, cobranças, unidades e estado comercial,
+pagamento efetivo, eventos ordenados por versão e `shipment` ORIGINAL ou null.
+Eventos distinguem `occurredAt` efetivo de `recordedAt` e preservam papel do ator.
+Tentativas incluem as do mesmo checkout anteriores ao pedido; estornos mostram
+obrigação e tentativas, sem contexto/chaves do provedor. ID alheio responde 404.
+Solicitações/remessas de pós-venda continuam incrementos futuros; ausência dessas
+funcionalidades não é representada como atendimento realizado.
+
 ## RF-014 Cancelar pedidos e unidades indisponíveis
 
 **Atores:** Cliente; equipe para indisponibilidade. **Pré-condição:** Pedido pendente/pago antes de em separação para cancelamento direto.
@@ -485,6 +504,25 @@ uso/reserva; reservas/consumo/limites concorrentes pertencem a TASK-016/018.
 | API-020.02 | GET | /admin/orders/{id} | id | detalhes administrativos | 200 |
 | API-020.03 | PATCH | /admin/orders/{id}/status | PREPARING/SEPARATED/SHIPPED/DELIVERED, revisão, rastreio quando aplicável | estado/evento e remessa original | 200; 409 transição |
 | API-020.04 | POST | /admin/aftersales/external-interactions | cliente, e-mail cadastrado, decisão comunicada, data e vínculo | registro auditado e ação permitida em nome do cliente | 200; 409 estado/versão; 422 dados |
+
+Listagem/detalhe de pedidos da equipe compartilham o formato de histórico acima,
+com `customerEmail` exato normalizado e dados limitados de cliente; exigem
+ADMIN/OPERATOR ativos na web. `PATCH /admin/orders/{id}/status` exige
+`Idempotency-Key` e `{version,status,reason}`. Próximas etapas originais:
+PAID → PREPARING → SEPARATED → SHIPPED → DELIVERED. SHIPPED exige ainda
+`trackingCode` (1–120 caracteres) e `postedAt`; DELIVERED exige `deliveredAt`.
+Instantes são ISO 8601 UTC; a interface converte o horário local digitado e
+exibe histórico em São Paulo. Datas futuras, postagem anterior ao pagamento,
+entrega anterior à postagem, saltos e regressões são recusados (422/409).
+
+Versão desatualizada exige nova consulta; mesma chave/corpo repete sem novo
+efeito. Estado, evento append-only, remessa, auditoria, recibo idempotente e
+mensagem são atômicos. Entrega efetiva preenche apenas unidades remanescentes;
+estimativa de frete não confirma entrega. Pagos de conta bloqueada/encerrada
+continuam atendíveis pela equipe. Somente SHIPPED/DELIVERED acrescentam avisos
+logísticos; falha posterior de entrega da mensagem não desfaz o pedido.
+Esta rota não cancela, recebe dinheiro, autoriza estorno ou registra remessa de
+pós-venda. API-020.04 permanece planejada para os módulos de atendimento.
 
 ## RF-021 Consultar e administrar clientes
 

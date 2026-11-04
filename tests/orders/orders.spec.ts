@@ -56,7 +56,7 @@ test('a fresh native client finds and pays a boleto created on the web without l
   await order.getByRole('button', { name: 'Executar simulação deste pagamento', exact: true }).click(); await expect(order).toContainText('Cobrança paga');
   await page.getByRole('button', { name: 'Meus pedidos', exact: true }).click(); await page.getByRole('button', { name: 'Abrir pedido ' + id.slice(0, 8), exact: true }).click(); await expect(history).toContainText('Pago');
   const final = await app.purchaseState(checkout.id); expect(final.orders).toHaveLength(1); expect(final.orders[0]!.expiresAt!.toISOString()).toBe(deadline); expect(final.events.filter(e => e.type === 'SALE')).toHaveLength(1);
-  await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => { for (const e of document.querySelectorAll<HTMLElement>('[dir="auto"]')) { const size = parseFloat(getComputedStyle(e).fontSize); e.style.setProperty('font-size', size * 2 + 'px', 'important'); e.style.setProperty('line-height', '1.5', 'important'); } });
+  await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => { for (const e of Array.from(document.querySelectorAll<HTMLElement>('[dir="auto"]'))) { const size = parseFloat(getComputedStyle(e).fontSize); e.style.setProperty('font-size', size * 2 + 'px', 'important'); e.style.setProperty('line-height', '1.5', 'important'); } });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true); await history.scrollIntoViewIfNeeded(); await page.screenshot({ path: resolve(app.directory, 'history-rnw-narrow-enlarged.png'), fullPage: true });
 });
 

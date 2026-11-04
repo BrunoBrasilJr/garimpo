@@ -1,5 +1,23 @@
 # Modelo inicial de dados
 
+## Histórico e remessa original materializados
+
+OrderStatusEvent acrescenta versão única por pedido, papel congelado do ator,
+occurredAt efetivo e createdAt de registro. UPDATE/DELETE/TRUNCATE são recusados;
+estado e evento são gravados na mesma transação. Migração de compras anteriores
+reconstitui somente criação, paidAt conhecido e expiração com auditoria real
+ORDER.EXPIRED. Não inventa ator, postagem, entrega nem transição sem evidência;
+snapshots, dinheiro, versão e prazos dos pedidos antigos permanecem intactos.
+
+Shipment materializado neste incremento aceita apenas ORIGINAL, exige orderId,
+trackingCode, postedAt e createdById; índice parcial garante uma por pedido.
+Identidade, vínculo, rastreio e postagem são imutáveis. deliveredAt pode ser
+preenchido uma vez e deve ser posterior/igual à postagem; exclusão e TRUNCATE
+são recusados. Serviço também valida datas efetivas não futuras e postagem após
+pagamento. Unidade KEPT recebe a entrega efetiva, sem reescrever snapshot ou
+movimentar estoque/finanças. Campos/remessas de atendimento no quadro planejado
+abaixo serão materializados nos respectivos incrementos, não existem ainda.
+
 ## Precisões de frete e pedido inicial — TASK-018
 
 FreightRate/CepRange são configuração versionada/auditada de ADMIN, sem seed de

@@ -258,3 +258,20 @@ Responsável: Bruno dos Santos Brasil Silva, identificado no README e nesta conv
 Detalhamento técnico sob a autorização contínua posterior de 2026-11-01/02, compatível com ADR-002/003/004: o simulador substituível persiste intenção, recibo e aplicação separados. A porta não recebe transação de negócio; o adaptador local escreve seu resultado por referência idempotente, e somente depois a aplicação confirma estoque/pedido ou cria obrigação de estorno. Não inserir rede em callbacks transacionais repetidos. Recibo aprovado aplicado após o prazo original não readquire saldo nem cria/reativa pedido. PENDING requer evento técnico real de resolução; não há controle de relógio em endpoint ou cenário que finja passagem de tempo.
 
 Não armazenar dados de cartão real. A aprovação de um cenário não dispensa conta, e-mail inicial, endereço próprio, frete aceito, saldo reservado e versão. Falha de aplicação conserva recibo retomável; falha de estorno conserva obrigação e tentativas, com repetição por sistema/ADMIN somente para automático. Mensagens comerciais usam a caixa local criptografada já ratificada e falha de entrega não desfaz venda. Eventos de restituição sem venda permanecem separados da receita. Este detalhamento não modifica o PDF nem aprova gateway/SMTP/infraestrutura de produção.
+
+### Datas efetivas e consulta de pedidos
+
+Precisão técnica sob a delegação de execução contínua, compatível com RN-015 e
+ADRs ratificados: filtros diários e apresentação usam America/Sao_Paulo; instantes
+persistidos/transmitidos usam UTC com milissegundos. A entrada datetime-local
+de logística é interpretada no fuso do aparelho, explicitado ao operador, e
+convertida para UTC. Não assumir offset fixo para dias históricos com horário
+de verão. Data efetiva é distinta da data de registro; estimativa de frete nunca
+preenche entrega. Um envio original por pedido, com rastreio imutável e entrega
+efetiva registrada uma vez; demais espécies pertencem ao pós-venda futuro.
+
+Listas usam paginação limitada, filtros validados e escopo próprio/equipe.
+Pagamentos e estornos no detalhe têm páginas independentes de 20 itens; prazo
+original e obrigações não são escondidos por troca de aparelho. Diário local
+continua indispensável à retomada de comando cuja resposta é desconhecida;
+pedidos já reconhecidos são consultados por GET, sem replay de criação.
