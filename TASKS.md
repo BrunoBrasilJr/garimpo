@@ -35,7 +35,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
-| 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | BLOCKED |
+| 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | IN_PROGRESS |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | BLOCKED |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | BLOCKED |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | BLOCKED |
@@ -3310,7 +3310,7 @@ Scope Guard e DoD PASS. PRIMARY em persistência de trocas, serviço, contratos,
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -3373,7 +3373,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR em 2026-11-04. TASK-025/026/027 DONE com evidências. Base main 313f1af publicada. ADR-001/002 aceitos e contratos RF-014/015/016 conferidos. BLOCKED → READY → IN_PROGRESS em feature/TASK-028-aftersales-clients. PRIMARY em interfaces e E2E de pós-venda. Incidental restrito à montagem na tela de pedidos, ao transporte de evidência autenticado e ao seletor nativo compatível com Expo SDK 57.
 
 ### TASK-029 Implementar relatórios financeiros e comerciais
 
