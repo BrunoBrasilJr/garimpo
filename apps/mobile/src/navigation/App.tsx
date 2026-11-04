@@ -36,7 +36,7 @@ export default function App({ clientFactory = deviceClient }: { clientFactory?: 
   const [addresses, setAddresses] = useState<Address[]>([]), [editing, setEditing] = useState<Address | null>(null), [deleteId, setDeleteId] = useState('');
   const [exitFailed, setExitFailed] = useState(false);
   const [cartReady, setCartReady] = useState(''), [loginEpoch, setLoginEpoch] = useState(0);
-  const epoch = useRef(0), leaving = useRef(false);
+  const epoch = useRef(0), leaving = useRef(false), closedCleanup = useRef(false);
   const [catalogEdition, setCatalogEdition] = useState('');
   useEffect(() => {
     let active = true;
@@ -68,7 +68,7 @@ export default function App({ clientFactory = deviceClient }: { clientFactory?: 
     if (leaving.current) return;
     leaving.current = true;
     epoch.current++;
-    try { await client?.logout(); setExitFailed(false); setNotice('Você saiu da sua conta.'); }
+    try { if (closedCleanup.current) await client?.forgetClosedAccount(); else await client?.logout(); closedCleanup.current = false; setExitFailed(false); setNotice('Você saiu da sua conta.'); }
     catch (cause) { setExitFailed(true); setNotice(errorMessage(cause) + ' Não foi possível confirmar a saída completa.'); }
     finally { leaving.current = false; setUser(null); setCartReady(''); setAddresses([]); setEditing(null); setScreen('login'); }
   }
@@ -139,7 +139,7 @@ export default function App({ clientFactory = deviceClient }: { clientFactory?: 
       <AccountForm {...formProps} key={user.name} title="Como podemos chamar você?" fields={[{ name: 'name', label: 'Nome completo', value: user.name }]} submit="Salvar nome" onSubmit={async values => { setUser(await call<AccountView>('/me', 'PATCH', values)); setNotice('Nome atualizado.'); }} />
       <AccountForm {...formProps} title="Alterar e-mail" fields={[{ ...email, label: 'Novo e-mail' }]} submit="Enviar confirmação" onSubmit={async values => { await call('/me/email-change', 'POST', values); setNotice('Confirme o novo endereço pelo link recebido. O e-mail atual continua válido até lá.'); }} />
       <Button title="Confirmar alteração de e-mail" onPress={() => setScreen('change-confirm')} />
-      {client ? <Closure key={user.id} user={user} client={client} closed={(message, cleanupFailed) => { epoch.current++; setUser(null); setCartReady(''); setAddresses([]); setEditing(null); setScreen('login'); setNotice(message); setExitFailed(cleanupFailed); }} /> : null}
+      {client ? <Closure key={user.id} user={user} client={client} closed={(message, cleanupFailed) => { closedCleanup.current = cleanupFailed; epoch.current++; setUser(null); setCartReady(''); setAddresses([]); setEditing(null); setScreen('login'); setNotice(message); setExitFailed(cleanupFailed); }} /> : null}
     </>;
     return <><AccountForm {...formProps} title="Bom te ver de novo" fields={[email, password]} submit="Entrar" onSubmit={async values => {
       if (!client) throw new MobileError(0, {}, 'A conexão segura está indisponível. Tente novamente em instantes.');
