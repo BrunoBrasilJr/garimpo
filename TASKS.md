@@ -33,7 +33,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | DONE |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
-| 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | IN_PROGRESS |
+| 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | BLOCKED |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | BLOCKED |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | BLOCKED |
@@ -3150,7 +3150,7 @@ Escopo e DoD PASS. 13 arquivos PRIMARY em cancelamento, estoque, pedidos, estorn
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3220,6 +3220,12 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 DoR em 2026-11-04. TASK-025 DONE na main em 8755b86, com testes verificados. PD-009 resolvida pelo responsável: “só quando todos forem devolvidos”. README registra a decisão após R03-P4 sem modificar a fonte. ADR-003/004/006 aceitos. Continuidade 026 a 028 autorizada. BLOCKED → READY → IN_PROGRESS em feature/TASK-026-returns. Escopo PRIMARY em devoluções, rateio, inspeção/reposição, elegibilidade de avaliações, evidências privadas, persistência, mensagens e testes próprios. Composição, exports e runner ficam limitados ao registro necessário. Trocas e interfaces seguem TASK-027/028.
+
+Fechamento em 2026-11-04. A abertura valida titularidade, unidades e janela. Postagem, recebimento, inspeção, exceções e reenvio mantêm rastreio e auditoria. Pré-envio dispensa retorno físico. Somente ADMIN autoriza estorno. Falha preserva o resultado comercial e permanece visível. Reposição ocorre para unidades aptas ou que não saíram do estoque. Devolução integral da edição oculta avaliação com histórico. PD-009 validada com 1 + 2 unidades em solicitações sucessivas, frete somente na última. Evidência imutável em bytes no banco, isolada da mídia pública, com tipo verificado, reprocessamento e limite independente de cinco arquivos para cada origem. Expiração é reconciliada na consulta do atendimento e em nova solicitação para o pedido.
+
+Gates 01 a 08 PASS. Build, tipos, lint, 126 unitários e 87 integrações no commit 551ab86 em verify.log, saída 0. Integrações de devolução 4, cancelamento 6, avaliações 11, pagamentos 32, pedidos 18 e mensagens 16. Em 6aebbd3, build API, tipos, lint e 5/5 devoluções em final.log, saída 0, incluindo concorrência entre duas solicitações da mesma unidade e exceção ADMIN após expiração. WSL com Node 24.22.1 e PostgreSQL 17, migrations aplicadas em schemas separados em garimpo_test. A primeira checagem de lint em build.log rejeitou caracteres de controle em regex, corrigidos em 551ab86. Auditoria bruta preserva sete alertas baixos e política passou.
+
+Escopo e DoD PASS. PRIMARY: README, TASKS, persistência, contratos de devolução, serviço/rotas/testes do módulo, evidências, estoque, avaliações, estorno e mensagens. INCIDENTAL: apps/api/src/app.ts registra router e gateway, packages/contracts/src/index.ts exporta tipos, package.json registra suíte, tests/core/run-integration.mjs seleciona o schema próprio e tests/accounts/lifecycle/fixtures.ts admite schema 026. Nenhuma alteração proibida. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. 26/37 concluídas. Próxima candidata TASK-027.
 
 ### TASK-027 Implementar trocas, ofertas e prazos
 
