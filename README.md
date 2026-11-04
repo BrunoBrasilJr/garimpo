@@ -480,7 +480,7 @@ Troca/devolução até 7 dias corridos após entrega, parcial por unidades, moti
 
 ### RN-021 Devolução e fretes
 
-Estornar valor líquido registrado das unidades. Devolução integral inclui frete original; parcial somente produtos. Retorno sem cobrança adicional ao cliente; troca inclui envio do substituto por conta da loja. Reposição somente após conferência apta. Estorno de pós-venda exige autorização ADMIN, além de recebimento/conferência quando aplicável.
+Estornar valor líquido registrado das unidades. O frete original é estornado uma única vez quando todas as unidades do pedido forem devolvidas, inclusive quando isso ocorrer em solicitações sucessivas. Até esse ponto, estornar somente os produtos devolvidos. Retorno sem cobrança adicional ao cliente; troca inclui envio do substituto por conta da loja. Reposição somente após conferência apta. Estorno de pós-venda exige autorização ADMIN, além de recebimento/conferência quando aplicável.
 
 **Fonte:** R01-P7; R03-P4; R05-P1; R05-P2. **Requisitos:** RF-015, RF-018, RF-023. **Casos:** UC-015, UC-018, UC-023. **Impacto:** Edition, Evidence, FinancialEvent, Genre, Offer, Order, OrderUnit, Refund, Reservation, ReturnItem, ReturnRequest, Shipment, StockMovement.
 
@@ -1290,6 +1290,6 @@ Autorização por papel e propriedade em toda operação. OPERATOR não herda po
 | PD-006 | **RESOLVIDA POR DECISÃO TÉCNICA DELEGADA EM 2026-11-01 — Vocabulários residuais:** Goldmine M/NM/VG+/VG/G+/G/F/P separada para mídia/capa; avaliação em estrelas inteiras de 1 a 5; promoção percentual ou valor fixo em centavos de real. Origem e limites em docs/architecture/parametros.md; não são enumerações atribuídas ao PDF. Sobreposição, acumulação, alerta NEW/USED/ANY e estoque baixo já definidos permanecem preservados. | TASK-008, TASK-013, TASK-014 |
 | PD-007 | **PENDENTE DE DECISÃO — Volume e metas de desempenho:** Definir tamanhos de dados, usuários simultâneos, metas e método de aferição. Números da versão anterior não são requisitos. | TASK-034 |
 | PD-008 | **PENDENTE DE DECISÃO — Retenção e backup:** Definir retenção de dados pessoais/anonimização e condições após retenção; definir retenção de backups, frequência dos testes e destino. | TASK-022, TASK-030, TASK-035 |
-| PD-009 | **PENDENTE DE DECISÃO — Devoluções integrais em solicitações parciais sucessivas:** PDF distingue devolução integral/parcial, mas não explicita quando devolver frete se várias solicitações parciais somarem o pedido inteiro. Definir antes desse caso; não presumir reembolso cumulativo de frete. | TASK-026 |
+| PD-009 | **RESOLVIDA — Frete nas devoluções sucessivas:** o responsável confirmou em 2026-11-04 que o frete original é estornado somente quando todos os discos forem devolvidos. O rateio soma as devoluções aprovadas do mesmo pedido e inclui o frete uma única vez, na autorização da devolução que completar o conjunto. | TASK-026 |
 
 As pendências não autorizam inventar requisitos. [Parâmetros](docs/architecture/parametros.md) separam os valores já decididos daqueles ainda em aberto.

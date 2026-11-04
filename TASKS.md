@@ -33,7 +33,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | DONE |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
-| 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | BLOCKED |
+| 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | IN_PROGRESS |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | BLOCKED |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | BLOCKED |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | BLOCKED |
@@ -3150,7 +3150,7 @@ Escopo e DoD PASS. 13 arquivos PRIMARY em cancelamento, estoque, pedidos, estorn
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -3207,7 +3207,7 @@ Somente ajustes mínimos de imports, exports, registro de módulo, tipos/mocks o
 
 #### Critérios de aceitação
 
-7 dias para abertura/ postagem conforme gatilhos; exceção ADMIN; evidências 5+5; OPERATOR inspeciona mas não autoriza estorno; aptidão controla reposição; integral de edição oculta review. PD-009 resolvida antes do caso de parciais sucessivas.
+7 dias para abertura/ postagem conforme gatilhos; exceção ADMIN; evidências 5+5; OPERATOR inspeciona mas não autoriza estorno; aptidão controla reposição; integral de edição oculta review. PD-009 resolvida. Solicitações parciais sucessivas incluem frete uma única vez quando a última autorização completar a devolução do pedido.
 
 #### Testes necessários
 
@@ -3219,7 +3219,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Dependência TASK-025 concluída. BLOCKED por PD-009: o PDF (R03-P4) prevê estorno do frete original na devolução integral e distingue a devolução parcial. Falta decidir se solicitações parciais sucessivas que devolvem todas as unidades devem estornar o frete na última aprovação. A decisão afeta o rateio e os testes de estorno. TASK-027 e TASK-028 aguardam essa dependência. Branch: N/A. Implementação e testes: não iniciados.
+DoR em 2026-11-04. TASK-025 DONE na main em 8755b86, com testes verificados. PD-009 resolvida pelo responsável: “só quando todos forem devolvidos”. README registra a decisão após R03-P4 sem modificar a fonte. ADR-003/004/006 aceitos. Continuidade 026 a 028 autorizada. BLOCKED → READY → IN_PROGRESS em feature/TASK-026-returns. Escopo PRIMARY em devoluções, rateio, inspeção/reposição, elegibilidade de avaliações, evidências privadas, persistência, mensagens e testes próprios. Composição, exports e runner ficam limitados ao registro necessário. Trocas e interfaces seguem TASK-027/028.
 
 ### TASK-027 Implementar trocas, ofertas e prazos
 
