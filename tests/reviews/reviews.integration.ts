@@ -1,3 +1,4 @@
+import { unavailableReviewPurchases } from '../../apps/api/src/modules/reviews/purchases.ts';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { mkdtemp } from 'node:fs/promises';
@@ -37,7 +38,7 @@ beforeAll(async () => {
   const edition = await catalog.createEdition(admin.accessToken, { title: 'Avaliações ' + randomUUID(), format: 'LP', artistIds: [artist.id], genreIds: [genre.id], primaryGenreId: genre.id });
   const image = await sharp({ create: { width: 4, height: 4, channels: 3, background: 'green' } }).png().toBuffer(); await catalog.upload(admin.accessToken, 'edition', edition.id, image, 'image/png', 'Capa sintética');
   await catalog.updateEdition(admin.accessToken, edition.id, { active: true }); editionId = edition.id;
-  server = await openCatalogServer({ db, clock, mediaRoot }, { db, clock, purchases }); closedServer = await openCatalogServer({ db, clock, mediaRoot });
+  server = await openCatalogServer({ db, clock, mediaRoot }, { db, clock, purchases }); closedServer = await openCatalogServer({ db, clock, mediaRoot }, { purchases: unavailableReviewPurchases });
   control = new Client({ connectionString: value }); await control.connect(); await control.query(`SET search_path TO "${schema}"`);
 });
 afterAll(async () => { await Promise.all([server?.close(), closedServer?.close()]); await control?.end(); await Promise.all([db?.$disconnect(), other?.$disconnect()]); });

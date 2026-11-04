@@ -27,7 +27,7 @@ export class Inventory {
       await tx.$queryRaw`SELECT id FROM "Edition" WHERE id = ${first.editionId}::uuid FOR UPDATE`;
       await tx.$queryRaw`SELECT id FROM "Offer" WHERE id = ${offerId}::uuid FOR UPDATE`;
       const offer = await tx.offer.findUniqueOrThrow({ where: { id: offerId } });
-      const beforeAvailability = await availability(tx, offer.editionId);
+      const beforeAvailability = await availability(tx, offer.editionId, clock.now());
       const stockOnHand = adjustedStock(offer.kind, offer.stockOnHand, delta);
       if (delta < 0) {
         const snapshot = requireKnown(await this.catalog.commercialBindings.inspect(tx, offer.editionId, [offerId]), [offerId]);

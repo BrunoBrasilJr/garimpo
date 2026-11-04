@@ -7,6 +7,7 @@ import type { EditionRecord } from './views.ts';
 import { activePromotions } from '../pricing/service.ts';
 import { promoted } from '../pricing/calculate.ts';
 import type { PromotionRule } from '../pricing/calculate.ts';
+import { reservedQuantities } from '../inventory/reservations.ts';
 
 /** Alias o is fixed in this module. All values, dates and filters are bound parameters. */
 function effectivePrice(now: Date) {
@@ -24,15 +25,17 @@ function offerMatch(query: CatalogQuery, now: Date) {
   if (query.maxPrice !== undefined) parts.push(Prisma.sql`${effectivePrice(now)} <= ${query.maxPrice}`);
   return Prisma.join(parts, ' AND ');
 }
-function pricedOffers(edition: EditionRecord, rules: PromotionRule[], now: Date, query?: CatalogQuery) {
+function pricedOffers(edition: EditionRecord, rules: PromotionRule[], now: Date, holds: ReadonlyMap<string, number>, query?: CatalogQuery) {
   return edition.offers.filter(offer => offer.active).map(offer => ({ ...offer, priceCents: promoted({ offerId: offer.id, basePriceCents: offer.priceCents }, rules, now).priceCents })).filter(offer => !query ||
     (query.minPrice === undefined || offer.priceCents >= query.minPrice) && (query.maxPrice === undefined || offer.priceCents <= query.maxPrice)
     && (!query.discCondition || offer.kind === 'USED' && offer.discGrade === query.discCondition) && (!query.sleeveCondition || offer.kind === 'USED' && offer.sleeveGrade === query.sleeveCondition)
-    && (query.available === undefined || (offer.stockOnHand > 0) === query.available));
+    && (query.available === undefined || (offer.stockOnHand > (holds.get(offer.id) ?? 0)) === query.available));
 }
 export async function publicPricedEdition(tx: Types.TransactionClient, edition: EditionRecord, now: Date) {
-  const rules = await activePromotions(tx, edition.offers.map(offer => offer.id), now);
-  return editionView(edition, pricedOffers(edition, rules, now));
+  const ids = edition.offers.map(offer => offer.id);
+  const rules = await activePromotions(tx, ids, now);
+  const holds = await reservedQuantities(tx, ids, now);
+  return editionView(edition, pricedOffers(edition, rules, now, holds), holds);
 }
 /** Page first in PostgreSQL: never load the entire catalog to apply price filters in JavaScript. */
 export async function publicPricedCatalog(tx: Types.TransactionClient, query: CatalogQuery, now: Date): Promise<CatalogPage> {
@@ -47,13 +50,18 @@ export async function publicPricedCatalog(tx: Types.TransactionClient, query: Ca
       OR EXISTS (SELECT 1 FROM "TrackArtist" ta JOIN "Artist" a ON a.id = ta."artistId" WHERE ta."trackId" = t.id AND strpos(lower(a.name), lower(${query.q})) > 0))))`);
   const matching = offerMatch(query, now);
   if (query.minPrice !== undefined || query.maxPrice !== undefined || query.discCondition || query.sleeveCondition) parts.push(Prisma.sql`EXISTS (SELECT 1 FROM "Offer" o WHERE ${matching})`);
-  if (query.available === true) parts.push(Prisma.sql`EXISTS (SELECT 1 FROM "Offer" o WHERE ${matching} AND o."stockOnHand" > 0)`);
-  if (query.available === false) parts.push(Prisma.sql`NOT EXISTS (SELECT 1 FROM "Offer" o WHERE ${matching} AND o."stockOnHand" > 0)`);
+  const availableOffer = Prisma.sql`SELECT 1 FROM "Offer" o WHERE ${matching}
+    AND o."stockOnHand" > COALESCE((SELECT SUM(r.quantity) FROM "Reservation" r
+      WHERE r."offerId" = o.id AND r.status = 'ACTIVE' AND r."expiresAt" > ${now}), 0)`;
+  if (query.available === true) parts.push(Prisma.sql`EXISTS (${availableOffer})`);
+  if (query.available === false) parts.push(Prisma.sql`NOT EXISTS (${availableOffer})`);
   const where = Prisma.join(parts, ' AND ');
   const counts = await tx.$queryRaw<{ total: bigint }[]>(Prisma.sql`SELECT count(*)::bigint AS total FROM "Edition" e WHERE ${where}`);
   const total = Number(counts[0]!.total);
   const ids = await tx.$queryRaw<{ id: string }[]>(Prisma.sql`SELECT e.id FROM "Edition" e WHERE ${where} ORDER BY e.title ASC, e.id ASC LIMIT ${query.pageSize} OFFSET ${(query.page - 1) * query.pageSize}`);
   const rows = await tx.edition.findMany({ where: { id: { in: ids.map(row => row.id) } }, include: editionInclude, orderBy: [{ title: 'asc' }, { id: 'asc' }] });
-  const rules = await activePromotions(tx, rows.flatMap(row => row.offers.map(offer => offer.id)), now);
-  return { items: rows.map(row => editionView(row, pricedOffers(row, rules, now, query))), page: query.page, pageSize: query.pageSize, total, totalPages: Math.ceil(total / query.pageSize) };
+  const offerIds = rows.flatMap(row => row.offers.map(offer => offer.id));
+  const rules = await activePromotions(tx, offerIds, now);
+  const holds = await reservedQuantities(tx, offerIds, now);
+  return { items: rows.map(row => editionView(row, pricedOffers(row, rules, now, holds, query), holds)), page: query.page, pageSize: query.pageSize, total, totalPages: Math.ceil(total / query.pageSize) };
 }

@@ -15,6 +15,8 @@ import { activeCheckout, checkoutInclude, closeCheckout, expireOwn, lockCoupons,
 import type { CheckoutRecord } from './lifecycle.ts';
 import { requirePendingCapacity, unavailablePendingOrders } from './pending-orders.ts';
 import type { PendingOrders } from './pending-orders.ts';
+import { publishAvailability } from '../engagement/availability.ts';
+import type { Availability } from '../engagement/availability.ts';
 
 export interface ReserveInput { version: number; pricingRevision: string; couponCode?: string | undefined }
 export class Checkouts {
@@ -39,18 +41,23 @@ export class Checkouts {
       await lockOffers(tx, [...cart.items.map(item => item.offerId), ...(active?.items.map(item => item.offerId) ?? [])]);
       await lockCoupons(tx, [active?.couponUsage?.couponId, requestedCoupon?.id]);
       const now = this.accounts.clock.now();
-      if (active && active.expiresAt <= now) await closeCheckout(tx, active, 'EXPIRED', this.accounts.clock, 'CHECKOUT_DEADLINE');
+      const availability = new Map<string, Availability>();
+      const finish = async <T>(value: T) => {
+        await publishAvailability(tx, availability, this.accounts.clock);
+        return value;
+      };
+      if (active && active.expiresAt <= now) await closeCheckout(tx, active, 'EXPIRED', this.accounts.clock, 'CHECKOUT_DEADLINE', user.id, availability);
       const receipt = { actorScope: user.id, operation: 'CHECKOUT.RESERVE', key };
       const replay = await tx.idempotencyRecord.findUnique({ where: { actorScope_operation_key: receipt } });
       if (replay) {
         if (replay.requestHash !== hash) throw new CartError(409, 'IDEMPOTENCY_CONFLICT', 'Esta chave já foi usada com outros dados.');
-        const row = await tx.checkout.findFirstOrThrow({ where: { id: replay.resultRef, userId: user.id }, include: checkoutInclude }); return { row };
+        const row = await tx.checkout.findFirstOrThrow({ where: { id: replay.resultRef, userId: user.id }, include: checkoutInclude }); return finish({ row });
       }
-      if (input.version !== cart.version) return { error: staleCart() };
+      if (input.version !== cart.version) return finish({ error: staleCart() });
       if (active && active.expiresAt > now && active.cartVersion === cart.version && active.couponCode === (input.couponCode ?? null)) {
         await tx.idempotencyRecord.create({ data: { ...receipt, requestHash: hash, resultRef: active.id, createdAt: now } }); return { row: active };
       }
-      if (active && active.expiresAt > now) await closeCheckout(tx, active, 'CANCELLED', this.accounts.clock, 'CHECKOUT_REPLACED');
+      if (active && active.expiresAt > now) await closeCheckout(tx, active, 'CANCELLED', this.accounts.clock, 'CHECKOUT_REPLACED', user.id, availability);
       // Expected commercial failures commit any prior release; storage/audit failures still roll back the whole transaction.
       let captured: Awaited<ReturnType<typeof captureQuote>>;
       try {
@@ -60,7 +67,7 @@ export class Checkouts {
         if (lines.some(line => !line.active || line.quantity > line.availableQuantity)) throw new CartError(409, 'INSUFFICIENT_STOCK', 'Um dos itens não possui saldo para esta quantidade. Confira o carrinho.');
         requirePendingCapacity(await this.pendingOrders.inspect(tx, user.id));
         if (captured.snapshot.quote.couponId) await requireCouponCapacity(tx, captured.snapshot.quote.couponId, user.id, now);
-      } catch (error) { if (error instanceof CartError || error instanceof PricingError) return { error }; throw error; }
+      } catch (error) { if (error instanceof CartError || error instanceof PricingError) return finish({ error }); throw error; }
       const expiresAt = new Date(now.getTime() + CHECKOUT_MILLISECONDS), { snapshot, revision } = captured;
       const row = await tx.checkout.create({ data: {
         userId: user.id, cartId: cart.id, cartVersion: cart.version, couponCode: input.couponCode ?? null, requestKey: key, requestHash: hash, pricingRevision: revision, quoteSnapshot: json(snapshot), createdAt: now, expiresAt,
@@ -73,7 +80,7 @@ export class Checkouts {
       await appendAudit(tx, { actorId: user.id, action: 'CHECKOUT.CREATED', targetType: 'CHECKOUT', targetId: row.id, result: 'SUCCESS', reason: 'ALL_ITEMS_RESERVED', changes: { totalCents: snapshot.quote.totalCents, expiresAt: expiresAt.toISOString() } }, this.accounts.clock);
       await enqueue(tx, { type: 'CHECKOUT.CREATED', aggregateId: row.id, payload: { checkoutId: row.id, userId: user.id, expiresAt: expiresAt.toISOString() } }, this.accounts.clock);
       await tx.idempotencyRecord.create({ data: { ...receipt, requestHash: hash, resultRef: row.id, createdAt: now } });
-      return { row };
+      return finish({ row });
     });
     if ('error' in result && result.error) throw result.error;
     return this.view(result.row!);

@@ -15,6 +15,9 @@ import { createPaymentsRouter } from './modules/payments/router.ts';
 import type { PaymentOptions } from './modules/payments/router.ts';
 import { createOrderHistoryRouter } from './modules/orders/router.ts';
 import { createAccountLifecycleRouter } from './modules/accounts/blocking-router.ts';
+import { systemClock } from './core/clock.ts';
+import { commercialBindings } from './composition/commercial.ts';
+import { deliveredPurchases } from './modules/reviews/purchases.ts';
 
 export function createApp(accounts?: AccountsOptions, messaging?: MessagingOptions, catalog?: CatalogOptions, reviews?: ReviewOptions, checkout?: CheckoutOptions, payments?: PaymentOptions) {
   const app = express();
@@ -28,8 +31,9 @@ export function createApp(accounts?: AccountsOptions, messaging?: MessagingOptio
   app.use('/api/v1', createPaymentsRouter({ ...accounts, ...payments }));
   app.use('/api/v1', createFreightOrderRouter({ ...accounts, ...checkout }));
   app.use('/api/v1', createCartRouter({ ...accounts, ...checkout }));
-  app.use('/api/v1', createReviewsRouter({ ...accounts, ...reviews }));
-  app.use('/api/v1', createCatalogRouter({ ...accounts, ...catalog }));
+  app.use('/api/v1', createReviewsRouter({ ...accounts, purchases: deliveredPurchases, ...reviews }));
+  const catalogClock = catalog?.clock ?? accounts?.clock ?? systemClock;
+  app.use('/api/v1', createCatalogRouter({ ...accounts, commercialBindings: commercialBindings(catalogClock), ...catalog }));
   app.use('/api/v1', createMessagingRouter(messaging));
   app.use('/api/v1', createAccountsRouter(accounts));
   return app;

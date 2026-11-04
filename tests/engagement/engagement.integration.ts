@@ -131,7 +131,7 @@ test('stock, audience and outbox roll back together on transaction failure', asy
   const count = await db.domainEvent.count({ where: { type: 'AVAILABILITY.RETURNED', aggregateId: item.id } });
   await expect(db.$transaction(async tx => {
     await tx.$queryRaw`SELECT id FROM "Edition" WHERE id = ${item.id}::uuid FOR UPDATE`;
-    const before = await availability(tx, item.id); await tx.offer.update({ where: { id: item.offer }, data: { stockOnHand: 1 } });
+    const before = await availability(tx, item.id, clock.now()); await tx.offer.update({ where: { id: item.offer }, data: { stockOnHand: 1 } });
     await availabilityReturned(tx, item.id, before, clock); throw new Error('Rollback requested');
   })).rejects.toThrow('Rollback requested');
   expect((await db.offer.findUniqueOrThrow({ where: { id: item.offer } })).stockOnHand).toBe(0);

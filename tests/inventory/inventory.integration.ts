@@ -1,3 +1,4 @@
+import { unavailableCommercialBindings } from '../../apps/api/src/modules/catalog/lifecycle.ts';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { mkdtemp, readFile } from 'node:fs/promises';
@@ -63,7 +64,7 @@ beforeAll(async () => {
   await createStaff(accounts, admin.accessToken, { name: 'Operador de estoque', email: operatorEmail, password, role: 'OPERATOR' }); operator = await accounts.login(operatorEmail, password, 'web');
   await accounts.register({ name: 'Cliente sintético', email: customerEmail, password }); customer = await accounts.login(customerEmail, password, 'web');
   const mediaRoot = await mkdtemp(join(tmpdir(), 'garimpo-inventory-'));
-  server = await openCatalogServer({ db, clock, mediaRoot, commercialBindings: bindings }); closed = await openCatalogServer({ db, clock, mediaRoot });
+  server = await openCatalogServer({ db, clock, mediaRoot, commercialBindings: bindings }); closed = await openCatalogServer({ db, clock, mediaRoot, commercialBindings: unavailableCommercialBindings });
   first = new Inventory(new Catalog(accounts, new PublicImageStore(mediaRoot), bindings));
   second = new Inventory(new Catalog(new Accounts(other, clock), new PublicImageStore(mediaRoot), bindings));
   control = new Client({ connectionString: value }); await control.connect(); await control.query(`SET search_path TO "${schema}"`);

@@ -23,8 +23,11 @@ export function offerView(offer: OfferRecord, editionActive: boolean): CatalogOf
     particulars: offer.particulars, stockOnHand: offer.stockOnHand, active: offer.active,
     available: editionActive && offer.active && offer.stockOnHand > 0, version: offer.version, images: offer.images.map(imageView) };
 }
-export function editionView(edition: EditionRecord, visibleOffers = edition.offers): CatalogEdition {
-  const offers = visibleOffers.map(offer => offerView(offer, edition.active));
+export function editionView(edition: EditionRecord, visibleOffers = edition.offers, holds?: ReadonlyMap<string, number>): CatalogEdition {
+  const offers = visibleOffers.map(offer => {
+    const view = offerView(offer, edition.active);
+    return { ...view, available: view.available && offer.stockOnHand > (holds?.get(offer.id) ?? 0) };
+  });
   const prices = offers.filter(offer => offer.active).map(offer => offer.priceCents);
   return { id: edition.id, title: edition.title, label: edition.label, primaryGenre: edition.primaryGenre,
     artists: edition.artists.map(item => item.artist), genres: edition.genres.map(item => item.genre),

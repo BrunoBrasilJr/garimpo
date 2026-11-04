@@ -123,7 +123,7 @@ export class Catalog {
   async updateEdition(access: string, id: string, input: EditionPatch, reason?: string) {
     return serializable(this.db, async tx => {
       const actor = await this.staff(tx, access); await this.lockEdition(tx, id);
-      const beforeAvailability = await availability(tx, id);
+      const beforeAvailability = await availability(tx, id, this.clock.now());
       const previous = await tx.edition.findUniqueOrThrow({ where: { id }, include: editionInclude });
       const fields = this.fields(input, previous), genres = input.genreIds ?? previous.genres.map(item => item.genreId);
       if (!genres.includes(fields.primaryGenreId)) throw publication(['primaryGenreId']);
@@ -152,7 +152,7 @@ export class Catalog {
     const actor = await this.staff(this.db, access);
     const command = await idempotent(this.db, { actorScope: actor.id, operation: 'CATALOG.OFFER_CREATE', key, payload: { editionId, ...input } }, async tx => {
       await this.staff(tx, access); await this.lockEdition(tx, editionId);
-      const beforeAvailability = await availability(tx, editionId);
+      const beforeAvailability = await availability(tx, editionId, this.clock.now());
       const data = { editionId, kind: input.kind, priceCents: input.priceCents,
         stockOnHand: input.stockOnHand, active: input.active, discGrade: input.discGrade ?? null,
         sleeveGrade: input.sleeveGrade ?? null, particulars: input.particulars ?? null };
@@ -173,7 +173,7 @@ export class Catalog {
       const actor = await this.staff(tx, access);
       const previous = await tx.offer.findUnique({ where: { id }, include: { ...includeOffer, edition: { include: { images: true } } } }); if (!previous) throw missing();
       await this.lockEdition(tx, previous.editionId);
-      const beforeAvailability = await availability(tx, previous.editionId);
+      const beforeAvailability = await availability(tx, previous.editionId, this.clock.now());
       const expected = 'version' in input ? input.version : previous.version;
       const patch: Partial<OfferPatch> = input;
       if (previous.version !== expected) throw conflict();
