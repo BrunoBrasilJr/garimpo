@@ -35,7 +35,7 @@ export class Checkouts {
   async reserve(access: string, input: ReserveInput, key: string): Promise<CheckoutView> {
     if (!key || key.length > 128) throw new CartError(422, 'IDEMPOTENCY_KEY_REQUIRED', 'Use uma chave válida para esta finalização.');
     const hash = payloadHash({ version: input.version, pricingRevision: input.pricingRevision, couponCode: input.couponCode ?? null });
-    const result = await serializable(this.accounts.db, async tx => {
+    const result = await serializable<{ row: CheckoutRecord } | { error: CartError | PricingError }>(this.accounts.db, async tx => {
       const user = await lockCustomer(this.accounts, tx, access), cart = await new Carts(this.accounts).cart(tx, user.id), active = await activeCheckout(tx, user.id);
       const requestedCoupon = input.couponCode ? await tx.coupon.findUnique({ where: { code: input.couponCode }, select: { id: true } }) : null;
       await lockOffers(tx, [...cart.items.map(item => item.offerId), ...(active?.items.map(item => item.offerId) ?? [])]);
@@ -82,8 +82,8 @@ export class Checkouts {
       await tx.idempotencyRecord.create({ data: { ...receipt, requestHash: hash, resultRef: row.id, createdAt: now } });
       return finish({ row });
     });
-    if ('error' in result && result.error) throw result.error;
-    return this.view(result.row!);
+    if ('error' in result) throw result.error;
+    return this.view(result.row);
   }
   async cancel(access: string, id: string): Promise<void> {
     await serializable(this.accounts.db, async tx => {
