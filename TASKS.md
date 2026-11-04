@@ -30,7 +30,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | DONE |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | DONE |
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | DONE |
-| 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | IN_PROGRESS |
+| 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | DONE |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | BLOCKED |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | BLOCKED |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | BLOCKED |
@@ -2919,7 +2919,7 @@ Scope Guard final: 36 arquivos PRIMARY nos módulos, contratos, documentação, 
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -2988,6 +2988,10 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Branch feature/TASK-023-integracao-comercial. BLOCKED → READY → IN_PROGRESS após DoR. Gates próprios pendentes.
+
+Fechamento 2026-11-04. Build API, contratos e web e 126 unitários PASS em cae937d. Tipos e lint PASS em b773e56. verify.log preserva falha inicial de tipagem do resultado do checkout, corrigida pela união explícita. verify2.log preserva falha de bootstrap duplicado em fixture no mesmo schema. A corrida real foi incorporada ao mesmo setup de comércio, sem remover caso ou relaxar isolamento. recheck.log exit 0 com comércio 6, estoque 12, catálogo 19, engajamento 12, avaliações 11, carrinho 22, checkout 24, ciclo de conta 16 e política de auditoria PASS. npm audit bruto mantém sete achados baixos. As duas transações concorrentes foram observadas aguardando a trava PostgreSQL, com um único efeito permitido no último usado. Compra inativada com reserva existente foi paga e preservou o histórico. Pedido entregue próprio qualificou avaliação e duplicata foi recusada. Expiração, fechamento de conta e substituição de checkout foram validados quanto à disponibilidade e ao gatilho durável. Limite de três pendentes foi revalidado na regressão de checkout.
+
+Scope Guard: 16 PRIMARY (composição, adaptadores, liberação de disponibilidade, testes próprios e registro). Seis INCIDENTAL (runner e comando, seleção explícita de adaptadores indisponíveis nas fixtures antigas, relógio no teste de alerta e extensão restrita da fixture compartilhada). Sem migrations. DoD e revisão satisfeitos. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. 23/37 concluídas. Próximo gate: TASK-024 antes da PHASE-04.
 
 ### TASK-024 Checkpoint PHASE-03
 
