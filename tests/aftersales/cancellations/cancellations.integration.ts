@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import type { CancellationResult, RefundView } from '@garimpo/contracts';
 import { credentials, foundation } from '../../accounts/lifecycle/fixtures.ts';
@@ -98,12 +99,29 @@ test('paid cancellation restores stock and keeps a failed refund visible until A
 
 test('cancellation and capture compete without duplicating stock or refunds', async () => {
   const { buyer, order, offer } = await pending(1);
-  const [cancel] = await Promise.all([
+  await fixture.control.query('BEGIN');
+  await fixture.control.query('SELECT id FROM "User" WHERE id=$1 FOR UPDATE', [buyer.user.id]);
+  const requests = Promise.all([
     fixture.server.call('/orders/' + order.id + '/cancellations', 'POST', { reason: 'Desistência concorrente' },
       { ...credentials(buyer), 'Idempotency-Key': randomUUID() }),
     fixture.secondPayments.charge(buyer.accessToken, order.id, { chargeId: order.charges[0]!.id, scenario: 'APPROVED' }, randomUUID())
       .catch((error: unknown) => { expect(error).toMatchObject({ status: 409 }); })
   ]);
+  let contended = false;
+  try {
+    for (let attempt = 0; attempt < 150; attempt++) {
+      await fixture.control.query('SELECT pg_stat_clear_snapshot()');
+      const result = await fixture.control.query(
+        "SELECT count(DISTINCT application_name)::int AS total FROM pg_stat_activity WHERE application_name IN ('TASK025_A', 'TASK025_B') AND wait_event_type='Lock'"
+      );
+      if (result.rows[0].total === 2) { contended = true; break; }
+      await delay(20);
+    }
+  } finally {
+    await fixture.control.query('ROLLBACK');
+  }
+  const [cancel] = await requests;
+  expect(contended).toBe(true);
   expect(cancel.status).toBe(201);
   expect(await fixture.db.order.findUnique({ where: { id: order.id } })).toMatchObject({ status: 'CANCELLED' });
   expect(await fixture.db.offer.findUnique({ where: { id: offer.id } })).toMatchObject({ stockOnHand: offer.stockOnHand });
