@@ -32,7 +32,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | DONE |
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | DONE |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
-| 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | BLOCKED |
+| 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | IN_PROGRESS |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | BLOCKED |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | BLOCKED |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | BLOCKED |
@@ -3068,7 +3068,7 @@ DoR em 2026-11-04. Dependências 020/021/022/023 DONE com testes verificados e b
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -3136,7 +3136,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR em 2026-11-04. Autorização explícita de continuidade até TASK-028. TASK-024 DONE e publicada em 06184bb. ADR-003/004 aceitos. Contratos API-014.01/.03/.04 e regras RF-014/RN-039 conferidos. BLOCKED → READY → IN_PROGRESS na branch feature/TASK-025-cancellations. Escopo PRIMARY: cancelamento, estorno, ajuste de cobrança, estoque, mensagens, persistência, contratos e testes próprios. Composição e configuração de teste somente quando necessárias ao registro e execução. Devolução e UI seguem tarefas posteriores.
 
 ### TASK-026 Implementar devoluções, inspeção e evidências
 
