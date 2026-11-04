@@ -30,7 +30,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | DONE |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | DONE |
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | DONE |
-| 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | BLOCKED |
+| 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | IN_PROGRESS |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | BLOCKED |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | BLOCKED |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | BLOCKED |
@@ -2919,7 +2919,7 @@ Scope Guard final: 36 arquivos PRIMARY nos módulos, contratos, documentação, 
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -2956,6 +2956,10 @@ Conectar pedidos reais às avaliações, limite de pendentes e guardas do catál
 - tests/concurrency/commerce/**
 - TASKS.md — somente estado/evidência desta TASK e prontidão comprovada de dependentes
 
+DoR 2026-11-04. Dependências 012/013/016/018/019/020/021/022 DONE. Base 333020f enviada ao GitHub, com 126 unitários, 16 integrações de ciclo e regressões de compra verificadas. ADR-003/004/005 aceitos e nenhum PD impeditivo neste incremento. A composição usa as reservas e pedidos do banco. Compra entregue exige unidade entregue e mantida do pedido e edição informados. A contagem de pendentes já implementada segue como fonte real. A disponibilidade pública considera somente reservas vigentes. Liberação ou expiração deve produzir transição durável de disponibilidade quando aplicável, inclusive em encerramento de conta. Reposição em devolução fica no incremento de pós-venda.
+
+Delimitação PRIMARY para a integração aprovada. app.ts compõe os dois adaptadores. engagement/availability.ts, inventory/service.ts, checkout/lifecycle.ts e checkout/service.ts, orders/expiry.ts e orders/account-lifecycle.ts recebem somente a medição e publicação de disponibilidade no commit que libera reservas. Checkout substituído mede o estado final para evitar alerta de disponibilidade intermediária. O fixture compartilhado de contas aceita somente os schemas explicitamente autorizados para 022 e 023. Os testes de indisponibilidade dos adaptadores legados mantêm cobertura por injeção explícita. Runner e comando de integração próprios são incidentais de execução isolada. Nenhuma migration ou mudança no protocolo de pagamento.
+
 #### Incidental Changes Policy
 
 MINIMAL_DIRECTLY_CAUSED_CHANGES_ALLOWED
@@ -2983,7 +2987,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+Branch feature/TASK-023-integracao-comercial. BLOCKED → READY → IN_PROGRESS após DoR. Gates próprios pendentes.
 
 ### TASK-024 Checkpoint PHASE-03
 
