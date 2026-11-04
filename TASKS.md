@@ -35,7 +35,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
-| 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | IN_PROGRESS |
+| 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | DONE |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | BLOCKED |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | BLOCKED |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | BLOCKED |
@@ -3310,7 +3310,7 @@ Scope Guard e DoD PASS. PRIMARY em persistência de trocas, serviço, contratos,
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3374,6 +3374,14 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 DoR em 2026-11-04. TASK-025/026/027 DONE com evidências. Base main 313f1af publicada. ADR-001/002 aceitos e contratos RF-014/015/016 conferidos. BLOCKED → READY → IN_PROGRESS em feature/TASK-028-aftersales-clients. PRIMARY em interfaces e E2E de pós-venda. Incidental restrito à montagem na tela de pedidos, ao transporte de evidência autenticado e ao seletor nativo compatível com Expo SDK 57.
+
+Fechamento em 2026-11-04. Interfaces ligadas aos detalhes do pedido. Cliente solicita cancelamento, devolução e troca por unidade, acompanha etapas, frete e estorno, envia evidências privadas e responde ao substituto. Equipe opera na web, registra indisponibilidade, postagem e resposta por contato externo de conta restrita, inspeção, substitutos e remessas. Controles de estorno e exceção aparecem somente para ADMIN. Evidência via HTTPS autenticado com o mesmo guard do atendimento. Expo SDK 57 usa seletor de fotos sem permissões adicionais de câmera ou microfone.
+
+Gates 01 a 08 PASS no recorte da tarefa. Build, tipos, lint e 126 unitários em verify.log no commit 6adf29b. Em 38aef9a, tipos, lint e seis jornadas Firefox aprovadas em browser.log, saída 0. Três de pós-venda: cancelamento com estorno, evidência e operação externa por e-mail com conta bloqueada e estorno falho visível, troca com upload e aceite via componentes React Native Web. Três regressões de histórico: logística, boleto no cliente móvel e conflito de revisão. Em platform.log, saída 0, integrações de devolução 5, troca 4 e cancelamento 6, auditoria de toolchain e bundles Android 654 módulos e iOS 656. Auditoria bruta preserva sete alertas baixos. Sem teste em aparelho físico ou leitor de tela. WSL, Node 24.22.1, PostgreSQL 17 isolado, HTTPS com CA de testes.
+
+As falhas de preparação com 429 em verify.log e de sincronização do seletor móvel em recheck.log foram corrigidas nos testes em e33aba5 e 38aef9a. A autenticação real e o limite de acesso foram preservados. A jornada móvel passou isoladamente em native.log e novamente na suíte completa. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE.
+
+Scope Guard e DoD PASS. PRIMARY em interfaces de pós-venda, suas jornadas e TASKS.md. INCIDENTAL: três pontos de montagem em pedidos, dois clientes de conta com transporte binário no mesmo fluxo autenticado, app.json para permissão de fotos, package.json e lockfile para seletor/arquivo compatíveis com SDK 57, e fixture HTTP que propaga Idempotency-Key sob demanda. Revisão React e verificação ponta a ponta concluídas. Nenhuma migration nesta tarefa. 28/37 concluídas (75,7%). Próxima candidata TASK-029, fora da execução autorizada até 028.
 
 ### TASK-029 Implementar relatórios financeiros e comerciais
 
