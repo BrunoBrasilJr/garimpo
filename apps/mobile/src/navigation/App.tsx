@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { AccountView } from '@garimpo/contracts';
 import { deviceClient } from '../features/account/device';
-import { MobileError, errorMessage } from '../features/account/client';
+import { MobileAccountClient, MobileError, errorMessage } from '../features/account/client';
 import { AccountForm } from '../features/account/Form';
 import type { MobileField } from '../features/account/Form';
 import Catalog from '../features/catalog/Catalog';
@@ -13,9 +13,10 @@ import { Cart } from '../features/cart/Cart';
 import { AddToCart } from '../features/cart/Add';
 import { MergeNotice } from '../features/cart/MergeNotice';
 import { Checkout } from '../features/checkout/Checkout';
+import { Closure } from '../features/account/Closure';
 import { Orders } from '../features/orders/Orders';
 
-type Screen = 'login' | 'register' | 'reset' | 'confirm' | 'change-confirm' | 'profile' | 'addresses' | 'catalog' | 'saved' | 'cart' | 'checkout' | 'payments' | 'orders';
+type Screen = 'login' | 'register' | 'reset' | 'confirm' | 'change-confirm' | 'profile' | 'addresses' | 'catalog' | 'saved' | 'cart' | 'checkout' | 'payments' | 'orders' | 'reactivation';
 interface Address { id: string; recipient: string; zip: string; region: string; city: string; neighborhood: string; street: string; number: string; complement?: string | null }
 const email: MobileField = { name: 'email', label: 'E-mail', email: true };
 const password: MobileField = { name: 'password', label: 'Senha', secret: true };
@@ -29,8 +30,8 @@ function linkToken(value: string) {
 function Button({ title, onPress }: { title: string; onPress: () => void }) {
   return <Pressable accessibilityRole="button" style={styles.link} onPress={onPress}><Text style={styles.linkText}>{title}</Text></Pressable>;
 }
-export default function App() {
-  const [client] = useState(() => { try { return deviceClient(); } catch { return null; } });
+export default function App({ clientFactory = deviceClient }: { clientFactory?: () => MobileAccountClient } = {}) {
+  const [client] = useState(() => { try { return clientFactory(); } catch { return null; } });
   const [user, setUser] = useState<AccountView | null>(null), [screen, setScreen] = useState<Screen>('login'), [notice, setNotice] = useState(''), [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState<Address[]>([]), [editing, setEditing] = useState<Address | null>(null), [deleteId, setDeleteId] = useState('');
   const [exitFailed, setExitFailed] = useState(false);
@@ -83,6 +84,11 @@ export default function App() {
     if (screen === 'register') return <AccountForm {...formProps} title="Crie sua conta" fields={[{ name: 'name', label: 'Nome completo' }, email, { ...password, newPassword: true }]} submit="Criar conta" onSubmit={async values => {
       await call('/auth/register', 'POST', values, false); setNotice('Conta criada! Confirme seu e-mail pelo link recebido e entre para continuar.'); setScreen('login');
     }} />;
+    if (screen === 'reactivation') return <>
+      <AccountForm {...formProps} title="Reativar minha conta" fields={[email]} submit="Pedir link de reativação" onSubmit={async values => { const result = await call<{ message: string }>('/auth/reactivation', 'POST', values, false); setNotice(result.message); }} />
+      <AccountForm {...formProps} title="Confirmar reativação" fields={[code]} submit="Reativar conta pelo link" onSubmit={async values => { const result = await call<{ message: string }>('/auth/reactivation/confirm', 'POST', { token: linkToken(values.token ?? '') }, false); epoch.current++; setUser(null); setScreen('login'); setNotice(result.message); }} />
+      <Text allowFontScaling style={styles.body}>Use o e-mail cadastrado. Reativação atende contas encerradas voluntariamente e não remove bloqueio administrativo.</Text>
+    </>;
     if (screen === 'reset') return <>
       <AccountForm {...formProps} title="Recuperar acesso" fields={[email]} submit="Pedir link de recuperação" onSubmit={async values => {
         const result = await call<{ message: string }>('/auth/password-reset', 'POST', values, false); setNotice(result.message);
@@ -101,7 +107,8 @@ export default function App() {
       }} />
       {screen === 'confirm' ? <><AccountForm {...formProps} title="Receber outro link" fields={[email]} submit="Reenviar confirmação" onSubmit={async values => {
         const result = await call<{ message: string }>('/auth/email-verification', 'POST', values, false); setNotice(result.message);
-      }} /><Button title="Confirmar alteração de e-mail" onPress={() => setScreen('change-confirm')} /></> : null}
+      }} /><Button title="Confirmar alteração de e-mail" onPress={() => setScreen('change-confirm')} />
+      </> : null}
     </>;
     if (user && screen === 'addresses') return <>
       <View style={styles.card}><Text style={styles.subtitle} accessibilityRole="header">Seus endereços</Text>
@@ -132,11 +139,12 @@ export default function App() {
       <AccountForm {...formProps} key={user.name} title="Como podemos chamar você?" fields={[{ name: 'name', label: 'Nome completo', value: user.name }]} submit="Salvar nome" onSubmit={async values => { setUser(await call<AccountView>('/me', 'PATCH', values)); setNotice('Nome atualizado.'); }} />
       <AccountForm {...formProps} title="Alterar e-mail" fields={[{ ...email, label: 'Novo e-mail' }]} submit="Enviar confirmação" onSubmit={async values => { await call('/me/email-change', 'POST', values); setNotice('Confirme o novo endereço pelo link recebido. O e-mail atual continua válido até lá.'); }} />
       <Button title="Confirmar alteração de e-mail" onPress={() => setScreen('change-confirm')} />
+      {client ? <Closure key={user.id} user={user} client={client} closed={(message, cleanupFailed) => { epoch.current++; setUser(null); setCartReady(''); setAddresses([]); setEditing(null); setScreen('login'); setNotice(message); setExitFailed(cleanupFailed); }} /> : null}
     </>;
     return <><AccountForm {...formProps} title="Bom te ver de novo" fields={[email, password]} submit="Entrar" onSubmit={async values => {
       if (!client) throw new MobileError(0, {}, 'A conexão segura está indisponível. Tente novamente em instantes.');
       setCartReady(''); setUser(await client.login(values.email ?? '', values.password ?? '')); setLoginEpoch(value => value + 1); setScreen('profile'); setNotice('Você entrou na sua conta.');
-    }} /><Button title="Esqueci minha senha" onPress={() => setScreen('reset')} /></>;
+    }} /><Button title="Esqueci minha senha" onPress={() => setScreen('reset')} /><Button title="Quero reativar minha conta" onPress={() => setScreen('reactivation')} /></>;
   }
   return <SafeAreaView style={styles.screen}><StatusBar style="dark" /><KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">

@@ -83,4 +83,11 @@ export class MobileAccountClient {
     finally { this.ending = false; }
     if (failure) throw failure;
   }
+  /** Only after /me/closure confirmed revocation; no logout request with revoked credentials. */
+  async forgetClosedAccount() {
+    this.ending = true;
+    try { await this.renewing?.catch(() => {}); this.access = ''; this.pendingLogout = ''; await this.store.clear(); }
+    catch { throw new MobileError(0, {}, 'A conta foi encerrada, mas não foi possível remover o acesso seguro deste aparelho. Tente limpar a saída novamente.'); }
+    finally { this.access = ''; this.ending = false; }
+  }
 }
