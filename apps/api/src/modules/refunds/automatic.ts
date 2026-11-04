@@ -11,11 +11,12 @@ import { AccountError } from '../accounts/errors.ts';
 import { CartError, missing } from '../cart/errors.ts';
 import { cents } from '../orders/service.ts';
 import { payloadHash } from '../../core/idempotency.ts';
+import { lockIdentities } from '../accounts/blocking-helpers.ts';
 export const refundInclude = { attempts: { orderBy: [{ createdAt: 'asc' }, { id: 'asc' }] } } satisfies Prisma.RefundInclude;
 export function refundView(row: Prisma.RefundGetPayload<{ include: typeof refundInclude }>): RefundView {
   return { id: row.id, status: row.status, origin: row.origin, productCents: cents(row.productCents), shippingCents: row.shippingCents, createdAt: row.createdAt.toISOString(), completedAt: row.completedAt?.toISOString() ?? null, attempts: row.attempts.map(a => ({ id: a.id, result: a.result, createdAt: a.createdAt.toISOString(), receivedAt: a.receivedAt?.toISOString() ?? null })) };
 }
-/** Automatic payment obligations only. No post-sale approval or customer retry authority. */
+/** Executes automatic payment and cancellation obligations. Post-sale approval is separate. */
 export class AutomaticRefunds {
   readonly accounts: Accounts; readonly gateway: PaymentGateway;
   constructor(accounts: Accounts, gateway: PaymentGateway) { this.accounts = accounts; this.gateway = gateway; }
@@ -27,21 +28,22 @@ export class AutomaticRefunds {
     await enqueue(tx, { type: 'REFUND.PENDING', aggregateId: row.id, payload: { refundId: row.id, userId: attempt.userId, orderId: attempt.orderId } }, clock); return row;
   }
   async admin(tx: Prisma.TransactionClient | Accounts['db'], access: string) { const { user } = await this.accounts.authorize(tx, access); if (user.context !== 'STAFF' || user.role !== 'ADMIN') throw new AccountError(403, 'ADMIN_REQUIRED'); return user; }
-  async run(id: string, key: string, scenario?: 'SUCCEEDED' | 'FAILED', access?: string): Promise<RefundView> {
+  async run(id: string, key: string, scenario?: 'SUCCEEDED' | 'FAILED', access?: string, reason?: string): Promise<RefundView> {
+    if (access !== undefined) await this.admin(this.accounts.db, access);
     const first = await this.accounts.db.refund.findUnique({ where: { id }, include: { paymentAttempt: true } }); if (!first) throw missing();
     const prepared = await serializable(this.accounts.db, async tx => {
-      const actor = access ? await this.admin(tx, access) : null;
-      await tx.$queryRaw`UPDATE "User" SET "updatedAt"="updatedAt" WHERE id=${first.paymentAttempt.userId}::uuid RETURNING id`;
-      if (access) await this.admin(tx, access);
+      const actor = access === undefined ? null : await this.admin(tx, access);
+      await lockIdentities(tx, actor ? [first.paymentAttempt.userId, actor.id] : [first.paymentAttempt.userId]);
+      if (access !== undefined) await this.admin(tx, access);
       const row = await tx.refund.findUniqueOrThrow({ where: { id }, include: { paymentAttempt: true } });
-      if (row.origin !== 'AUTOMATIC_PAYMENT') throw new AccountError(403, 'POST_SALE_AUTHORIZATION_REQUIRED');
+      if (!['AUTOMATIC_PAYMENT', 'AUTOMATIC_CANCELLATION'].includes(row.origin)) throw new AccountError(403, 'POST_SALE_AUTHORIZATION_REQUIRED');
       const attemptKey = 'REFUND:' + payloadHash({ id, key, actor: actor?.id ?? 'SYSTEM' });
       const replay = await tx.refundAttempt.findUnique({ where: { attemptKey } });
-      if (replay) { if (scenario && replay.scenario !== scenario) throw new CartError(409, 'IDEMPOTENCY_CONFLICT', 'Esta repetição já foi usada com outros dados.'); return replay; }
+      if (replay) { if ((scenario && replay.scenario !== scenario) || replay.reason !== (reason ?? null)) throw new CartError(409, 'IDEMPOTENCY_CONFLICT', 'Esta repetição já foi usada com outros dados.'); return replay; }
       if (row.status === 'SUCCEEDED') return null;
       // Reuse a durable unfinished provider request, including a successful receipt not applied after a crash.
       const unfinished = await tx.refundAttempt.findFirst({ where: { refundId: id, appliedAt: null } }); if (unfinished) return unfinished;
-      return tx.refundAttempt.create({ data: { refundId: id, attemptKey, actorId: actor?.id ?? null, scenario: scenario ?? (row.paymentAttempt.scenario === 'APPROVED_REFUND_FAIL' ? 'FAILED' : 'SUCCEEDED'), createdAt: this.accounts.clock.now() } });
+      return tx.refundAttempt.create({ data: { refundId: id, attemptKey, actorId: actor?.id ?? null, reason: reason ?? null, scenario: scenario ?? (actor && reason ? 'SUCCEEDED' : row.paymentAttempt.scenario === 'APPROVED_REFUND_FAIL' ? 'FAILED' : 'SUCCEEDED'), createdAt: this.accounts.clock.now() } });
     });
     if (prepared) {
       await this.gateway.refund(prepared.id);
@@ -55,7 +57,7 @@ export class AutomaticRefunds {
           const sold = await tx.financialEvent.count({ where: { paymentAttemptId: first.paymentAttemptId, type: 'SALE' } });
           await tx.financialEvent.create({ data: { orderId: row.orderId, paymentAttemptId: row.paymentAttemptId, refundId: id, type: sold ? 'REFUND' : 'LATE_REFUND', productCents: row.productCents, shippingCents: row.shippingCents, occurredAt: attempt.receivedAt!, eventKey: 'REFUND:' + id } });
         }
-        await appendAudit(tx, { ...(attempt.actorId ? { actorId: attempt.actorId } : {}), action: 'REFUND.' + attempt.result, targetType: 'REFUND', targetId: id, result: attempt.result === 'SUCCEEDED' ? 'SUCCESS' : 'FAILURE', reason: 'LOCAL_SIMULATOR_AUTOMATIC_REFUND', changes: { attemptId: attempt.id } }, this.accounts.clock);
+        await appendAudit(tx, { ...(attempt.actorId ? { actorId: attempt.actorId } : {}), action: 'REFUND.' + attempt.result, targetType: 'REFUND', targetId: id, result: attempt.result === 'SUCCEEDED' ? 'SUCCESS' : 'FAILURE', reason: attempt.reason ?? 'LOCAL_SIMULATOR_AUTOMATIC_REFUND', changes: { attemptId: attempt.id } }, this.accounts.clock);
         await enqueue(tx, { type: 'REFUND.' + attempt.result, aggregateId: id, payload: { refundId: id, userId: first.paymentAttempt.userId, orderId: row.orderId } }, this.accounts.clock);
       });
     }

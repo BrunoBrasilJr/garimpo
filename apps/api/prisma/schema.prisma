@@ -243,6 +243,7 @@ model User {
   couponUsages    CouponUsage[]
   reviewRevisions ReviewRevision[]
   orders          Order[]
+  cancellations   CancellationRequest[]
   paymentAttempts PaymentAttempt[]
   refundAttempts RefundAttempt[]
   orderStatusEvents OrderStatusEvent[]
@@ -733,6 +734,7 @@ model Order {
   refunds Refund[]
   financialEvents FinancialEvent[]
   statusEvents OrderStatusEvent[]
+  cancellations CancellationRequest[]
   shipments Shipment[]
   @@index([userId, status, expiresAt])
   @@index([status, expiresAt, id])
@@ -770,6 +772,26 @@ model OrderUnit {
   @@index([currentOfferId])
 }
 
+model CancellationRequest {
+  id String @id @db.Uuid
+  orderId String @db.Uuid
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  actorId String @db.Uuid
+  actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  kind String @db.VarChar(20)
+  reason String @db.VarChar(500)
+  unitIds String[] @db.Uuid
+  unavailableUnitIds String[] @db.Uuid
+  orderVersion Int
+  orderStatus OrderStatus
+  refundId String? @db.Uuid
+  refund Refund? @relation(fields: [refundId], references: [id], onDelete: Restrict)
+  replacementChargeId String? @db.Uuid
+  replacementCharge PaymentCharge? @relation(fields: [replacementChargeId], references: [id], onDelete: Restrict)
+  createdAt DateTime @db.Timestamptz(3)
+  @@index([orderId, createdAt])
+}
+
 model PaymentCharge {
   id String @id @default(uuid()) @db.Uuid
   orderId String @db.Uuid
@@ -784,6 +806,7 @@ model PaymentCharge {
   supersedesId String? @unique @db.Uuid
   supersedes PaymentCharge? @relation("ChargeReplacement", fields: [supersedesId], references: [id], onDelete: Restrict)
   replacement PaymentCharge? @relation("ChargeReplacement")
+  cancellations CancellationRequest[]
   paymentAttempts PaymentAttempt[]
   @@index([orderId])
   @@index([status, expiresAt])
@@ -842,6 +865,7 @@ model Refund {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   completedAt DateTime? @db.Timestamptz(3)
   attempts RefundAttempt[]
+  cancellations CancellationRequest[]
   financialEvents FinancialEvent[]
   @@index([paymentAttemptId])
   @@index([orderId])
@@ -855,6 +879,7 @@ model RefundAttempt {
   actorId String? @db.Uuid
   actor User? @relation(fields: [actorId], references: [id], onDelete: Restrict)
   scenario String @db.VarChar(30)
+  reason String? @db.VarChar(500)
   result RefundStatus @default(PENDING)
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   receivedAt DateTime? @db.Timestamptz(3)

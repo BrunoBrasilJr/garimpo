@@ -27,7 +27,7 @@ export function createApp(accounts?: AccountsOptions, messaging?: MessagingOptio
     response.json(body);
   });
   app.use('/api/v1', createAccountLifecycleRouter(accounts, messaging));
-  app.use('/api/v1', createOrderHistoryRouter(accounts));
+  app.use('/api/v1', createOrderHistoryRouter(accounts, payments?.gateway));
   app.use('/api/v1', createPaymentsRouter({ ...accounts, ...payments }));
   app.use('/api/v1', createFreightOrderRouter({ ...accounts, ...checkout }));
   app.use('/api/v1', createCartRouter({ ...accounts, ...checkout }));

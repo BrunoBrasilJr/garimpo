@@ -10,8 +10,13 @@ import { publicError } from '../../core/errors.ts';
 import { CartError } from '../cart/errors.ts';
 import { OrderHistory } from './history.ts';
 import { Logistics } from './logistics.ts';
+import { Cancellations } from '../aftersales/cancellations/service.ts';
+import * as cancellationInput from '../aftersales/cancellations/validation.ts';
+import { AutomaticRefunds } from '../refunds/automatic.ts';
+import { LocalGateway } from '../payments/gateway.ts';
+import type { PaymentGateway } from '../payments/gateway.ts';
 import * as input from './history-validation.ts';
-const prefix = /^\/(?:me\/orders(?:\/|$)|admin\/orders(?:\/|$))/;
+const prefix = /^\/(?:me\/orders(?:\/|$)|admin\/orders(?:\/|$)|orders\/[^/]+\/cancellations\/?$|admin\/refunds\/[^/]+\/retry\/?$)/;
 const empty = z.object({}).strict();
 function cookies(request: Request) {
   const values = new Map<string, string>();
@@ -23,9 +28,10 @@ function cookies(request: Request) {
 }
 const mobile = (request: Request) => request.get('x-garimpo-client') === 'mobile';
 const access = (request: Request) => mobile(request) ? /^Bearer ([\w-]{43})$/.exec(request.get('authorization') ?? '')?.[1] ?? '' : cookies(request).get('__Host-garimpo-access') ?? '';
-export function createOrderHistoryRouter(options: AccountsOptions = {}) {
+export function createOrderHistoryRouter(options: AccountsOptions = {}, gateway?: PaymentGateway) {
   const router = express.Router(), db = options.db ?? (process.env.DATABASE_URL ? createDatabase(process.env.DATABASE_URL) : undefined), accounts = db ? new Accounts(db, options.clock, options.policy) : undefined;
   const service = () => { if (!accounts) throw new CartError(503, 'DATABASE_UNAVAILABLE', 'O histórico de pedidos está temporariamente indisponível.'); return accounts; };
+  const refunds = () => new AutomaticRefunds(service(), gateway ?? new LocalGateway(service().db, service().clock));
   const origin = options.webOrigin ?? process.env.WEB_ORIGIN ?? 'https://localhost:5173';
   if (new URL(origin).protocol !== 'https:' || new URL(origin).origin !== origin) throw new Error('WEB_ORIGIN must be an exact HTTPS origin.');
   async function customer(request: Request) {
@@ -41,11 +47,12 @@ export function createOrderHistoryRouter(options: AccountsOptions = {}) {
     res.set('Cache-Control', 'no-store'); res.set('X-Content-Type-Options', 'nosniff'); if (!req.secure) throw new AccountError(403, 'HTTPS_REQUIRED');
     const supplied = req.get('origin'); if (supplied && supplied !== origin) throw new AccountError(403, 'ORIGIN_INVALID');
     if (supplied) { res.set('Access-Control-Allow-Origin', origin); res.set('Access-Control-Allow-Credentials', 'true'); res.vary('Origin'); }
-    if (req.method === 'OPTIONS') { if (supplied !== origin) throw new AccountError(403, 'ORIGIN_INVALID'); res.set('Access-Control-Allow-Methods', 'GET,PATCH,OPTIONS'); res.set('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-CSRF-Token,X-Garimpo-Client,Idempotency-Key,X-Garimpo-Account'); res.sendStatus(204); return; }
+    if (req.method === 'OPTIONS') { if (supplied !== origin) throw new AccountError(403, 'ORIGIN_INVALID'); res.set('Access-Control-Allow-Methods', 'GET,POST,PATCH,OPTIONS'); res.set('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-CSRF-Token,X-Garimpo-Client,Idempotency-Key,X-Garimpo-Account'); res.sendStatus(204); return; }
     if (req.get('x-garimpo-client') && !mobile(req)) throw new AccountError(422, 'INVALID_CLIENT'); const values = cookies(req);
     if (mobile(req) && values.size || !mobile(req) && req.get('authorization')) throw new AccountError(422, 'AMBIGUOUS_CREDENTIALS');
     if (req.path.startsWith('/admin/')) {
       if (mobile(req)) throw new AccountError(403, 'STAFF_WEB_ONLY'); const actor = await new OrderHistory(service()).staff(service().db, access(req));
+      if (req.path.startsWith('/admin/refunds/') && actor.role !== 'ADMIN') throw new AccountError(403, 'ADMIN_REQUIRED');
       const expected = req.get('x-garimpo-account'); if (expected && input.parse(input.id, expected) !== actor.id) throw new CartError(403, 'ACCOUNT_CONTEXT_CHANGED', 'Sua conta interna mudou. Atualize seu acesso antes de continuar.');
       if (!['GET', 'HEAD'].includes(req.method)) { if (supplied !== origin) throw new AccountError(403, 'ORIGIN_REQUIRED'); const proof = req.get('x-csrf-token') ?? ''; if (!proof || proof !== values.get('__Host-garimpo-csrf')) throw new AccountError(403, 'CSRF_INVALID'); await service().csrf(access(req), proof); }
     } else await customer(req);
@@ -57,6 +64,20 @@ export function createOrderHistoryRouter(options: AccountsOptions = {}) {
   router.get('/admin/orders', async (req, res) => { res.json(await new OrderHistory(service()).list(access(req), input.parse(input.staffList, req.query), true)); });
   router.get('/admin/orders/:id', async (req, res) => { res.json(await new OrderHistory(service()).detail(access(req), input.parse(input.id, req.params.id), input.parse(input.detail, req.query), true)); });
   router.patch('/admin/orders/:id/status', async (req, res) => { input.parse(empty, req.query); res.json(await new Logistics(service()).change(access(req), input.parse(input.id, req.params.id), input.parse(input.logistics, req.body), input.parse(input.key, req.get('idempotency-key')))); });
+  router.post('/orders/:id/cancellations', async (req, res) => {
+    input.parse(empty, req.query);
+    const result = await new Cancellations(service(), refunds()).apply(access(req), input.parse(input.id, req.params.id), input.parse(cancellationInput.direct, req.body), input.parse(input.key, req.get('idempotency-key')));
+    res.status(201).json(result);
+  });
+  router.post('/admin/orders/:id/unavailable-units', async (req, res) => {
+    input.parse(empty, req.query);
+    res.json(await new Cancellations(service(), refunds()).apply(access(req), input.parse(input.id, req.params.id), input.parse(cancellationInput.unavailable, req.body), input.parse(input.key, req.get('idempotency-key'))));
+  });
+  router.post('/admin/refunds/:id/retry', async (req, res) => {
+    input.parse(empty, req.query);
+    const body = input.parse(cancellationInput.retry, req.body);
+    res.json(await refunds().run(input.parse(input.id, req.params.id), input.parse(input.key, req.get('idempotency-key')), body.scenario, access(req), body.reason));
+  });
   const errors: ErrorRequestHandler = (error: unknown, _req, res, _next) => {
     void _next; const correlationId = randomUUID();
     if (error instanceof AccountError || error instanceof CartError) { res.status(error.status).json({ code: error.code, message: error.message, fieldErrors: error instanceof AccountError ? error.fieldErrors : {}, correlationId }); return; }
