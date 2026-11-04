@@ -36,7 +36,9 @@ export class AutomaticRefunds {
       await lockIdentities(tx, actor ? [first.paymentAttempt.userId, actor.id] : [first.paymentAttempt.userId]);
       if (access !== undefined) await this.admin(tx, access);
       const row = await tx.refund.findUniqueOrThrow({ where: { id }, include: { paymentAttempt: true } });
-      if (!['AUTOMATIC_PAYMENT', 'AUTOMATIC_CANCELLATION'].includes(row.origin)) throw new AccountError(403, 'POST_SALE_AUTHORIZATION_REQUIRED');
+      const authorizedReturn = row.origin === 'POST_SALE_RETURN' && actor && reason
+        && await tx.returnRequest.findFirst({ where: { refundId: id, state: 'COMPLETED', refundAuthorizedAt: { not: null } }, select: { id: true } });
+      if (!['AUTOMATIC_PAYMENT', 'AUTOMATIC_CANCELLATION'].includes(row.origin) && !authorizedReturn) throw new AccountError(403, 'POST_SALE_AUTHORIZATION_REQUIRED');
       const command = actor && reason ? { actorScope: actor.id, operation: 'REFUND.RETRY', key } : null;
       const requestHash = payloadHash({ id, scenario: scenario ?? null, reason: reason ?? null });
       if (command) {

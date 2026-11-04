@@ -14,6 +14,7 @@ import { createFreightOrderRouter } from './modules/freight/router.ts';
 import { createPaymentsRouter } from './modules/payments/router.ts';
 import type { PaymentOptions } from './modules/payments/router.ts';
 import { createOrderHistoryRouter } from './modules/orders/router.ts';
+import { createReturnsRouter } from './modules/aftersales/returns/router.ts';
 import { createAccountLifecycleRouter } from './modules/accounts/blocking-router.ts';
 import { systemClock } from './core/clock.ts';
 import { commercialBindings } from './composition/commercial.ts';
@@ -27,6 +28,7 @@ export function createApp(accounts?: AccountsOptions, messaging?: MessagingOptio
     response.json(body);
   });
   app.use('/api/v1', createAccountLifecycleRouter(accounts, messaging));
+  app.use('/api/v1', createReturnsRouter(accounts, payments?.gateway));
   app.use('/api/v1', createOrderHistoryRouter(accounts, payments?.gateway));
   app.use('/api/v1', createPaymentsRouter({ ...accounts, ...payments }));
   app.use('/api/v1', createFreightOrderRouter({ ...accounts, ...checkout }));

@@ -24,3 +24,4 @@ export type { PurchaseIntent, OrderIntent, PurchaseJournalState, PurchaseStorage
 export type { OrderStage, LogisticsStage, OriginalShipmentView, OrderStageEvent, OrderCustomer, OrderSummary, OrderPage, OrderPayment, HistoryPage, OrderDetail, LogisticsCommand, ShipmentMessageContent } from './orders/index.js';
 export { ORIGINAL_LOGISTICS_NEXT } from './orders/index.js';
 export type { CancellationResult } from './aftersales/cancellations.js';
+export type { ReturnState, ReturnView } from './aftersales/returns.js';

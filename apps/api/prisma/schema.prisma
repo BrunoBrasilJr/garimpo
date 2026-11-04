@@ -244,6 +244,8 @@ model User {
   reviewRevisions ReviewRevision[]
   orders          Order[]
   cancellations   CancellationRequest[]
+  returnEvidence  Evidence[]
+  externalInteractions ExternalInteraction[]
   paymentAttempts PaymentAttempt[]
   refundAttempts RefundAttempt[]
   orderStatusEvents OrderStatusEvent[]
@@ -736,6 +738,7 @@ model Order {
   statusEvents OrderStatusEvent[]
   cancellations CancellationRequest[]
   shipments Shipment[]
+  returns ReturnRequest[]
   @@index([userId, status, expiresAt])
   @@index([status, expiresAt, id])
 }
@@ -768,8 +771,82 @@ model OrderUnit {
   currentOfferId String @db.Uuid
   currentOffer Offer @relation(fields: [currentOfferId], references: [id], onDelete: Restrict)
   deliveredAt DateTime? @db.Timestamptz(3)
+  returnItems ReturnItem[]
   @@unique([orderItemId, logicalIndex])
   @@index([currentOfferId])
+}
+
+enum ReturnState {
+  REQUESTED
+  AWAITING_POSTING
+  IN_TRANSIT
+  AWAITING_REFUND
+  REJECTED
+  REJECTED_AWAITING_SHIPMENT
+  REJECTED_IN_TRANSIT
+  REJECTED_DELIVERED
+  COMPLETED
+  EXPIRED
+}
+
+model ReturnRequest {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String @db.Uuid
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  state ReturnState @default(REQUESTED)
+  reason String @db.VarChar(500)
+  version Int @default(1)
+  createdAt DateTime @db.Timestamptz(3)
+  approvedAt DateTime? @db.Timestamptz(3)
+  postingDueAt DateTime? @db.Timestamptz(3)
+  inspectedAt DateTime? @db.Timestamptz(3)
+  refundAuthorizedAt DateTime? @db.Timestamptz(3)
+  refundId String? @unique @db.Uuid
+  refund Refund? @relation(fields: [refundId], references: [id], onDelete: Restrict)
+  items ReturnItem[]
+  shipments Shipment[]
+  evidence Evidence[]
+  interactions ExternalInteraction[]
+  @@index([orderId, createdAt])
+  @@index([state, postingDueAt])
+}
+
+model ReturnItem {
+  returnId String @db.Uuid
+  request ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  orderUnitId String @db.Uuid
+  orderUnit OrderUnit @relation(fields: [orderUnitId], references: [id], onDelete: Restrict)
+  active Boolean @default(true)
+  inspection String? @db.VarChar(24)
+  @@id([returnId, orderUnitId])
+  @@index([orderUnitId])
+}
+
+model Evidence {
+  id String @id @default(uuid()) @db.Uuid
+  returnId String @db.Uuid
+  request ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  actorId String @db.Uuid
+  actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  source String @db.VarChar(12)
+  position Int
+  mediaType String @db.VarChar(30)
+  content Bytes
+  createdAt DateTime @db.Timestamptz(3)
+  @@unique([returnId, source, position])
+}
+
+model ExternalInteraction {
+  id String @id @default(uuid()) @db.Uuid
+  returnId String @db.Uuid
+  request ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  actorId String @db.Uuid
+  actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  channel String @db.VarChar(30)
+  reference String @db.VarChar(500)
+  occurredAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @db.Timestamptz(3)
+  @@index([returnId])
 }
 
 model CancellationRequest {
@@ -866,6 +943,7 @@ model Refund {
   completedAt DateTime? @db.Timestamptz(3)
   attempts RefundAttempt[]
   cancellations CancellationRequest[]
+  returnRequest ReturnRequest?
   financialEvents FinancialEvent[]
   @@index([paymentAttemptId])
   @@index([orderId])
@@ -933,6 +1011,9 @@ model Shipment {
   createdById String @db.Uuid
   createdBy User @relation(fields: [createdById], references: [id], onDelete: Restrict)
   createdAt DateTime @default(now()) @db.Timestamptz(3)
+  returnId String? @db.Uuid
+  returnRequest ReturnRequest? @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  @@unique([returnId, kind])
   @@index([orderId])
   @@index([createdById])
 }
