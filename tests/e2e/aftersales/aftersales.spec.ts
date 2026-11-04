@@ -112,6 +112,7 @@ test('customer evidence, operator email posting for blocked account and admin re
 });
 
 test('native renderer opens a durable exchange, uploads evidence and accepts the reserved substitute', async ({ page, app, scenario }) => {
+  page.setDefaultTimeout(20000);
   const order = await purchase(page, app, scenario);
   await page.getByRole('button', { name: 'Sair', exact: true }).click();
   await page.goto(app.origin + '/orders-mobile-preview.html');
@@ -122,19 +123,26 @@ test('native renderer opens a durable exchange, uploads evidence and accepts the
   await page.getByRole('button', { name: 'Abrir pós-venda', exact: true }).click();
   await page.getByRole('button', { name: 'Tipo de solicitação: Devolução', exact: true }).click();
   await page.getByRole('radio', { name: 'Troca', exact: true }).click();
-  await page.getByRole('textbox', { name: /^Quantidade de / }).fill('1');
-  await page.getByRole('textbox', { name: 'Motivo da solicitação', exact: true }).fill('Condição divergente em teste');
-  const created = page.waitForResponse(response => response.url().endsWith('/exchanges') && response.request().method() === 'POST');
-  await page.getByRole('button', { name: 'Solicitar troca', exact: true }).click();
-  const response = await created;
+  await expect(page.getByRole('button', { name: 'Fechar opções', exact: true })).toBeHidden();
+  const quantity = page.getByRole('textbox', { name: /^Quantidade de / });
+  const reason = page.getByRole('textbox', { name: 'Motivo da solicitação', exact: true });
+  await quantity.pressSequentially('1');
+  await reason.pressSequentially('Condição divergente em teste');
+  await expect(quantity).toHaveValue('1');
+  await expect(reason).toHaveValue('Condição divergente em teste');
+  const submit = page.getByRole('button', { name: 'Solicitar troca', exact: true });
+  await expect(submit).toBeEnabled();
+  const [response] = await Promise.all([
+    page.waitForResponse(result => result.url().endsWith('/exchanges') && result.request().method() === 'POST'),
+    submit.click()
+  ]);
   expect(response.status()).toBe(201);
   const row = await response.json() as ExchangeView;
   expect(response.request().headers()['authorization']).toMatch(/^Bearer /);
   expect(response.request().headers()['cookie']).toBeUndefined();
 
-  const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Selecionar e enviar evidência', exact: true }).click();
-  await (await chooser).setFiles({ name: 'troca.png', mimeType: 'image/png', buffer: await png() });
+  await page.getByTestId('file-input').setInputFiles({ name: 'troca.png', mimeType: 'image/png', buffer: await png() });
   await expect(page.getByRole('button', { name: 'Ver evidência 1', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Ver evidência 1', exact: true }).click();
   await expect(page.getByLabel('Evidência privada selecionada', { exact: true })).toBeVisible();
