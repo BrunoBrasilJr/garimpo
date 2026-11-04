@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import type { AftersalesOverview, CatalogEdition, ExchangeView, ReturnView } from '@garimpo/contracts';
 import { Exchanges } from '../../../apps/api/src/modules/aftersales/exchanges/service.ts';
@@ -10,7 +11,7 @@ afterAll(async () => { await fixture?.close(); });
 const day = 86400000;
 const now = () => fixture.clock.now().toISOString();
 
-async function setup() {
+async function purchase() {
   await fixture.freshRoles();
   const buyer = await fixture.customer(), offer = await fixture.offer('NEW', 2);
   const held = await fixture.ready(buyer, { offer });
@@ -25,6 +26,10 @@ async function setup() {
   }
   const item = await fixture.db.orderItem.findFirstOrThrow({ where: { orderId: order.id } });
   const input = { reason: 'Condição divergente', items: [{ orderItemId: item.id, quantity: 1 }] };
+  return { order, offer, buyer, input };
+}
+async function setup() {
+  const { order, offer, buyer, input } = await purchase();
   const opened = await call('/orders/' + order.id + '/exchanges', input, buyer);
   expect(opened.status).toBe(201);
   const approved = await call('/admin/exchanges/' + opened.body.id + '/decision',
@@ -63,6 +68,11 @@ test('an offer on day 29 keeps all 48 hours, then converts without authorizing a
   const substitute = offered.substitutes[0]!;
   expect(Date.parse(substitute.expiresAt) - fixture.clock.now().getTime()).toBe(2 * day);
   expect((await fixture.server.call<CatalogEdition>('/editions/' + p.offer.editionId)).body.available).toBe(false);
+  const watcher = await fixture.customer();
+  const alert = await fixture.server.call<{ id: string }>('/me/availability-alerts', 'POST', {
+    editionId: p.offer.editionId, kind: 'ANY'
+  }, credentials(watcher));
+  expect(alert.status).toBe(201);
   fixture.advance(day);
   expect(await clock.reconcile()).toBe(0);
   expect(await fixture.db.exchangeRequest.findUnique({ where: { id: p.row.id } })).toMatchObject({ state: 'WAITING_SUBSTITUTE' });
@@ -75,6 +85,7 @@ test('an offer on day 29 keeps all 48 hours, then converts without authorizing a
   const linked = await fixture.server.call<ReturnView>('/admin/returns/' + converted.convertedReturnId, 'GET', undefined, credentials(fixture.operator));
   expect(linked).toMatchObject({ status: 200, body: { state: 'AWAITING_REFUND', refund: null } });
   expect((await fixture.server.call<CatalogEdition>('/editions/' + p.offer.editionId)).body.available).toBe(true);
+  expect((await fixture.db.availabilityAlert.findUniqueOrThrow({ where: { id: alert.body.id } })).triggerEventId).not.toBeNull();
   expect(await fixture.db.refund.count({ where: { orderId: p.order.id } })).toBe(0);
 });
 
@@ -124,4 +135,27 @@ test('posting expiration releases an accepted substitute and a rejected inspecti
       status: failure === 'POSTING_EXPIRED' ? 'EXPIRED' : 'RELEASED'
     });
   }
+});
+
+test('a return and an exchange contend for the same unit and only one can claim it', async () => {
+  const p = await purchase();
+  await fixture.control.query('BEGIN');
+  await fixture.control.query('SELECT id FROM "User" WHERE id=$1 FOR UPDATE', [p.buyer.user.id]);
+  const requests = Promise.all([
+    call('/orders/' + p.order.id + '/returns', p.input, p.buyer),
+    call('/orders/' + p.order.id + '/exchanges', p.input, p.buyer)
+  ]);
+  let contended = false;
+  try {
+    for (let attempt = 0; attempt < 150; attempt++) {
+      await fixture.control.query('SELECT pg_stat_clear_snapshot()');
+      const result = await fixture.control.query("SELECT count(*)::int AS total FROM pg_stat_activity WHERE application_name='TASK027_A' AND wait_event_type='Lock'");
+      if (result.rows[0].total >= 2) { contended = true; break; }
+      await delay(20);
+    }
+  } finally {
+    await fixture.control.query('ROLLBACK');
+  }
+  expect((await requests).map(result => result.status).sort()).toEqual([201, 409]);
+  expect(contended).toBe(true);
 });
