@@ -32,7 +32,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | DONE |
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | DONE |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
-| 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | IN_PROGRESS |
+| 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | BLOCKED |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | BLOCKED |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | BLOCKED |
@@ -3068,7 +3068,7 @@ DoR em 2026-11-04. Dependências 020/021/022/023 DONE com testes verificados e b
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3137,6 +3137,14 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 DoR em 2026-11-04. Autorização explícita de continuidade até TASK-028. TASK-024 DONE e publicada em 06184bb. ADR-003/004 aceitos. Contratos API-014.01/.03/.04 e regras RF-014/RN-039 conferidos. BLOCKED → READY → IN_PROGRESS na branch feature/TASK-025-cancellations. Escopo PRIMARY: cancelamento, estorno, ajuste de cobrança, estoque, mensagens, persistência, contratos e testes próprios. Composição e configuração de teste somente quando necessárias ao registro e execução. Devolução e UI seguem tarefas posteriores.
+
+Fechamento em 2026-11-04. O cliente pode cancelar antes da separação. A equipe registra unidades indisponíveis com revisão do pedido. A perda parcial preserva cupom e frete, substitui a cobrança pendente com o mesmo vencimento ou estorna somente o valor líquido das unidades afetadas. No vencimento exato, a perda pendente cancela o pedido todo e baixa somente o estoque indisponível. A confirmação da cobrança antiga gera estorno e não quita a nova. O último cancelamento pago estorna também o frete e libera o uso do cupom. Estorno falho continua visível, com nova tentativa idempotente por ADMIN.
+
+Gates 01 a 08 PASS. Build, tipos, lint, 126 unitários e 94 integrações passaram em final.log no commit 80831a9. Integrações: cancelamento 6, pagamentos 32, pedidos 18, comércio 6, ciclo de conta 16 e mensagens 16. Tipos, lint e os seis cenários de cancelamento passaram novamente em contention.log no commit 80d6935. As duas conexões PostgreSQL foram observadas esperando a trava da mesma conta. O npm audit bruto mantém sete alertas baixos. A política do toolchain passou. Ambiente WSL, Node 24.22.1 e PostgreSQL 17 com schemas isolados em garimpo_test.
+
+Falhas preservadas em verify.log e recheck.log. A primeira rodada encontrou sintaxe de construtor incompatível com a execução direta do Node, corrigida em 1d94d4d. A segunda rejeitou texto livre em código de auditoria. O commit 80831a9 usa códigos estáveis e conserva a justificativa no registro correspondente. IN_PROGRESS → FAILED → IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE.
+
+Escopo e DoD PASS. 13 arquivos PRIMARY em cancelamento, estoque, pedidos, estornos, mensagens, persistência, contratos, testes e TASKS.md. Cinco INCIDENTAL: apps/api/src/app.ts encaminha o gateway de teste, packages/contracts/src/index.ts exporta o novo tipo, package.json registra a suíte, tests/core/run-integration.mjs seleciona o schema e a configuração próprios, e tests/accounts/lifecycle/fixtures.ts admite o schema 025. Alterações proibidas e expansão de escopo ausentes. 25/37 concluídas. Próxima candidata TASK-026, com PD-009 ainda pendente.
 
 ### TASK-026 Implementar devoluções, inspeção e evidências
 
@@ -3211,7 +3219,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+Dependência TASK-025 concluída. BLOCKED por PD-009: o PDF (R03-P4) prevê estorno do frete original na devolução integral e distingue a devolução parcial. Falta decidir se solicitações parciais sucessivas que devolvem todas as unidades devem estornar o frete na última aprovação. A decisão afeta o rateio e os testes de estorno. TASK-027 e TASK-028 aguardam essa dependência. Branch: N/A. Implementação e testes: não iniciados.
 
 ### TASK-027 Implementar trocas, ofertas e prazos
 
