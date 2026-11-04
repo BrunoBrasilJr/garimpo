@@ -152,10 +152,10 @@ function CommandForm({ row, flow, kind, accountId }: { row: SupportCase; flow: F
     {error ? <p role="alert">{error}</p> : null}
     {hasReason ? <label>{kind === 'offer' ? 'Justificativa de equivalência' : 'Justificativa da operação'}<textarea value={reason} required minLength={3} maxLength={500} onChange={event => setReason(event.target.value)} /></label> : null}
     {hasTracking ? <label>Código de rastreamento<input required value={tracking} maxLength={120} onChange={event => setTracking(event.target.value)} /></label> : null}
-    {hasDate ? <label>{kind === 'extension' ? 'Novo prazo de postagem' : 'Data e hora efetivas'}<input required type="datetime-local" value={when} onChange={event => setWhen(event.target.value)} /></label> : null}
+    {hasDate ? <label>{kind === 'extension' ? 'Novo prazo de postagem' : 'Data e hora efetivas'}<input required type="datetime-local" step="0.001" value={when} onChange={event => setWhen(event.target.value)} /></label> : null}
     {hasInteraction ? <>
       <label>Referência do contato por e-mail<input required minLength={3} maxLength={500} value={reference} onChange={event => setReference(event.target.value)} /></label>
-      <label>Data e hora do contato por e-mail<input required type="datetime-local" value={interactionTime} onChange={event => setInteractionTime(event.target.value)} /></label>
+      <label>Data e hora do contato por e-mail<input required type="datetime-local" step="0.001" value={interactionTime} onChange={event => setInteractionTime(event.target.value)} /></label>
     </> : null}
     {kind === 'receipt' ? eligible.map(unit => <label key={unit.id}>Inspeção da unidade {unit.id.slice(0, 8)}
       <select required value={inspections[unit.id] ?? ''} onChange={event => setInspections(previous => ({ ...previous, [unit.id]: event.target.value }))}>

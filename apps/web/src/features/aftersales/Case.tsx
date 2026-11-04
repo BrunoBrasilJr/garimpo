@@ -78,7 +78,7 @@ export function CustomerCaseActions({ row, flow }: { row: SupportCase; flow: Ret
       event.preventDefault(); if (when) void flow.update(prefix + '/posting', { version: row.version, trackingCode: tracking, postedAt: new Date(when).toISOString() });
     }} aria-label="Informar postagem do retorno">
       <label>Código de rastreamento do retorno<input required value={tracking} maxLength={120} onChange={event => setTracking(event.target.value)} /></label>
-      <label>Data e hora efetivas da postagem<input required type="datetime-local" value={when} onChange={event => setWhen(event.target.value)} /></label>
+      <label>Data e hora efetivas da postagem<input required type="datetime-local" step="0.001" value={when} onChange={event => setWhen(event.target.value)} /></label>
       <button disabled={flow.busy}>Informar postagem</button>
     </form> : null}
     {!returns ? <Substitutes row={row} flow={flow} /> : null}
