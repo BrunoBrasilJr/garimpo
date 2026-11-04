@@ -5,6 +5,7 @@ import { payloadHash } from '../../../core/idempotency.ts';
 import { enqueue } from '../../../core/outbox.ts';
 import { serializable } from '../../../persistence/transaction.ts';
 import { lockIdentities, staff } from '../../accounts/blocking-helpers.ts';
+import { AccountError } from '../../accounts/errors.ts';
 import type { Accounts } from '../../accounts/service.ts';
 import { CartError, missing } from '../../cart/errors.ts';
 import { restockReturn } from '../../inventory/return-stock.ts';
@@ -100,13 +101,19 @@ export class Returns {
       for (const entry of expired) await this.expire(tx, entry.id, actor.id, orderId);
       const selected: string[] = [];
       for (const item of data.items) {
+        const available = { orderItemId: item.orderItemId, orderItem: { orderId }, commercialState: 'KEPT',
+          returnItems: { none: { active: true } } } satisfies Prisma.OrderUnitWhereInput;
+        const physical = !beforeShipment(order.status);
         const eligible = await tx.orderUnit.findMany({
-          where: { orderItemId: item.orderItemId, orderItem: { orderId }, commercialState: 'KEPT',
-            returnItems: { none: { active: true } },
-            ...(beforeShipment(order.status) ? {} : { deliveredAt: { gt: new Date(now.getTime() - sevenDays), lte: now } }) },
+          where: { ...available, ...(physical ? { deliveredAt: { gt: new Date(now.getTime() - sevenDays), lte: now } } : {}) },
           orderBy: { logicalIndex: 'asc' }, take: item.quantity, select: { id: true }
         });
-        if (eligible.length < item.quantity) throw conflict('A quantidade excede as unidades disponíveis para devolução dentro do prazo.');
+        if (eligible.length < item.quantity) {
+          if (physical && await tx.orderUnit.count({ where: available }) >= item.quantity) {
+            throw new CartError(422, 'RETURN_OPENING_WINDOW', 'O prazo para solicitar a devolução destas unidades encerrou.');
+          }
+          throw conflict('A quantidade excede as unidades disponíveis para devolução.');
+        }
         selected.push(...eligible.map(unit => unit.id));
       }
       const created = await tx.returnRequest.create({ data: {
@@ -120,6 +127,7 @@ export class Returns {
   }
 
   async change(access: string, id: string, command: Command, internal: boolean, key?: string) {
+    if (!internal && command.type !== 'posting') throw new AccountError(403, 'STAFF_REQUIRED');
     const { db, clock } = this.accounts;
     const admin = ['authorization', 'extension', 'inspection-exception'].includes(command.type);
     const row = await serializable(db, async tx => {
