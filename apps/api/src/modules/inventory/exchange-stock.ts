@@ -35,7 +35,7 @@ export async function dispatchSubstitutes(tx: Prisma.TransactionClient, clock: C
         deltaOnHand: move.delta, balanceBefore: previous.stockOnHand, balanceAfter: stockOnHand,
         originKey: 'EXCHANGE:' + line.id + ':' + move.code, reason: move.delta < 0 ? 'Envio de substituto' : 'Reposição do original apto', createdAt: clock.now() } });
       await enqueue(tx, { type: 'INVENTORY.STOCK_CHANGED', aggregateId: move.offerId,
-        payload: { offerId: move.offerId, editionId: previous.editionId, before: previous.stockOnHand, after: stockOnHand }, clock);
+        payload: { offerId: move.offerId, editionId: previous.editionId, before: previous.stockOnHand, after: stockOnHand } }, clock);
     }
     await tx.substituteOffer.update({ where: { id: line.id }, data: { state: 'SHIPPED' } });
   }

@@ -283,7 +283,7 @@ export class Exchanges {
     const { clock } = this.accounts;
     await appendAudit(tx, { ...(actorId ? { actorId } : {}), action: 'EXCHANGE.' + action, targetType: 'EXCHANGE', targetId: row.id,
       result: 'SUCCESS', reason: 'EXCHANGE_COMMAND', changes: { orderId: row.orderId, state: row.state, ...(reason ? { reason } : {}) } }, clock);
-    await enqueue(tx, { type: 'EXCHANGE.UPDATED', aggregateId: row.id, payload: { orderId: row.orderId, userId: row.order.userId }, clock);
+    await enqueue(tx, { type: 'EXCHANGE.UPDATED', aggregateId: row.id, payload: { orderId: row.orderId, userId: row.order.userId } }, clock);
   }
 
   private async reconcileLocked(tx: Prisma.TransactionClient, row: Exchange) {
