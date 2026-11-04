@@ -2907,7 +2907,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-DoR e escopo registrados acima. Núcleo/API e primeiros testes em 16879f7; api-check.log: build de contracts PASS, build de API FAIL por parâmetro Express inferido como string|string[] em rota composta. Correção mínima valida UUID com Zod antes do serviço, sem cast/bypass. IN_PROGRESS → FAILED → IN_PROGRESS para revalidação. api-recheck.log em 7b37fb7, exit 0: build/tipos/lint, 124 unitários e oito integrações de ciclo PASS em task022_1f959bb19a58452580dc1a1293e92c61. Interface, mais corridas/contratos e validação completa continuam pendentes; não declarar DONE por esses recortes.
+DoR e escopo registrados acima. Núcleo/API e primeiros testes em 16879f7; api-check.log: build de contracts PASS, build de API FAIL por parâmetro Express inferido como string|string[] em rota composta. Correção mínima valida UUID com Zod antes do serviço, sem cast/bypass. IN_PROGRESS → FAILED → IN_PROGRESS para revalidação. api-recheck.log em 7b37fb7, exit 0: build/tipos/lint, 124 unitários e oito integrações de ciclo PASS em task022_1f959bb19a58452580dc1a1293e92c61. ui-build.log em 646a86a: build/tipos/lint PASS, unitários 125/126, FAIL no teste novo porque a fixture HTTP respondia 200 até sem credencial; corrigida para rejeitar /me e conferir que nenhum token antigo/logout/refresh é enviado após limpar acesso. Produto não foi alterado para acomodar a fixture. IN_PROGRESS → FAILED → IN_PROGRESS. Interface, mais corridas/contratos e validação completa continuam pendentes; não declarar DONE por esses recortes.
 
 ### TASK-023 Integrar regras comerciais e validar fronteiras
 
