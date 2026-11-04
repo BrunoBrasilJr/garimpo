@@ -66,7 +66,16 @@ export class Returns {
   async detail(access: string, id: string, internal = false) {
     return serializable(this.accounts.db, async tx => {
       const actor = await this.actor(tx, access, internal);
-      return view(await this.ownedCase(tx, id, actor.id, internal));
+      const row = await this.ownedCase(tx, id, actor.id, internal);
+      if (row.state !== 'AWAITING_POSTING' || !row.postingDueAt || row.postingDueAt > this.accounts.clock.now()) return view(row);
+      await lockIdentities(tx, [actor.id, row.order.userId]);
+      await this.actor(tx, access, internal);
+      const fresh = await this.ownedCase(tx, id, actor.id, internal);
+      if (fresh.state === 'AWAITING_POSTING' && fresh.postingDueAt && fresh.postingDueAt <= this.accounts.clock.now()) {
+        await this.expire(tx, id, actor.id, row.orderId);
+        return view(await this.ownedCase(tx, id, actor.id, internal));
+      }
+      return view(fresh);
     });
   }
 
@@ -197,8 +206,14 @@ export class Returns {
         return { state: 'COMPLETED', refundAuthorizedAt: now, refundId: refund?.id ?? null };
       }
       case 'extension':
-        if (row.state !== 'AWAITING_POSTING' || !row.postingDueAt || command.data.dueAt <= row.postingDueAt || command.data.dueAt <= now) break;
-        return { postingDueAt: command.data.dueAt };
+        if (!['AWAITING_POSTING', 'EXPIRED'].includes(row.state) || !row.postingDueAt || command.data.dueAt <= row.postingDueAt || command.data.dueAt <= now) break;
+        if (row.state === 'EXPIRED') {
+          const ids = row.items.map(item => item.orderUnitId);
+          if (row.items.some(item => item.orderUnit.commercialState !== 'KEPT')
+            || await tx.returnItem.count({ where: { orderUnitId: { in: ids }, active: true } })) break;
+          await tx.returnItem.updateMany({ where: { returnId: id }, data: { active: true } });
+        }
+        return { state: 'AWAITING_POSTING', postingDueAt: command.data.dueAt };
       case 'rejected-shipment': {
         const { trackingCode, postedAt } = command.data;
         if (!row.inspectedAt || postedAt < row.inspectedAt || postedAt > now || !row.items.some(item => item.inspection === 'REJECTED')

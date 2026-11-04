@@ -125,3 +125,21 @@ test('evidence requires case ownership and enforces separate five-image limits',
   expect(downloaded.status).toBe(200);
   expect(downloaded.headers['cache-control']).toContain('no-store');
 });
+
+test('an active return excludes another request for the same unit and expiry needs an audited ADMIN exception', async () => {
+  const p = await purchase(1);
+  const path = '/orders/' + p.order.id + '/returns';
+  const data = { reason: 'Devolução no prazo', items: [{ orderItemId: p.item.id, quantity: 1 }] };
+  const results = await Promise.all([call(path, data, p.buyer), call(path, data, p.buyer)]);
+  expect(results.map(result => result.status).sort()).toEqual([201, 409]);
+  const approved = await decision(results.find(result => result.status === 201)!.body);
+  fixture.advance(7 * 86400000);
+  await fixture.freshRoles();
+  const expired = await fixture.server.call<ReturnView>('/admin/returns/' + approved.id, 'GET', undefined, credentials(fixture.operator));
+  expect(expired).toMatchObject({ status: 200, body: { state: 'EXPIRED' } });
+  const exception = '/admin/aftersales/' + approved.id + '/posting-extension';
+  const proposed = { version: expired.body.version, reason: 'Exceção de postagem registrada', dueAt: new Date(fixture.clock.now().getTime() + 86400000).toISOString() };
+  expect((await call(exception, proposed, fixture.operator)).status).toBe(403);
+  expect((await call(exception, proposed, fixture.admin)).body.state).toBe('AWAITING_POSTING');
+  expect(await fixture.db.auditLog.count({ where: { targetId: approved.id, action: 'RETURN.EXTENSION' } })).toBe(1);
+});
