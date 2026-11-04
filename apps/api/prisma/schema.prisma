@@ -139,6 +139,8 @@ model Offer {
   updatedAt    DateTime        @updatedAt @db.Timestamptz(3)
   images       ProductImage[]
   movements    StockMovement[]
+  exchangeOriginals ExchangeItem[] @relation("ExchangeOriginal")
+  substitutes SubstituteOffer[]
   promotions   PromotionOffer[]
   couponTargets CouponTarget[]
   cartItems CartItem[]
@@ -626,8 +628,10 @@ model Reservation {
   id String @id @default(uuid()) @db.Uuid
   offerId String @db.Uuid
   offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict)
-  checkoutItemId String @unique @db.Uuid
-  checkoutItem CheckoutItem @relation(fields: [checkoutItemId], references: [id], onDelete: Restrict)
+  checkoutItemId String? @unique @db.Uuid
+  checkoutItem CheckoutItem? @relation(fields: [checkoutItemId], references: [id], onDelete: Restrict)
+  substituteId String? @unique @db.Uuid
+  substitute SubstituteOffer? @relation(fields: [substituteId], references: [id], onDelete: Restrict)
   orderItemId String? @unique @db.Uuid
   orderItem OrderItem? @relation(fields: [orderItemId], references: [id], onDelete: Restrict)
   quantity Int
@@ -739,6 +743,7 @@ model Order {
   cancellations CancellationRequest[]
   shipments Shipment[]
   returns ReturnRequest[]
+  exchanges ExchangeRequest[]
   @@index([userId, status, expiresAt])
   @@index([status, expiresAt, id])
 }
@@ -772,6 +777,7 @@ model OrderUnit {
   currentOffer Offer @relation(fields: [currentOfferId], references: [id], onDelete: Restrict)
   deliveredAt DateTime? @db.Timestamptz(3)
   returnItems ReturnItem[]
+  exchangeItems ExchangeItem[]
   @@unique([orderItemId, logicalIndex])
   @@index([currentOfferId])
 }
@@ -807,6 +813,7 @@ model ReturnRequest {
   shipments Shipment[]
   evidence Evidence[]
   interactions ExternalInteraction[]
+  exchange ExchangeRequest?
   @@index([orderId, createdAt])
   @@index([state, postingDueAt])
 }
@@ -824,8 +831,10 @@ model ReturnItem {
 
 model Evidence {
   id String @id @default(uuid()) @db.Uuid
-  returnId String @db.Uuid
-  request ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  returnId String? @db.Uuid
+  request ReturnRequest? @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  exchangeId String? @db.Uuid
+  exchange ExchangeRequest? @relation(fields: [exchangeId], references: [id], onDelete: Restrict)
   actorId String @db.Uuid
   actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
   source String @db.VarChar(12)
@@ -834,12 +843,15 @@ model Evidence {
   content Bytes
   createdAt DateTime @db.Timestamptz(3)
   @@unique([returnId, source, position])
+  @@unique([exchangeId, source, position])
 }
 
 model ExternalInteraction {
   id String @id @default(uuid()) @db.Uuid
-  returnId String @db.Uuid
-  request ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  returnId String? @db.Uuid
+  request ReturnRequest? @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  exchangeId String? @db.Uuid
+  exchange ExchangeRequest? @relation(fields: [exchangeId], references: [id], onDelete: Restrict)
   actorId String @db.Uuid
   actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
   channel String @db.VarChar(30)
@@ -847,6 +859,86 @@ model ExternalInteraction {
   occurredAt DateTime @db.Timestamptz(3)
   createdAt DateTime @db.Timestamptz(3)
   @@index([returnId])
+  @@index([exchangeId])
+}
+
+enum ExchangeState {
+  REQUESTED
+  AWAITING_POSTING
+  IN_TRANSIT
+  WAITING_SUBSTITUTE
+  SHIPPED
+  DELIVERED
+  REJECTED
+  REJECTED_AWAITING_SHIPMENT
+  REJECTED_IN_TRANSIT
+  REJECTED_DELIVERED
+  CANCELLED
+  EXPIRED
+  CONVERTED
+}
+
+enum SubstituteState {
+  OFFERED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  RELEASED
+  SHIPPED
+}
+
+model ExchangeRequest {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String @db.Uuid
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  state ExchangeState @default(REQUESTED)
+  reason String @db.VarChar(500)
+  version Int @default(1)
+  createdAt DateTime @db.Timestamptz(3)
+  approvedAt DateTime? @db.Timestamptz(3)
+  postingDueAt DateTime? @db.Timestamptz(3)
+  inspectedAt DateTime? @db.Timestamptz(3)
+  waitingDueAt DateTime? @db.Timestamptz(3)
+  convertedReturnId String? @unique @db.Uuid
+  convertedReturn ReturnRequest? @relation(fields: [convertedReturnId], references: [id], onDelete: Restrict)
+  items ExchangeItem[]
+  shipments Shipment[]
+  evidence Evidence[]
+  interactions ExternalInteraction[]
+  @@index([orderId, createdAt])
+  @@index([state, postingDueAt])
+  @@index([state, waitingDueAt])
+}
+
+model ExchangeItem {
+  exchangeId String @db.Uuid
+  request ExchangeRequest @relation(fields: [exchangeId], references: [id], onDelete: Restrict)
+  orderUnitId String @db.Uuid
+  orderUnit OrderUnit @relation(fields: [orderUnitId], references: [id], onDelete: Restrict)
+  originalOfferId String @db.Uuid
+  originalOffer Offer @relation("ExchangeOriginal", fields: [originalOfferId], references: [id], onDelete: Restrict)
+  active Boolean @default(true)
+  inspection String? @db.VarChar(24)
+  substitutes SubstituteOffer[]
+  @@id([exchangeId, orderUnitId])
+  @@index([orderUnitId])
+}
+
+model SubstituteOffer {
+  id String @id @default(uuid()) @db.Uuid
+  exchangeId String @db.Uuid
+  orderUnitId String @db.Uuid
+  item ExchangeItem @relation(fields: [exchangeId, orderUnitId], references: [exchangeId, orderUnitId], onDelete: Restrict)
+  offerId String @db.Uuid
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  equivalenceReason String @db.VarChar(500)
+  state SubstituteState @default(OFFERED)
+  createdAt DateTime @db.Timestamptz(3)
+  expiresAt DateTime @db.Timestamptz(3)
+  respondedAt DateTime? @db.Timestamptz(3)
+  reservation Reservation?
+  @@index([exchangeId, orderUnitId])
+  @@index([state, expiresAt])
 }
 
 model CancellationRequest {
@@ -1013,7 +1105,10 @@ model Shipment {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   returnId String? @db.Uuid
   returnRequest ReturnRequest? @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  exchangeId String? @db.Uuid
+  exchangeRequest ExchangeRequest? @relation(fields: [exchangeId], references: [id], onDelete: Restrict)
   @@unique([returnId, kind])
+  @@unique([exchangeId, kind])
   @@index([orderId])
   @@index([createdById])
 }

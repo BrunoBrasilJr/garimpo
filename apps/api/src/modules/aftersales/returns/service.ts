@@ -15,6 +15,7 @@ import { allocateReturnRefund } from '../../refunds/return-allocation.ts';
 import { hideReturnedReviews } from '../../reviews/returned.ts';
 import type { z } from 'zod';
 import type * as input from './validation.ts';
+import { unclaimedUnit } from '../shared/claims.ts';
 
 const sevenDays = 7 * 86400000;
 const beforeShipment = (status: string) => status === 'PREPARING' || status === 'SEPARATED';
@@ -101,8 +102,7 @@ export class Returns {
       for (const entry of expired) await this.expire(tx, entry.id, actor.id, orderId);
       const selected: string[] = [];
       for (const item of data.items) {
-        const available = { orderItemId: item.orderItemId, orderItem: { orderId }, commercialState: 'KEPT',
-          returnItems: { none: { active: true } } } satisfies Prisma.OrderUnitWhereInput;
+        const available = { orderItemId: item.orderItemId, orderItem: { orderId }, ...unclaimedUnit } satisfies Prisma.OrderUnitWhereInput;
         const physical = !beforeShipment(order.status);
         const eligible = await tx.orderUnit.findMany({
           where: { ...available, ...(physical ? { deliveredAt: { gt: new Date(now.getTime() - sevenDays), lte: now } } : {}) },
@@ -217,8 +217,7 @@ export class Returns {
         if (!['AWAITING_POSTING', 'EXPIRED'].includes(row.state) || !row.postingDueAt || command.data.dueAt <= row.postingDueAt || command.data.dueAt <= now) break;
         if (row.state === 'EXPIRED') {
           const ids = row.items.map(item => item.orderUnitId);
-          if (row.items.some(item => item.orderUnit.commercialState !== 'KEPT')
-            || await tx.returnItem.count({ where: { orderUnitId: { in: ids }, active: true } })) break;
+          if (await tx.orderUnit.count({ where: { id: { in: ids }, ...unclaimedUnit } }) !== ids.length) break;
           await tx.returnItem.updateMany({ where: { returnId: id }, data: { active: true } });
         }
         return { state: 'AWAITING_POSTING', postingDueAt: command.data.dueAt };

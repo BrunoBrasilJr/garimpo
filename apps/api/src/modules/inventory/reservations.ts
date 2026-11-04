@@ -1,7 +1,9 @@
 import type { Prisma } from '../../persistence/client.ts';
 /** Only live reservations reduce physical capacity; a delayed expiry job cannot prolong a hold. */
 export async function reservedQuantities(tx: Prisma.TransactionClient, offerIds: string[], now: Date, ignoreCheckoutId?: string) {
-  const rows = await tx.reservation.groupBy({ by: ['offerId'], where: { offerId: { in: offerIds }, status: 'ACTIVE', expiresAt: { gt: now }, ...(ignoreCheckoutId ? { checkoutItem: { checkoutId: { not: ignoreCheckoutId } } } : {}) }, _sum: { quantity: true } });
+  const rows = await tx.reservation.groupBy({ by: ['offerId'], where: { offerId: { in: offerIds }, status: 'ACTIVE', expiresAt: { gt: now },
+    ...(ignoreCheckoutId ? { OR: [{ checkoutItemId: null }, { checkoutItem: { checkoutId: { not: ignoreCheckoutId } } }] } : {})
+  }, _sum: { quantity: true } });
   return new Map(rows.map(row => [row.offerId, row._sum.quantity ?? 0]));
 }
 export async function lockOffers(tx: Prisma.TransactionClient, offerIds: string[]) {

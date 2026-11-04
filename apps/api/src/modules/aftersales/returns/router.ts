@@ -14,10 +14,13 @@ import { LocalGateway } from '../../payments/gateway.ts';
 import type { PaymentGateway } from '../../payments/gateway.ts';
 import { AutomaticRefunds } from '../../refunds/automatic.ts';
 import { addEvidence, readEvidence } from '../shared/evidence.ts';
+import { Exchanges } from '../exchanges/service.ts';
+import type { ExchangeCommand } from '../exchanges/model.ts';
+import { registerExchangeRoutes } from '../exchanges/routes.ts';
 import { Returns } from './service.ts';
 import * as input from './validation.ts';
 
-const prefix = /^\/(?:orders\/[^/]+\/returns\/?$|(?:me\/|admin\/)?returns\/[^/]+(?:\/|$)|(?:admin\/)?aftersales\/[^/]+(?:\/|$))/;
+const prefix = /^\/(?:orders\/[^/]+\/(?:returns|exchanges)\/?$|(?:me\/|admin\/)?(?:returns|exchanges)\/[^/]+(?:\/|$)|(?:admin\/)?aftersales\/[^/]+(?:\/|$))/;
 const empty = z.object({}).strict();
 const mobile = (request: Request) => request.get('x-garimpo-client') === 'mobile';
 const guardedCookies = new Set(['__Host-garimpo-access', '__Host-garimpo-refresh', '__Host-garimpo-csrf']);
@@ -41,6 +44,7 @@ export function createReturnsRouter(options: AccountsOptions = {}, gateway?: Pay
   const db = options.db ?? (process.env.DATABASE_URL ? createDatabase(process.env.DATABASE_URL) : undefined);
   const accounts = db ? new Accounts(db, options.clock, options.policy) : null;
   const service = accounts ? new Returns(accounts, new AutomaticRefunds(accounts, gateway ?? new LocalGateway(accounts.db, accounts.clock))) : null;
+  const exchanges = accounts ? new Exchanges(accounts) : null;
   const origin = options.webOrigin ?? process.env.WEB_ORIGIN ?? 'https://localhost:5173';
   if (new URL(origin).protocol !== 'https:' || new URL(origin).origin !== origin) throw new Error('WEB_ORIGIN must be an exact HTTPS origin.');
 
@@ -85,7 +89,9 @@ export function createReturnsRouter(options: AccountsOptions = {}, gateway?: Pay
 
   const id = (req: Request) => orderInput.parse(orderInput.id, req.params.id);
   const key = (req: Request) => orderInput.parse(orderInput.key, req.get('idempotency-key'));
+  const exchangeCase = async (caseId: string) => Boolean(await accounts!.db.exchangeRequest.findUnique({ where: { id: caseId }, select: { id: true } }));
   const json = express.json({ limit: '1mb', strict: true });
+  registerExchangeRoutes(router, exchanges, req => auth.get(req)!);
   router.post('/orders/:id/returns', json, async (req, res) => {
     orderInput.parse(empty, req.query);
     res.status(201).json(await service!.open(auth.get(req)!.access, id(req), orderInput.parse(input.request, req.body), key(req)));
@@ -112,6 +118,10 @@ export function createReturnsRouter(options: AccountsOptions = {}, gateway?: Pay
       const { access, internal } = auth.get(req)!;
       const parsed = schema.safeParse(req.body);
       if (!parsed.success) throw new CartError(422, 'INVALID_RETURN_INPUT', 'Confira os dados do atendimento.');
+      if (path.startsWith('/admin/aftersales/') && await exchangeCase(id(req))) {
+        res.json(await exchanges!.change(access, id(req), { type, data: parsed.data } as ExchangeCommand, internal));
+        return;
+      }
       const command = { type, data: parsed.data } as Parameters<Returns['change']>[2];
       res.json(await service!.change(access, id(req), command, internal, type === 'authorization' ? key(req) : undefined));
     });
@@ -119,17 +129,20 @@ export function createReturnsRouter(options: AccountsOptions = {}, gateway?: Pay
   router.post('/aftersales/:id/evidence', async (req, _res, next) => {
     orderInput.parse(empty, req.query);
     const { access, internal } = auth.get(req)!;
-    await service!.detail(access, id(req), internal);
+    const target = await exchangeCase(id(req)) ? exchanges! : service!;
+    await target.detail(access, id(req), internal);
     next();
   }, express.raw({ type: ['image/jpeg', 'image/png', 'image/webp'], limit: MAX_IMAGE_BYTES, inflate: false }), async (req, res) => {
     const { access, internal } = auth.get(req)!;
     const mediaType = (req.get('content-type') ?? '').split(';', 1)[0]!.trim().toLowerCase();
-    res.status(201).json(await addEvidence(service!, access, internal, id(req), mediaType, req.body));
+    const exchange = await exchangeCase(id(req));
+    res.status(201).json(await addEvidence(exchange ? exchanges! : service!, access, internal, id(req), mediaType, req.body, exchange));
   });
   router.get('/aftersales/:id/evidence/:imageId', async (req, res) => {
     orderInput.parse(empty, req.query);
     const { access, internal } = auth.get(req)!;
-    const row = await readEvidence(service!, access, internal, id(req), orderInput.parse(orderInput.id, req.params.imageId));
+    const exchange = await exchangeCase(id(req));
+    const row = await readEvidence(exchange ? exchanges! : service!, access, internal, id(req), orderInput.parse(orderInput.id, req.params.imageId), exchange);
     res.set('Content-Security-Policy', "default-src 'none'; sandbox");
     res.type(row.mediaType).send(Buffer.from(row.content));
   });
