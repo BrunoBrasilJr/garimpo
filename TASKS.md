@@ -2907,7 +2907,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-DoR e escopo registrados acima. Implementação/validação desta TASK ainda não concluídas; nenhuma aprovação de gate próprio presumida.
+DoR e escopo registrados acima. Núcleo/API e primeiros testes em 16879f7; api-check.log: build de contracts PASS, build de API FAIL por parâmetro Express inferido como string|string[] em rota composta. Correção mínima valida UUID com Zod antes do serviço, sem cast/bypass. IN_PROGRESS → FAILED → IN_PROGRESS para revalidação. Interface e validação completa continuam pendentes; nenhum gate próprio aprovado por antecipação.
 
 ### TASK-023 Integrar regras comerciais e validar fronteiras
 

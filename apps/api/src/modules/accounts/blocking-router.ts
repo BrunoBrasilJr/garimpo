@@ -54,11 +54,11 @@ export function createAccountLifecycleRouter(accountsOptions: AccountsOptions = 
   });
   router.use(express.json({ limit: '32kb', strict: true }));
   router.get('/admin/customers', async (req, res) => { res.json(await new Customers(service()).list(access(req), req.query)); });
-  router.get('/admin/customers/:id', async (req, res) => { input.parse(empty, req.query); res.json(await new Customers(service()).detail(access(req), req.params.id!)); });
+  router.get('/admin/customers/:id', async (req, res) => { input.parse(empty, req.query); res.json(await new Customers(service()).detail(access(req), input.parse(input.id, req.params.id))); });
   for (const [path, action] of [['block', 'BLOCK'], ['unblock', 'UNBLOCK']] as const) router.post('/admin/customers/:id/' + path, async (req, res) => {
-    input.parse(empty, req.query); res.json(await new Customers(service()).restrict(access(req), req.params.id!, action, req.body, req.get('idempotency-key') ?? ''));
+    input.parse(empty, req.query); res.json(await new Customers(service()).restrict(access(req), input.parse(input.id, req.params.id), action, req.body, req.get('idempotency-key') ?? ''));
   });
-  router.patch('/admin/customers/:id', async (req, res) => { input.parse(empty, req.query); res.json(await new Customers(service()).correct(access(req), req.params.id!, req.body, req.get('idempotency-key') ?? '', messages)); });
+  router.patch('/admin/customers/:id', async (req, res) => { input.parse(empty, req.query); res.json(await new Customers(service()).correct(access(req), input.parse(input.id, req.params.id), req.body, req.get('idempotency-key') ?? '', messages)); });
   router.post('/me/closure', async (req, res) => {
     input.parse(empty, req.query); const result = await closeAccount(service(), access(req), req.body, req.get('idempotency-key') ?? '');
     if (req.get('x-garimpo-client') !== 'mobile') for (const name of ['access', 'refresh', 'csrf']) res.clearCookie('__Host-garimpo-' + name, { path: '/', secure: true, sameSite: 'lax', httpOnly: name !== 'csrf' });
