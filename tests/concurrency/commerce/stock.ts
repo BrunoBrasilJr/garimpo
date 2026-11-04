@@ -1,13 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
-import { afterAll, beforeAll, expect, test } from 'vitest';
-import { foundation, credentials } from '../../accounts/lifecycle/fixtures.ts';
+import { expect } from 'vitest';
+import { credentials } from '../../accounts/lifecycle/fixtures.ts';
+import type { foundation } from '../../accounts/lifecycle/fixtures.ts';
 
-let fixture: Awaited<ReturnType<typeof foundation>>;
-beforeAll(async () => { fixture = await foundation(undefined, '023'); });
-afterAll(async () => { await fixture?.close(); });
-
-test('two real transactions cannot reserve and remove the same last unit', async () => {
+export async function stockRace(fixture: Awaited<ReturnType<typeof foundation>>) {
   const buyer = await fixture.customer();
   const offer = await fixture.offer('USED');
   const draft = await fixture.draft(buyer, offer.id);
@@ -39,4 +36,4 @@ test('two real transactions cannot reserve and remove the same last unit', async
   const held = await fixture.db.reservation.count({ where: { offerId: offer.id, status: 'ACTIVE' } });
   expect(held).toBe(reservation.status === 201 ? 1 : 0);
   expect(actual.stockOnHand).toBe(held);
-});
+}

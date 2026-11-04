@@ -1,3 +1,4 @@
+import { stockRace } from '../../concurrency/commerce/stock.ts';
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import type { CatalogEdition, CatalogPage, CheckoutView, StockPage } from '@garimpo/contracts';
@@ -123,3 +124,5 @@ test('same-item renewal does not announce availability between expired and repla
   expect(replacement.body.id).not.toBe(first.checkout.id);
   expect((await fixture.db.availabilityAlert.findUniqueOrThrow({ where: { id: alert.body.id } })).triggerEventId).toBeNull();
 });
+
+test('two real transactions cannot reserve and remove the same last unit', async () => stockRace(fixture));
