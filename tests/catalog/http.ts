@@ -9,17 +9,18 @@ import type { CatalogOptions } from '../../apps/api/src/modules/catalog/router.t
 import type { ReviewOptions } from '../../apps/api/src/modules/reviews/router.ts';
 import type { CheckoutOptions } from '../../apps/api/src/modules/cart/router.ts';
 import type { PaymentOptions } from '../../apps/api/src/modules/payments/router.ts';
+import type { MessagingOptions } from '../../apps/api/src/modules/messaging/config.ts';
 
 export const origin = 'https://localhost:5173';
 export interface Reply<T> { status: number; body: T; raw: Buffer; cookie: string; csrf: string; headers: import('node:http').IncomingHttpHeaders }
 export const web = (reply: Pick<Reply<unknown>, 'cookie' | 'csrf'>) => ({ Origin: origin, Cookie: reply.cookie, 'X-CSRF-Token': reply.csrf });
-export async function openCatalogServer(options: CatalogOptions, reviews?: ReviewOptions, checkout?: CheckoutOptions, payments?: PaymentOptions) {
+export async function openCatalogServer(options: CatalogOptions, reviews?: ReviewOptions, checkout?: CheckoutOptions, payments?: PaymentOptions, messaging?: MessagingOptions) {
   const directory = mkdtempSync(join(tmpdir(), 'garimpo-catalog-http-'));
   const key = join(directory, 'server.key'), cert = join(directory, 'server.pem');
   execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '1', '-keyout', key,
     '-out', cert, '-subj', '/CN=localhost', '-addext', 'subjectAltName=DNS:localhost,IP:127.0.0.1'], { stdio: 'ignore' });
   chmodSync(key, 0o600); const ca = readFileSync(cert);
-  const app = createApp(options, undefined, options, reviews, checkout, payments), secure = createServer({ key: readFileSync(key), cert: ca }, app), plain = plainServer(app);
+  const app = createApp(options, messaging, options, reviews, checkout, payments), secure = createServer({ key: readFileSync(key), cert: ca }, app), plain = plainServer(app);
   await Promise.all([secure, plain].map(server => new Promise<void>(resolve => { server.listen(0, '127.0.0.1', resolve); })));
   return {
     async call<T = Record<string, unknown>>(path: string, method = 'GET', payload?: unknown, headers: Record<string, string> = {}, plaintext = false): Promise<Reply<T>> {

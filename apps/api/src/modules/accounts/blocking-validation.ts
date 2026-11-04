@@ -1,0 +1,11 @@
+import { z } from 'zod';
+import { email } from './validation.ts';
+export { parse } from './validation.ts';
+export const id = z.string().uuid(), key = z.string().min(1).max(128).regex(/^[\w.:-]+$/);
+export const revision = z.string().regex(/^[a-f0-9]{64}$/);
+export const restriction = z.object({ revision, reason: z.string().trim().min(3).max(500).refine(v => !v.includes('\0')) }).strict();
+export const correction = z.object({ revision, name: z.string().trim().min(1).max(160).optional(), email: email.optional() }).strict().refine(v => v.name !== undefined || v.email !== undefined);
+export const list = z.object({ page: z.coerce.number().int().min(1).max(1000000).default(1), pageSize: z.coerce.number().int().min(1).max(30).default(10), search: z.string().trim().max(160).optional(), state: z.enum(['ACTIVE', 'BLOCKED', 'CLOSED']).optional() }).strict();
+export const closure = z.object({ confirm: z.literal(true) }).strict();
+export const reactivation = z.object({ email }).strict();
+export const confirmation = z.object({ token: z.string().regex(/^[\w-]{43}$/) }).strict();

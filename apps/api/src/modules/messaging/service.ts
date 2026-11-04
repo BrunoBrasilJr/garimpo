@@ -10,7 +10,7 @@ import { secret, tokenHash } from '../accounts/credentials.ts';
 import { MessageProtection } from './protection.ts';
 
 export const available = (user: User) => !user.blockedAt && !user.closedAt && !user.inactiveAt;
-export type AccessPurpose = 'RESET' | 'VERIFY' | 'CHANGE';
+export type AccessPurpose = 'RESET' | 'VERIFY' | 'CHANGE' | 'REACTIVATE';
 export class AccessMessages {
   readonly accounts: Accounts;
   readonly protection: MessageProtection;
@@ -45,7 +45,7 @@ export class AccessMessages {
         tokenHash: tokenHash(`email-${purpose.toLowerCase()}`, token), expiresAt, createdAt: now } });
     }
     const messageId = randomUUID();
-    const path = purpose === 'RESET' ? 'password-reset' : purpose === 'VERIFY' ? 'email-verification' : 'email-change';
+    const path = purpose === 'RESET' ? 'password-reset' : purpose === 'VERIFY' ? 'email-verification' : purpose === 'REACTIVATE' ? 'reactivation' : 'email-change';
     const restrictedBody = this.protection.seal(messageId, JSON.stringify({ recipient, purpose,
       link: `${this.webOrigin}/#/${path}?token=${token}`, expiresAt: expiresAt.toISOString() }));
     await tx.demoMessage.create({ data: { id: messageId, userId: user.id, tokenRef: id, type: `ACCESS.${purpose}`,

@@ -9,6 +9,7 @@ const payload = z.object({ userId: z.string().uuid(), orderId: z.string().uuid()
 const descriptions: Record<string, [string, string]> = {
   'ORDER.CREATED': ['Pedido criado', 'Seu pedido foi registrado. Confira os dados e, se estiver pendente, o prazo de pagamento.'],
   'ORDER.EXPIRED': ['Pedido cancelado por vencimento', 'O prazo de pagamento terminou. A reserva foi liberada. Um pagamento tardio será estornado.'],
+  'ORDER.CANCELLED': ['Pedido pendente cancelado', 'O pedido aguardando pagamento foi cancelado por bloqueio ou encerramento da conta. A reserva foi liberada; um pagamento recebido depois será conciliado para estorno.'],
   'ORDER.SHIPPED': ['Pedido enviado', 'A postagem da remessa original foi registrada. Consulte o código de rastreamento e a data efetiva no pedido.'],
   'ORDER.DELIVERED': ['Pedido entregue', 'A entrega efetiva foi registrada. Consulte seu pedido e o prazo de atendimento.'],
   'PAYMENT.PAID': ['Pagamento confirmado', 'O pagamento foi confirmado e o pedido está pago.'],
@@ -21,7 +22,7 @@ const descriptions: Record<string, [string, string]> = {
 export async function consumeCommerce(messages: AccessMessages): Promise<'EMPTY' | 'PROCESSED' | 'FAILED'> {
   const { db, clock } = messages.accounts;
   return serializable(db, async tx => {
-    const rows = await tx.$queryRaw<DomainEvent[]>`SELECT * FROM "DomainEvent" WHERE "processedAt" IS NULL AND type IN ('ORDER.CREATED','ORDER.EXPIRED','ORDER.SHIPPED','ORDER.DELIVERED','PAYMENT.PAID','PAYMENT.DECLINED','PAYMENT.REFUND_REQUIRED','REFUND.PENDING','REFUND.FAILED','REFUND.SUCCEEDED') ORDER BY attempts,"createdAt",id FOR UPDATE SKIP LOCKED LIMIT 1`;
+    const rows = await tx.$queryRaw<DomainEvent[]>`SELECT * FROM "DomainEvent" WHERE "processedAt" IS NULL AND type IN ('ORDER.CREATED','ORDER.EXPIRED','ORDER.CANCELLED','ORDER.SHIPPED','ORDER.DELIVERED','PAYMENT.PAID','PAYMENT.DECLINED','PAYMENT.REFUND_REQUIRED','REFUND.PENDING','REFUND.FAILED','REFUND.SUCCEEDED') ORDER BY attempts,"createdAt",id FOR UPDATE SKIP LOCKED LIMIT 1`;
     const event = rows[0]; if (!event) return 'EMPTY';
     await tx.domainEvent.update({ where: { id: event.id }, data: { attempts: { increment: 1 } } }); await tx.$executeRawUnsafe('SAVEPOINT commerce_message');
     try {

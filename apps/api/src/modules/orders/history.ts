@@ -17,7 +17,7 @@ export function shipmentView(row: { id: string; kind: string; trackingCode: stri
   if (row.kind !== 'ORIGINAL') throw new Error('Only original shipments belong to this increment.');
   return { id: row.id, kind: 'ORIGINAL', trackingCode: row.trackingCode, postedAt: row.postedAt.toISOString(), deliveredAt: row.deliveredAt?.toISOString() ?? null, createdAt: row.createdAt.toISOString() };
 }
-const knownReasons: Record<string, string> = { CREATED_FROM_CHECKOUT: 'Pedido criado a partir da finalização confirmada.', SIMULATED_PAYMENT: 'Pagamento confirmado pelo simulador.', PAYMENT_DEADLINE: 'Prazo de pagamento encerrado.', MIGRATED_STORED_CREATION: 'Criação preservada dos dados históricos.', MIGRATED_STORED_PAYMENT: 'Pagamento preservado dos dados históricos.', MIGRATED_STORED_EXPIRY: 'Vencimento preservado dos dados históricos.' };
+const knownReasons: Record<string, string> = { CREATED_FROM_CHECKOUT: 'Pedido criado a partir da finalização confirmada.', SIMULATED_PAYMENT: 'Pagamento confirmado pelo simulador.', PAYMENT_DEADLINE: 'Prazo de pagamento encerrado.', ACCOUNT_BLOCKED: 'Pedido pendente cancelado por bloqueio da conta.', ACCOUNT_CLOSED: 'Pedido pendente cancelado por encerramento da conta.', MIGRATED_STORED_CREATION: 'Criação preservada dos dados históricos.', MIGRATED_STORED_PAYMENT: 'Pagamento preservado dos dados históricos.', MIGRATED_STORED_EXPIRY: 'Vencimento preservado dos dados históricos.' };
 export class OrderHistory {
   readonly accounts: Accounts;
   constructor(accounts: Accounts) { this.accounts = accounts; }
