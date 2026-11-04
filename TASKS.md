@@ -28,7 +28,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 18 | TASK-018 Implementar frete, cotação e pedidos | PHASE-03 | CRITICAL | TASK-016, TASK-014 | DONE |
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | DONE |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | DONE |
-| 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | IN_PROGRESS |
+| 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | DONE |
 | 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | BLOCKED |
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | BLOCKED |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | BLOCKED |
@@ -2686,7 +2686,7 @@ TASK-021 candidata (019 DONE), própria DoR/Scope Guard antes da promoção. Est
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -2772,6 +2772,51 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 2026-11-03: retomada da execução contínua expressamente determinada pelo responsável após a conferência do texto antigo de AGENTS §1. Esta instrução posterior de desenvolvimento até pelo menos 28/37 prevalece sobre a restrição documental histórica, sem dispensar gates, checkpoints ou Scope Guard. Não atribuir essa decisão ao PDF nem alterar o histórico de autorizações anteriores.
 
 Branch real feature/TASK-021-historico-logistica, base 86bac77; commits d34950f, 9dc493b, 3431da7 e 8553bf4. API/schema e testes do incremento já materializados; telas web/mobile, leitura entre aparelhos e validação final ainda em andamento. ui-build.log em dfff2e2: build PASS, tipos FAIL por query opcional enviada explicitamente como undefined sob exactOptionalPropertyTypes; falha preservada e correção mínima usa query vazia no ponto de composição. Estado IN_PROGRESS → FAILED → IN_PROGRESS para correção/revalidação, sem promoção a DONE. acceptance-ui.log em 79365a4: build e tipos de produto PASS; tipos dos testes FAIL por iteração de NodeList sem DOM.Iterable, corrigida com Array.from, sem mudar tsconfig ou validação. api-acceptance.log registra build/tipos/lint, 121 unitários, 16 integrações de pedidos e regressões de 32 pagamentos/24 checkout PASS no commit 8553bf4. Auditoria bruta continua FAIL com sete low conhecidos; política/patch/hash PASS. Esses resultados não aprovam os arquivos de interface posteriores nem tornam a TASK DONE. Pendem testes E2E, compatibilidade da migration com fatos legados, bundles e revisão final. ZIP e dados originais preservados.
+
+#### TASK Execution Report — 2026-11-03
+
+TASK: TASK-021. Status: DONE. Branch: feature/TASK-021-historico-logistica, base 86bac77. Commits reais d34950f, 9dc493b, 3431da7, 8553bf4, dfff2e2, 79365a4 e aca12bd; fechamento documental neste registro. Falhas de tipos e correções preservadas acima, sem dispensa de gate.
+
+### Primary Changes
+
+46 arquivos PRIMARY: TASKS.md; schema.prisma/migration 202611030001_original_logistics; app.ts somente composição protegida; messaging/{commerce,service}.ts somente conteúdo/eventos logísticos; orders/{calendar,events,expiry,history-validation,history,logistics,router,service}.ts; payments/service.ts somente emissão atômica PENDING→PAID. contracts/src/orders/index.ts materializa views/comando/grafo original. Web features/orders/{Details,Orders,labels,orders.css,useHistory}, features/admin/orders/Orders; mobile features/orders/{Orders,labels,useHistory}; Checkout/useFlow dos dois clientes somente histórico/links; navigation/App dos dois e route web somente composição/guardas. docs/architecture/{api,data-model,parametros}; tests/e2e/checkout/README somente adaptador de consulta; todos os dez arquivos de tests/orders, incluindo README, fixtures, migration/API/E2E/regras/preview/configurações.
+
+Consulta própria paginada funciona entre aparelhos sem referência local; equipe consulta dados limitados e registra PAID→PREPARING→SEPARATED→SHIPPED→DELIVERED com revisão e chave idempotente. Histórico append-only separa data efetiva/registro/papel do ator; migration preserva fatos antigos sem criar remessa/ator/data fictícios. Shipment ORIGINAL único/imutável, entrega efetiva uma vez nas unidades restantes. No mesmo commit transacional: estado/evento/remessa/auditoria/recibo/outbox. Guardas revalidam identidade e papel após espera; pagos de cliente bloqueado/encerrado continuam atendíveis. Falha de entrega da mensagem não desfaz logística. Checkout conserva intenção desconhecida para retomada e usa GET de pendentes vivos para pagamentos entre aparelhos. Não acrescenta cancelamento, regra financeira, remessa de pós-venda, serviço externo ou dependência.
+
+### Incidental Changes
+
+| Arquivo/Componente | Alteração | Justificativa |
+| --- | --- | --- |
+| packages/contracts/src/index.ts | exports do módulo orders | Registro mínimo dos tipos/grafo compartilhados diretamente necessários, sem regra independente. |
+| package.json | test:orders e inclusão no verify | Comando de validação do incremento, preservando os gates existentes. |
+| tests/core/run-integration.mjs | seleção orders → schema TASK-021/config própria | Reutiliza isolamento real sem reset/fallback de banco e sem alterar outras suítes. |
+
+Nove critérios PASS para os três incidentais. Autorização, persistência e composição protegida foram classificados PRIMARY antes da implementação, não como ajustes incidentais de segurança.
+
+### Tests Executed
+
+Ubuntu WSL2/Node 24.22.1/npm 11.19.1/PostgreSQL 17, banco garimpo_test e schemas novos retidos. TLS real com CA no perfil Firefox isolado, sem bypass. Base original e ZIP preservados. Heap somente por processo, sem alterar custos de senha ou timeout.
+
+- build.log/9dc493b e api-build.log/3431da7: build/tipos/lint PASS. api-acceptance.log/8553bf4: 121 unitários, 16 integrações novas, 32 pagamentos e 24 checkout PASS; schema de pedidos task021_fe285e487b98485281339600e20682b5, financeiros task019_85bd736d1862486280c112e8fa586e03, checkout task018_fe59b7f05d514f0f993087eec1a42a87. Esses recortes preservam os efeitos financeiros após emissão dos eventos de histórico.
+- ui-build.log/dfff2e2: build PASS e tipos FAIL por query opcional; correção em 79365a4. acceptance-ui.log/79365a4: build e tipos do produto PASS; tipos de teste FAIL por NodeList sem DOM.Iterable; aca12bd usa Array.from, sem mudar tsconfig/validação. Logs anteriores retidos, sem aprovação retroativa.
+- ui-recheck.log/aca12bd, exit 0: tipos/lint PASS; npm test 121/121 PASS; test:orders 18/18 PASS (17 API/integração + uma compatibilidade da migration), schemas task021_11f9bace18cf424e8873b690ead179e4 e task021_legacy_4a244695d17646a89d9c2396e30df779. Compatibilidade aplica SQL anterior real, insere fatos sintéticos mínimos e aplica SQL novo; compara todas as colunas originais e datas conhecidas, sem inventar postagem/entrega/ator.
+- Mesmo ui-recheck.log: três E2E próprios PASS (ADMIN/OPERATOR e histórico do comprador; boleto web encontrado/pago por cliente RNW sem diário local; dois editores com 409, refresh e privacidade de outro comprador). Seis E2E de checkout existentes PASS no conjunto, incluindo resposta Pix perdida/chave/corpo/reload, boleto tardio e estorno, recusa, bearer, armazenamento indisponível e troca de dono. Navegador → HTTPS/API → serviços → DB → resposta reais, sem stub de regra comercial.
+- Mesmo ui-recheck.log: bundle:android PASS (629 módulos) e export iOS PASS (631). Bundles não são APK/IPA nem execução física.
+- messaging-regression.log/aca12bd, exit 0: 16 integrações de mensagens PASS em task005_830188c9b1e54a0b9d6fc2028968441f. audit:toolchain PASS na política/hash/mitigações ratificadas; relatório bruto npm permanece FAIL/exit 1, sete low deepmerge, zero moderate/high/critical. Não declarar auditoria limpa.
+- Capturas history-web-narrow-enlarged.png e history-rnw-narrow-enlarged.png inspecionadas: web 390px/texto 200%, foco no detalhe e sem rolagem horizontal; texto e rastreio quebram linhas. RNW amplia por CSS e mostra a porção visível do ScrollView; não comprova conteúdo inteiro fora da viewport, fonte nativa ou aparelho. Android/iOS físicos, TalkBack/VoiceOver NÃO EXECUTADOS; recusa do responsável preservada.
+- Revisão React: telas lazy web, hooks sem ramificações condicionais, request estável por identidade, cancelamento/generation e limpeza no unmount, listas com chaves, rótulos/foco/alerts, fonte escalável declarada no native, consultas independentes paralelas. Sem polling por tick ou estado financeiro otimista. git diff --check e checker documental PASS: 37 IDs/79 arestas, índice/seções coerentes e grafo acíclico.
+
+### Quality Gates
+
+Build PASS; Lint PASS; Unit Tests PASS (121); Integration Tests PASS (18 novos + 32 pagamentos/24 checkout/16 mensagens de regressão); API Tests PASS (dono, papéis, HTTPS/origem/CSRF/bearer, revisão/idempotência, datas, rollback, concorrência real); Security PASS nos controles/política/hash, auditoria bruta FAIL conhecida registrada; Acceptance Criteria PASS no incremento original descrito; Regression Tests PASS (seis E2E de checkout e suítes afetadas). Exportações Android/iOS PASS; aparelho/leitor N/A como gate automatizado, não PASS manual. Pós-venda e cancelamento de TEST-020 e demais eventos futuros de TEST-024 serão validados nas respectivas tarefas/checkpoint, sem aprovação antecipada.
+
+### Scope Validation
+
+Allowed Changes PASS com precisões PRIMARY anteriores à edição; Incidental Changes PASS; Forbidden Changes PASS; Scope Creep NONE. 49 arquivos classificados, nenhum arquivo alheio incluído. Definition of Done PASS após conferência final de critérios/escopo/estado. Estados IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE; checker intermediário detectou índice ainda IN_PROGRESS durante promoção à revisão, corrigido junto à seção e revalidado. 21/37 DONE; acumulado 363 casos distintos = 121 unitários + 201 integrações + 41 E2E, sem contar repetições.
+
+### Next Eligible TASK
+
+TASK-022 candidata, dependências 019/021 DONE; própria DoR, retenção/anonimização apenas no comportamento dependente e contratos/ADRs verificados. Continuidade até pelo menos 28/37 permanece ativa; checkpoint 024 obrigatório antes da PHASE-04.
 
 ### TASK-022 Implementar bloqueio, encerramento e reativação de contas
 
