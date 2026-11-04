@@ -29,7 +29,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 19 | TASK-019 Implementar simulador, cobranças e estornos automáticos | PHASE-03 | CRITICAL | TASK-018 | DONE |
 | 20 | TASK-020 Criar checkout e simulação nos clientes | PHASE-03 | HIGH | TASK-017, TASK-018, TASK-019 | DONE |
 | 21 | TASK-021 Implementar histórico e logística manual | PHASE-03 | HIGH | TASK-019 | DONE |
-| 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | IN_PROGRESS |
+| 22 | TASK-022 Implementar bloqueio, encerramento e reativação de contas | PHASE-03 | HIGH | TASK-019, TASK-021 | DONE |
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | BLOCKED |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | BLOCKED |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | BLOCKED |
@@ -2822,7 +2822,7 @@ TASK-022 candidata, dependências 019/021 DONE; própria DoR, retenção/anonimi
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -2910,6 +2910,10 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 DoR e escopo registrados acima. Núcleo/API e primeiros testes em 16879f7; api-check.log: build de contracts PASS, build de API FAIL por parâmetro Express inferido como string|string[] em rota composta. Correção mínima valida UUID com Zod antes do serviço, sem cast/bypass. IN_PROGRESS → FAILED → IN_PROGRESS para revalidação. api-recheck.log em 7b37fb7, exit 0: build/tipos/lint, 124 unitários e oito integrações de ciclo PASS em task022_1f959bb19a58452580dc1a1293e92c61. ui-build.log em 646a86a: build/tipos/lint PASS, unitários 125/126, FAIL no teste novo porque a fixture HTTP respondia 200 até sem credencial; corrigida para rejeitar /me e conferir que nenhum token antigo/logout/refresh é enviado após limpar acesso. Produto não foi alterado para acomodar a fixture. IN_PROGRESS → FAILED → IN_PROGRESS. ui-check.log em 6258695: tipos/lint, 126 unitários e quatro E2E completos PASS, inclusive navegação nativa real. acceptance.log em 7900cea: build e tipos de produto PASS; tipos dos novos testes FAIL pelo nome onHand em duas asserções, cujo campo real é stockOnHand; corrigido sem alterar modelo ou validação. IN_PROGRESS → FAILED → IN_PROGRESS. Interface final/revisão de autorização de correção restrita e regressões completas continuam pendentes; não declarar DONE por esses recortes.
 
 Validação intermediária no commit ea18470: acceptance2.log registrou 126 unitários e 16 integrações de ciclo aprovados. A suíte legada executou seus 14 casos com sucesso, mas seu glob incluiu indevidamente a suíte 022 no schema 004. A configuração da suíte legada passa a selecionar apenas accounts.integration.ts (ajuste incidental de descoberta, preservando ambos os runners e a guarda de isolamento).
+
+Fechamento em 2026-11-04 sobre 35e7158. Build de API/contratos/web PASS em 7900cea/ea18470. Tipos e lint PASS no código final. Unitários 126 e integração do ciclo 16 PASS no recorte ea18470, com núcleo/API inalterados no fechamento. Regressões PASS em remaining.log: contas 14, mensagens 16, pagamentos 32, checkout 24. Pedidos 18 PASS em orders-ui.log após repetição do teste que falhou por certificado local ainda fora da validade temporal. A validação TLS continuou ativa. E2E 4 PASS, incluindo navegação mobile no Firefox e nova tentativa de limpeza local sem chamada de logout. Bundles Android e iOS PASS. Dispositivo físico e leitor de tela não executados. A auditoria bruta mantém 7 achados baixos. O gate de política e verificação de patch passou.
+
+Scope Guard final: 36 arquivos PRIMARY nos módulos, contratos, documentação, composição e fixtures delimitados acima. Quatro INCIDENTAIS: export de contratos, comandos em package.json, descoberta e isolamento no runner, seleção explícita da suíte legada de contas. Nenhuma migration ou dado original alterado. Gate de revisão e DoD satisfeitos. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. 22 de 37 concluídas. A TASK-023 segue para validação de prontidão.
 
 ### TASK-023 Integrar regras comerciais e validar fronteiras
 
