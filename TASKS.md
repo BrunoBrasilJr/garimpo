@@ -2298,6 +2298,8 @@ Quality Gates: Build PASS; Lint PASS; Unit Tests PASS (103); Integration Tests P
 
 Scope Validation: Allowed Changes PASS; Incidental Changes PASS (um arquivo export); Forbidden Changes PASS; Scope Creep NONE. Definition of Done PASS. 17/37 DONE; acumulado 259 casos distintos com evidências = 103 unitários + 127 integrações + 29 E2E. Next Eligible TASK: TASK-018 candidata, dependências 016/014 DONE, própria DoR e Scope Guard antes de iniciar. Autorização de continuidade até 28/37 permanece vigente. ZIP e dados originais preservados; nenhum novo túnel, implantação ou mensagem externa.
 
+Revalidação em 2026-11-04. A TASK-024 identificou que a aplicação de cupom recarregava o carrinho duas vezes e podia bloquear a caixa de confirmação durante o clique. Correção PRIMARY em apps/web/src/features/cart/Cart.tsx, branch fix/TASK-017-coupon-confirmation, commit 98452ee. Incidental Changes: NONE. Build, tipos, lint e 23 jornadas Firefox PASS, incluindo cupom, revisão e recusa de cartão. GATE-07 e GATE-08 PASS. Evidência em test-results/phase-03/recheck.log.
+
 ### TASK-018 Implementar frete, cotação e pedidos
 
 #### Status
