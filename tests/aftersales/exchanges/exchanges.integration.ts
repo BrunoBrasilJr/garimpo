@@ -3,6 +3,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import type { AftersalesOverview, CatalogEdition, ExchangeView, ReturnView } from '@garimpo/contracts';
 import { Exchanges } from '../../../apps/api/src/modules/aftersales/exchanges/service.ts';
+import { consumeCommerce } from '../../../apps/api/src/modules/messaging/commerce.ts';
 import { credentials, foundation } from '../../accounts/lifecycle/fixtures.ts';
 
 let fixture: Awaited<ReturnType<typeof foundation>>;
@@ -10,6 +11,55 @@ beforeAll(async () => { fixture = await foundation(undefined, '027'); });
 afterAll(async () => { await fixture?.close(); });
 const day = 86400000;
 const now = () => fixture.clock.now().toISOString();
+
+test('notices retain offer deadlines and omit posting, acceptance and successful inspection', async () => {
+  const p = await setup(), offered = await offerSubstitute(p.row, p.offer.id);
+  const sub = offered.substitutes[0]!;
+  const accepted = await call('/exchanges/' + p.row.id + '/substitute-offers/' + sub.id + '/response',
+    { version: offered.version, decision: 'ACCEPT' }, p.buyer);
+  expect(accepted.status).toBe(200);
+  const waiting = await postAndInspect(accepted.body, p.buyer);
+  expect(await fixture.db.domainEvent.count({ where: { aggregateId: p.row.id, type: 'EXCHANGE.UPDATED' } })).toBe(3);
+  const shipped = await call(adminPath(waiting, 'shipment'), { version: waiting.version, trackingCode: 'NOTICE-SUBSTITUTE', postedAt: now() });
+  expect(shipped.status).toBe(200);
+  expect((await call(adminPath(shipped.body, 'delivery'), { version: shipped.body.version, deliveredAt: now() })).status).toBe(200);
+  const events = await fixture.db.domainEvent.findMany({ where: { aggregateId: p.row.id, type: 'EXCHANGE.UPDATED' } });
+  expect(events).toHaveLength(5);
+  for (;;) { const result = await consumeCommerce(fixture.messages); if (result === 'EMPTY') break; expect(result).toBe('PROCESSED'); }
+  const messages = await fixture.db.demoMessage.findMany({ where: { eventId: { in: events.map(event => event.id) } } });
+  const bodies = messages.map(message => JSON.parse(fixture.messages.protection.open(message.id, message.restrictedBody)) as { title: string; caseInfo: { deadline: string | null } });
+  expect(bodies).toContainEqual(expect.objectContaining({ title: 'Substituto disponível', caseInfo: expect.objectContaining({ deadline: sub.expiresAt }) }));
+  expect(bodies).toContainEqual(expect.objectContaining({ title: 'Troca aprovada; postagem necessária', caseInfo: expect.objectContaining({ deadline: p.row.postingDueAt }) }));
+  expect(bodies).toContainEqual(expect.objectContaining({ title: 'Substituto enviado' }));
+});
+
+test('competing offer responses serialize and acceptance at the expiry boundary cannot keep a hold', async () => {
+  for (const expired of [false, true]) {
+    const p = await setup(), waiting = await postAndInspect(p.row, p.buyer), offered = await offerSubstitute(waiting, p.offer.id);
+    const sub = offered.substitutes[0]!;
+    if (expired) { fixture.advance(2 * day); await fixture.freshRoles(); }
+    const buyer = expired ? await fixture.accounts.login(p.buyer.user.email, fixture.password) : p.buyer;
+    await fixture.control.query('BEGIN');
+    await fixture.control.query('SELECT id FROM "User" WHERE id=$1 FOR UPDATE', [buyer.user.id]);
+    const responses = Promise.all(['ACCEPT', 'REJECT'].map(decision => call('/exchanges/' + p.row.id + '/substitute-offers/' + sub.id + '/response',
+      { version: offered.version, decision }, buyer)));
+    let contended = false;
+    try {
+      for (let attempt = 0; attempt < 150; attempt++) {
+        await fixture.control.query('SELECT pg_stat_clear_snapshot()');
+        const result = await fixture.control.query("SELECT count(*)::int AS total FROM pg_stat_activity WHERE application_name='TASK027_A' AND wait_event_type='Lock'");
+        if (result.rows[0].total >= 2) { contended = true; break; }
+        await delay(20);
+      }
+    } finally { await fixture.control.query('ROLLBACK'); }
+    expect((await responses).map(result => result.status).sort()).toEqual(expired ? [409, 409] : [200, 409]);
+    expect(contended).toBe(true);
+    if (expired) {
+      await new Exchanges(fixture.accounts).reconcile();
+      expect(await fixture.db.reservation.findUnique({ where: { substituteId: sub.id } })).toMatchObject({ status: 'EXPIRED' });
+    }
+  }
+});
 
 async function purchase() {
   await fixture.freshRoles();

@@ -6,7 +6,7 @@ export function aftersalesDescription(kind: 'RETURN' | 'EXCHANGE', notice: CaseN
   if (notice.action === 'OFFER') return ['Substituto disponível', 'Um substituto foi reservado para sua resposta. Confira a equivalência e responda até ' + notice.deadline + '.'];
   if (notice.state === 'AWAITING_POSTING') return [label + ' aprovada; postagem necessária', 'O retorno deve ser postado e informado até ' + notice.deadline + '. Consulte o atendimento para registrar o envio.'];
   if (notice.state === 'AWAITING_REFUND') return [label + ' aprovada', 'O atendimento aguarda autorização do administrador para estorno.'];
-  if (notice.state === 'CONVERTED' || notice.action === 'WAIT_CONVERTED') return ['Troca convertida em devolução', 'A espera pelo substituto terminou. A devolução vinculada continua sujeita à conferência e autorização de estorno.'];
+  if (notice.state === 'CONVERTED' || ['CONVERT', 'WAIT_CONVERTED'].includes(notice.action)) return ['Troca convertida em devolução', 'A troca foi convertida. A devolução vinculada continua sujeita à conferência e autorização de estorno.'];
   if (notice.action === 'SHIPMENT') return ['Substituto enviado', 'A remessa do substituto foi registrada. Consulte o código de rastreamento no atendimento.'];
   if (notice.action === 'DELIVERY') return ['Substituto entregue', 'A entrega do substituto foi registrada e inicia a nova janela de atendimento dessa unidade.'];
   if (notice.action === 'REJECTED_SHIPMENT') return ['Original reenviado', 'A remessa de reenvio do exemplar original foi registrada. Consulte o rastreamento no atendimento.'];

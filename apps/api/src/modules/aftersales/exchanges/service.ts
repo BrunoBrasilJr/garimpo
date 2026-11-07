@@ -283,7 +283,16 @@ export class Exchanges {
     const { clock } = this.accounts;
     await appendAudit(tx, { ...(actorId ? { actorId } : {}), action: 'EXCHANGE.' + action, targetType: 'EXCHANGE', targetId: row.id,
       result: 'SUCCESS', reason: 'EXCHANGE_COMMAND', changes: { orderId: row.orderId, state: row.state, ...(reason ? { reason } : {}) } }, clock);
-    await enqueue(tx, { type: 'EXCHANGE.UPDATED', aggregateId: row.id, payload: { orderId: row.orderId, userId: row.order.userId } }, clock);
+    const notify = ['OPENED', 'DECISION', 'OFFER', 'SHIPMENT', 'DELIVERY', 'CANCEL', 'CONVERT', 'EXTENSION',
+      'INSPECTION_EXCEPTION', 'REJECTED_SHIPMENT', 'REJECTED_DELIVERY', 'WAIT_CONVERTED', 'POSTING_EXPIRED'].includes(action)
+      || action === 'RECEIPT' && row.state === 'REJECTED_AWAITING_SHIPMENT';
+    if (!notify) return;
+    const offerDeadline = action === 'OFFER' ? live(row).filter(value => value.state === 'OFFERED')
+      .reduce<Date | null>((latest, value) => !latest || value.expiresAt > latest ? value.expiresAt : latest, null) : null;
+    await enqueue(tx, { type: 'EXCHANGE.UPDATED', aggregateId: row.id, payload: {
+      orderId: row.orderId, userId: row.order.userId,
+      caseInfo: { id: row.id, action, state: row.state, deadline: (offerDeadline ?? row.postingDueAt)?.toISOString() ?? null }
+    } }, clock);
   }
 
   private async reconcileLocked(tx: Prisma.TransactionClient, row: Exchange) {
