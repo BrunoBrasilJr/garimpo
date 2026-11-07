@@ -24,10 +24,12 @@ beforeAll(async () => {
   const edition = await f.db.edition.findUniqueOrThrow({ where: { id: original.editionId }, include: { artists: true, images: true } });
   const image = edition.images[0]!, bytes = await readFile(join(f.mediaRoot, image.storageKey));
   const rows = Array.from({ length: profile.editions - 1 }, (_, index) => ({ editionId: randomUUID(), offerId: randomUUID(), imageId: randomUUID(), stock: index < profile.customers - 1 ? 500 : 20 }));
-  await f.db.edition.createMany({ data: rows.map((row, index) => ({ id: row.editionId, title: 'Carga acadêmica ' + String(index).padStart(4, '0'), format: 'LP',
-    primaryGenreId: edition.primaryGenreId, editionYear: 1970 + index % 55, active: true })) });
-  await f.db.editionArtist.createMany({ data: rows.map(row => ({ editionId: row.editionId, artistId: edition.artists[0]!.artistId })) });
-  await f.db.editionGenre.createMany({ data: rows.map(row => ({ editionId: row.editionId, genreId: edition.primaryGenreId })) });
+  await f.db.$transaction(async tx => {
+    await tx.edition.createMany({ data: rows.map((row, index) => ({ id: row.editionId, title: 'Carga acadêmica ' + String(index).padStart(4, '0'), format: 'LP',
+      primaryGenreId: edition.primaryGenreId, editionYear: 1970 + index % 55, active: true })) });
+    await tx.editionArtist.createMany({ data: rows.map(row => ({ editionId: row.editionId, artistId: edition.artists[0]!.artistId })) });
+    await tx.editionGenre.createMany({ data: rows.map(row => ({ editionId: row.editionId, genreId: edition.primaryGenreId })) });
+  });
   await f.db.offer.createMany({ data: rows.map(row => ({ id: row.offerId, editionId: row.editionId, kind: 'NEW', priceCents: 10000, stockOnHand: row.stock, active: true })) });
   await f.db.stockMovement.createMany({ data: rows.map(row => ({ offerId: row.offerId, deltaOnHand: row.stock, balanceBefore: 0, balanceAfter: row.stock,
     offerVersion: 1, reason: 'Massa sintética do perfil de carga', originKey: 'PERFORMANCE_SEED:' + row.offerId, actorId: f.admin.user.id })) });
@@ -80,13 +82,15 @@ async function cycle(actor: typeof actors[number], measured: boolean) {
 test('frozen local workload meets its predeclared p95 and preserves all sales and stock', async () => {
   expect(profile.customers).toBe(profile.concurrency);
   expect(profile.baselinePaidOrders % profile.customers).toBe(0);
-  await Promise.all(actors.map(async actor => { for (let index = 0; index < profile.baselinePaidOrders / profile.customers; index++) await cycle(actor, false); }));
+  const warmup = await Promise.allSettled(actors.map(async actor => { for (let index = 0; index < profile.baselinePaidOrders / profile.customers; index++) await cycle(actor, false); }));
+  const failedWarmup = warmup.find(result => result.status === 'rejected');
+  if (failedWarmup?.status === 'rejected') throw failedWarmup.reason;
   expect(await f.db.order.count({ where: { status: 'PAID' } })).toBe(profile.baselinePaidOrders);
   for (const table of ['Edition', 'EditionArtist', 'EditionGenre', 'Track', 'TrackArtist', 'Offer', 'ProductImage', 'Order', 'OrderItem', 'OrderUnit', 'FinancialEvent', 'Checkout', 'CheckoutItem', 'Reservation', 'PaymentAttempt', 'PaymentCharge', 'User', 'Session']) await f.db.$executeRawUnsafe('ANALYZE "' + table + '"');
   const started = performance.now();
-  let failure: unknown;
-  try { await Promise.all(actors.map(async actor => { for (let index = 0; index < profile.iterationsPerCustomer; index++) await cycle(actor, true); })); }
-  catch (error) { failure = error; }
+  const runs = await Promise.allSettled(actors.map(async actor => { for (let index = 0; index < profile.iterationsPerCustomer; index++) await cycle(actor, true); }));
+  const failedRun = runs.find(result => result.status === 'rejected');
+  const failure: unknown = failedRun?.status === 'rejected' ? failedRun.reason : undefined;
   const elapsed = performance.now() - started;
   const metrics = Object.fromEntries((Object.keys(profile.p95Milliseconds) as Metric[]).map(operation => {
     const durations = samples.filter(sample => sample.operation === operation).map(sample => sample.milliseconds).sort((a, b) => a - b);

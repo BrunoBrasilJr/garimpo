@@ -3854,6 +3854,8 @@ Prontidão em 2026-11-07. TASK-032 DONE em 70ecc38 e aplicação de domínio sem
 
 DoR PASS após perfil congelado b78f868, antes de qualquer amostra. READY → IN_PROGRESS. Runner cria schema UUID sob namespace 030 para reaproveitar a guarda da fixture existente sem alterá-la; nove corridas selecionadas usam seus namespaces próprios e bancos separados. Massa de catálogo sintética explícita, pedidos e pagamentos por HTTPS/serviços reais; dados e duração brutos serão registrados. Nenhuma alteração de produção autorizada por esta tarefa.
 
+Primeira preparação em 3ef6b8f: tipos/lint PASS, suite de carga FAILED antes de medir pela FK diferível Edition_principal_membership_fkey. Edição e associação ao gênero devem ser criadas na mesma transação, como no serviço real; nenhuma constraint desativada. IN_PROGRESS → FAILED → IN_PROGRESS para correção no próprio escopo de fixture. Metas/perfil b78f868 preservados; não há resultado de latência aprovado na primeira execução. Os clientes concorrentes passam a ser aguardados com allSettled para preservar todas as amostras mesmo em falha.
+
 ### TASK-035 Executar restauração isolada
 
 #### Status
