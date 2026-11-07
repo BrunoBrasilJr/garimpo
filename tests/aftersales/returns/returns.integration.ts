@@ -169,9 +169,9 @@ test('a return approved before shipment notifies a later physical posting requir
   expect(approved.state).toBe('AWAITING_REFUND');
   let version = (await fixture.db.order.findUniqueOrThrow({ where: { id: p.order.id } })).version;
   for (const status of ['SEPARATED', 'SHIPPED', 'DELIVERED'] as const) {
-    const body = { version, status, reason: 'Entrega posterior à aprovação da devolução' };
-    const command = status === 'SHIPPED' ? { ...body, postedAt: fixture.clock.now().toISOString(), trackingCode: 'RETURN-LATE-SHIPMENT' }
-      : status === 'DELIVERED' ? { ...body, deliveredAt: fixture.clock.now().toISOString() } : body;
+    const body = { version, reason: 'Entrega posterior à aprovação da devolução' };
+    const command = status === 'SHIPPED' ? { ...body, status, postedAt: fixture.clock.now().toISOString(), trackingCode: 'RETURN-LATE-SHIPMENT' }
+      : status === 'DELIVERED' ? { ...body, status, deliveredAt: fixture.clock.now().toISOString() } : { ...body, status };
     version = (await fixture.logistics.change(fixture.admin.accessToken, p.order.id, command, randomUUID())).version;
   }
   const response = await call('/admin/returns/' + approved.id + '/refund-authorization', authorization(approved), fixture.admin);
