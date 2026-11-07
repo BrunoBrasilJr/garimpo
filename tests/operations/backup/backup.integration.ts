@@ -15,7 +15,7 @@ import type { BackupManifest } from '../../../apps/api/src/operations/backup/man
 import { mkdir } from 'node:fs/promises';
 
 const value = process.env.TEST_DATABASE_URL!;
-let f: Awaited<ReturnType<typeof foundation>>, root: string, media: string, good: string, evidenceId: string;
+let f: Awaited<ReturnType<typeof foundation>>, root: string, media: string, good: string, evidenceId: string, historicalId: string, historicalKey: string;
 const id = randomUUID(), key = id + '.png';
 const schema = new URL(value).searchParams.get('schema')!;
 let bytes: Buffer;
@@ -29,6 +29,10 @@ beforeAll(async () => {
   const buyer = await f.customer(), held = await f.ready(buyer);
   const order = await f.orders.create(buyer.accessToken, held.body, held.key);
   const paid = await f.payments.charge(buyer.accessToken, order.id, { chargeId: order.charges[0]!.id, scenario: 'APPROVED' }, randomUUID());
+  historicalId = order.products[0]!.images[0]!.id;
+  historicalKey = order.products[0]!.images[0]!.url.split('/').at(-1)!;
+  await f.catalog.upload(f.admin.accessToken, 'edition', held.offer.editionId, bytes, 'image/png', 'Nova capa sintética');
+  await f.catalog.deleteImage(f.admin.accessToken, historicalId);
   await f.logistics.change(f.operator.accessToken, order.id, { version: paid.order!.version, status: 'PREPARING', reason: 'Separação sintética' }, randomUUID());
   const item = await f.db.orderItem.findFirstOrThrow({ where: { orderId: order.id } });
   const returns = new Returns(f.accounts, new AutomaticRefunds(f.accounts, f.gateway));
@@ -46,6 +50,7 @@ test('snapshot dump, historical media and whole-table fingerprints form a privat
   expect(manifest).toMatchObject({ database: 'garimpo_test', schema });
   expect(manifest.files).toEqual(expect.arrayContaining([expect.objectContaining({ key, byteSize: bytes.length })]));
   expect(manifest.evidence).toEqual([expect.objectContaining({ id: evidenceId, byteSize: bytes.length })]);
+  expect(manifest.images).toEqual(expect.arrayContaining([expect.objectContaining({ id: historicalId, key: historicalKey })]));
   expect(manifest.tables.find(table => table.name === 'BackupRun')?.rows).toBe(1);
   expect(manifest.tables.some(table => table.name === 'OrderUnit')).toBe(true);
   expect((await stat(good)).mode & 0o077).toBe(0);

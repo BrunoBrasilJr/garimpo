@@ -2,6 +2,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import { chmod, copyFile, mkdir, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { Client } from 'pg';
+import { z } from 'zod';
 import type { BackupConfig } from './config.ts';
 import { identifier, postgresEnvironment } from './config.ts';
 import { fileDigest, postgresCommand, privateRoot, syncFile } from './files.ts';
@@ -48,6 +49,22 @@ export async function runBackup(config: BackupConfig) {
     await chmod(dumpPath, 0o600);
     const images = await client.query<{ id: string; storageKey: string; contentHash: string; byteSize: number }>(
       'SELECT id,"storageKey","contentHash","byteSize" FROM ' + identifier(config.schema) + '."ProductImage" ORDER BY id');
+    const references = new Map(images.rows.map(row => [row.id, { id: row.id, key: row.storageKey, sha256: row.contentHash, byteSize: row.byteSize }]));
+    const snapshotImage = z.object({ id: z.string().uuid(), url: z.string().startsWith('/api/v1/media/products/'),
+      contentHash: z.string().regex(/^[a-f0-9]{64}$/), byteSize: z.number().int().positive() });
+    const historical = await client.query<{ image: unknown }>(
+      'SELECT image FROM ' + identifier(config.schema) + '."OrderItem" i CROSS JOIN LATERAL jsonb_array_elements(coalesce(i."productSnapshot"->\'images\',\'[]\')) AS images(image) '
+      + 'UNION ALL SELECT image FROM ' + identifier(config.schema) + '."Checkout" c CROSS JOIN LATERAL jsonb_array_elements(coalesce(c."quoteSnapshot"->\'products\',\'[]\')) AS products(product) '
+      + 'CROSS JOIN LATERAL jsonb_array_elements(coalesce(product->\'images\',\'[]\')) AS images(image)');
+    for (const row of historical.rows) {
+      const parsed = snapshotImage.safeParse(row.image);
+      if (!parsed.success) throw new Error('BACKUP_HISTORICAL_REFERENCE_INVALID');
+      const image = parsed.data, key = image.url.slice('/api/v1/media/products/'.length);
+      if (!imageKey.test(key)) throw new Error('BACKUP_HISTORICAL_REFERENCE_INVALID');
+      const reference = { id: image.id, key, sha256: image.contentHash, byteSize: image.byteSize }, old = references.get(image.id);
+      if (old && (old.key !== key || old.sha256 !== reference.sha256 || old.byteSize !== reference.byteSize)) throw new Error('BACKUP_REFERENCE_CONFLICT');
+      references.set(image.id, reference);
+    }
     const keys = await readdir(config.mediaRoot).catch((error: NodeJS.ErrnoException) => { if (error.code === 'ENOENT') return []; throw error; });
     const files: BackupManifest['files'] = [];
     // Preserve immutable historical image bytes too, including files retained after a catalog edit.
@@ -71,7 +88,7 @@ export async function runBackup(config: BackupConfig) {
     }
     const manifest: BackupManifest = {
       version: 1, id, database: config.database, schema: config.schema, createdAt: now.toISOString(), dump: await fileDigest(dumpPath),
-      files, images: images.rows.map(row => ({ id: row.id, key: row.storageKey, sha256: row.contentHash, byteSize: row.byteSize })),
+      files, images: [...references.values()].sort((a, b) => a.id.localeCompare(b.id)),
       evidence, tables: await tableDigests(client, config.schema)
     };
     await client.query('COMMIT'); transaction = false;
