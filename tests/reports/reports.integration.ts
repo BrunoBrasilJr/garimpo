@@ -1,0 +1,73 @@
+import { randomUUID } from 'node:crypto';
+import { afterAll, beforeAll, expect, test } from 'vitest';
+import type { CancellationResult, RankingReport, SalesReport } from '@garimpo/contracts';
+import { credentials, foundation } from '../accounts/lifecycle/fixtures.ts';
+
+let f: Awaited<ReturnType<typeof foundation>>;
+const september = '/admin/reports/sales?from=2026-09-01&to=2026-09-30';
+beforeAll(async () => { f = await foundation(undefined, '029', Date.parse('2026-09-15T12:00:00Z')); });
+afterAll(async () => { await f?.close(); });
+async function paid(quantity = 1, couponCode?: string) {
+  const buyer = await f.customer();
+  const held = await f.ready(buyer, { quantity, ...(couponCode ? { couponCode } : {}) });
+  const order = await f.orders.create(buyer.accessToken, held.body, held.key);
+  await f.payments.charge(buyer.accessToken, order.id, { chargeId: order.charges[0]!.id, scenario: 'APPROVED' }, randomUUID());
+  return { buyer, order, held };
+}
+const report = () => f.server.call<SalesReport>(september, 'GET', undefined, credentials(f.admin));
+
+test('September sale, October refund and historical asOf retain their separate meanings', async () => {
+  const purchase = await paid(2);
+  const before = await report();
+  expect(before).toMatchObject({ status: 200, body: { financial: { saleProductsCents: 20000, refundedProductsCents: 0 }, cohort: { paidOrders: 1, retainedOrders: 1, retainedUnits: 2, averageTicketCents: 20000 } } });
+  const asOf = before.body.asOf;
+  f.advance(Date.parse('2026-10-05T12:00:00Z') - f.clock.now().getTime());
+  await f.freshRoles();
+  const buyer = await f.accounts.login(purchase.buyer.user.email, f.password);
+  const cancellation = await f.server.call<CancellationResult>('/orders/' + purchase.order.id + '/cancellations', 'POST',
+    { reason: 'Desistência sintética em outubro' }, { ...credentials(buyer), 'Idempotency-Key': randomUUID() });
+  expect(cancellation.status).toBe(201);
+  expect((await report()).body).toMatchObject({ financial: { saleProductsCents: 20000, refundedProductsCents: 0 }, cohort: { retainedOrders: 0, retainedUnits: 0, averageTicketCents: null } });
+  expect((await f.server.call<SalesReport>(september + '&asOf=' + encodeURIComponent(asOf), 'GET', undefined, credentials(f.admin))).body.cohort.retainedUnits).toBe(2);
+  const october = await f.server.call<SalesReport>('/admin/reports/sales?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
+  expect(october.body.financial).toMatchObject({ saleProductsCents: 0, refundedProductsCents: 20000, netProductsCents: -20000, refundedShippingCents: 1500 });
+});
+
+test('free retained units count and the frozen primary genre prevents duplication after catalog edits', async () => {
+  const coupon = await f.pricing.createCoupon(f.admin.accessToken, { code: 'FREE' + randomUUID().slice(0, 8).toUpperCase(),
+    type: 'PERCENT', amount: 10000, allowPromotional: true, startsAt: new Date(f.clock.now().getTime() - 1000).toISOString(), endsAt: '2027-01-01T00:00:00.000Z' });
+  const purchase = await paid(1, coupon.code);
+  const result = await f.server.call<SalesReport>('/admin/reports/sales?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
+  expect(result.body.cohort).toMatchObject({ paidOrders: 1, retainedOrders: 1, retainedUnits: 1, averageTicketCents: 0 });
+  const frozen = purchase.order.products[0]!;
+  await f.catalog.changeMetadata(f.admin.accessToken, 'genre', 'Nome alterado depois da venda', frozen.primaryGenreId);
+  const ranking = await f.server.call<RankingReport>('/admin/reports/genres?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
+  expect(ranking.body.items).toEqual([{ id: frozen.primaryGenreId, name: frozen.primaryGenre, units: 1, productCents: 0 }]);
+  const products = await f.server.call<RankingReport>('/admin/reports/products?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
+  expect(products.body.items).toMatchObject([{ id: purchase.held.offer.editionId, units: 1, productCents: 0 }]);
+});
+
+test('technical late payment refunds do not count as new sales', async () => {
+  const buyer = await f.customer(), held = await f.ready(buyer);
+  const order = await f.orders.create(buyer.accessToken, held.body, held.key);
+  const pending = await f.payments.charge(buyer.accessToken, order.id, { chargeId: order.charges[0]!.id, scenario: 'PENDING' }, randomUUID());
+  f.advance(31 * 60000);
+  await f.gateway.event(pending.id, 'APPROVED');
+  await f.payments.apply(pending.id);
+  await f.freshRoles();
+  const result = await f.server.call<SalesReport>('/admin/reports/sales?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
+  expect(result.body.financial).toMatchObject({ saleProductsCents: 0, technicalRefundCents: 11500 });
+  expect(result.body.cohort.paidOrders).toBe(1);
+});
+
+test('ADMIN web authorization runs before filter parsing, and private totals require HTTPS', async () => {
+  const buyer = await f.customer();
+  for (const actor of [f.operator, buyer]) expect((await f.server.call('/admin/reports/sales?from=invalid', 'GET', undefined, credentials(actor))).status).toBe(403);
+  expect((await f.server.call(september, 'GET', undefined, { 'X-Garimpo-Client': 'mobile', Authorization: 'Bearer ' + f.admin.accessToken })).status).toBe(403);
+  expect((await f.server.call(september, 'GET', undefined, credentials(f.admin), true)).status).toBe(403);
+  expect((await f.server.call('/admin/reports/sales?from=2026-02-30&to=2026-03-01', 'GET', undefined, credentials(f.admin))).status).toBe(422);
+  expect((await f.server.call(september + '&asOf=2099-01-01T00:00:00Z', 'GET', undefined, credentials(f.admin))).status).toBe(422);
+  const empty = await f.server.call<SalesReport>('/admin/reports/sales?from=2020-01-01&to=2020-01-01', 'GET', undefined, credentials(f.admin));
+  expect(empty.body.cohort.averageTicketCents).toBeNull();
+  expect(empty.headers['cache-control']).toContain('no-store');
+});

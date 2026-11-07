@@ -25,10 +25,10 @@ import { Logistics } from '../../../apps/api/src/modules/orders/logistics.ts';
 import { Pricing } from '../../../apps/api/src/modules/pricing/service.ts';
 import { openCatalogServer, web } from '../../catalog/http.ts';
 export const credentials = (session: SessionBundle) => web({ cookie: `__Host-garimpo-access=${session.accessToken}; __Host-garimpo-refresh=${session.refreshToken}; __Host-garimpo-csrf=${session.csrfToken}`, csrf: session.csrfToken });
-export async function foundation(wrap?: (gateway: LocalGateway) => PaymentGateway, task: '022' | '023' | '025' | '026' | '027' = '022') {
+export async function foundation(wrap?: (gateway: LocalGateway) => PaymentGateway, task: '022' | '023' | '025' | '026' | '027' | '029' = '022', initialTime = Date.now()) {
   const value = process.env.TEST_DATABASE_URL; if (!value) throw new Error('Separate test database required.');
   const url = new URL(value), schema = url.searchParams.get('schema'); if (url.pathname !== '/garimpo_test' || !['localhost', '127.0.0.1'].includes(url.hostname) || !new RegExp('^task' + task + '_[a-f0-9]{32}$').test(schema ?? '')) throw new Error('Only the isolated schema for this task is accepted.');
-  let current = Date.now(), nextZip = 10000000; const clock = { now: () => new Date(current) }, advance = (milliseconds: number) => { current += milliseconds; };
+  let current = initialTime, nextZip = 10000000; const clock = { now: () => new Date(current) }, advance = (milliseconds: number) => { current += milliseconds; };
   url.searchParams.set('application_name', 'TASK' + task + '_A'); const db = createDatabase(url.href); url.searchParams.set('application_name', 'TASK' + task + '_B'); const other = createDatabase(url.href);
   const accounts = new Accounts(db, clock), secondAccounts = new Accounts(other, clock), freight = new Freight(accounts), secondFreight = new Freight(secondAccounts), carts = new Carts(accounts), orders = new Orders(accounts), secondOrders = new Orders(secondAccounts), quotes = new CheckoutQuotes(accounts), pricing = new Pricing(accounts);
   const password = 'Frase sintética comprida para testar frete e pedidos!', adminEmail = randomUUID() + '@example.invalid', operatorEmail = randomUUID() + '@example.invalid';

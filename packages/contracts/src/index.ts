@@ -27,3 +27,4 @@ export type { CancellationResult } from './aftersales/cancellations.js';
 export type { ReturnState, ReturnView } from './aftersales/returns.js';
 export type { ExchangeState, ExchangeView } from './aftersales/exchanges.js';
 export type { AftersalesOverview } from './aftersales/overview.js';
+export type { ReportPeriod, SalesReport, ReportRank, RankingReport } from './reports/index.js';
