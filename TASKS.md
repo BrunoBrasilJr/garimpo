@@ -40,7 +40,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | DONE |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | DONE |
-| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | FAILED |
+| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | IN_PROGRESS |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | BLOCKED |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | READY |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | BLOCKED |
@@ -3708,7 +3708,7 @@ Fechamento em 2026-11-07. docs/validation/phase-04.md consolida verify.log, core
 
 #### Status
 
-FAILED
+IN_PROGRESS
 
 #### Phase
 
@@ -3778,6 +3778,8 @@ Primeiros dois E2E de acessibilidade PASS em accessibility.log. Inspeção visua
 IN_PROGRESS → FAILED pela legibilidade dos metadados ampliados constatada na captura acceptance-200-edition.png. A TASK-010 fará a correção CSS; os ensaios acumulados no snapshot anterior continuam para localizar outros problemas sem alterar o código em execução.
 
 A correção visual 010 em 225ec18/60cf75f passou em build/tipos/lint e 5 E2E (catalog-final.log). Suítes acumuladas browser.log: contas 7, catálogo web 3 e componentes móveis 3 PASS; estoque administrativo 1 FAIL/1 PASS porque a expectativa histórica ainda pede vínculos UNAVAILABLE após a integração comercial real da TASK-023. Corrigir o teste na TASK-009 para conferir saldo real e impedir redução de estoque reservado, mantendo o caso de porta indisponível nos testes de integração existentes.
+
+Retomada após correções 010 e 009 concluídas e verificadas. Captura metadata-fixed.png inspecionada com fotos carregadas e rótulos legíveis. FAILED → IN_PROGRESS para completar as 30 jornadas restantes, preservando os resultados já aprovados. Chrome/Edge positivos e inspeção física permanecem sem resultado; não são PASS por inferência.
 
 ### TASK-034 Validar desempenho e concorrência
 
