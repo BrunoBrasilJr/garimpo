@@ -258,7 +258,8 @@ export class Returns {
       result: 'SUCCESS', reason: 'RETURN_COMMAND', changes: { orderId, ...(reason ? { reason } : {}) } }, clock);
     const request = await tx.returnRequest.findUniqueOrThrow({ where: { id }, select: { state: true, postingDueAt: true } });
     const notify = ['OPENED', 'DECISION', 'EXTENSION', 'INSPECTION_EXCEPTION', 'REJECTED_SHIPMENT', 'REJECTED_DELIVERY', 'EXPIRED'].includes(action)
-      || action === 'RECEIPT' && request.state === 'REJECTED_AWAITING_SHIPMENT';
+      || action === 'RECEIPT' && request.state === 'REJECTED_AWAITING_SHIPMENT'
+      || action === 'AUTHORIZATION' && request.state === 'AWAITING_POSTING';
     if (!notify) return;
     const order = await tx.order.findUniqueOrThrow({ where: { id: orderId }, select: { userId: true } });
     await enqueue(tx, { type: 'RETURN.UPDATED', aggregateId: id, payload: { orderId, userId: order.userId,

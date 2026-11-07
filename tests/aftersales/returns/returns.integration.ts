@@ -163,3 +163,22 @@ test('customer notices preserve the original posting decision and omit intermedi
     caseInfo: expect.objectContaining({ state: 'AWAITING_POSTING', deadline: approved.postingDueAt })
   }));
 });
+
+test('a return approved before shipment notifies a later physical posting requirement', async () => {
+  const p = await purchase(1, false), approved = await decision(await open(p, 1));
+  expect(approved.state).toBe('AWAITING_REFUND');
+  let version = (await fixture.db.order.findUniqueOrThrow({ where: { id: p.order.id } })).version;
+  for (const status of ['SEPARATED', 'SHIPPED', 'DELIVERED'] as const) {
+    const body = { version, status, reason: 'Entrega posterior à aprovação da devolução' };
+    const command = status === 'SHIPPED' ? { ...body, postedAt: fixture.clock.now().toISOString(), trackingCode: 'RETURN-LATE-SHIPMENT' }
+      : status === 'DELIVERED' ? { ...body, deliveredAt: fixture.clock.now().toISOString() } : body;
+    version = (await fixture.logistics.change(fixture.admin.accessToken, p.order.id, command, randomUUID())).version;
+  }
+  const response = await call('/admin/returns/' + approved.id + '/refund-authorization', authorization(approved), fixture.admin);
+  expect(response).toMatchObject({ status: 200, body: { state: 'AWAITING_POSTING', refund: null } });
+  const events = await fixture.db.domainEvent.findMany({ where: { aggregateId: approved.id, type: 'RETURN.UPDATED' } });
+  expect(events).toHaveLength(3);
+  expect(events.map(event => event.payload)).toContainEqual(expect.objectContaining({
+    caseInfo: expect.objectContaining({ action: 'AUTHORIZATION', state: 'AWAITING_POSTING', deadline: response.body.postingDueAt })
+  }));
+});
