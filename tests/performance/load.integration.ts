@@ -34,7 +34,7 @@ beforeAll(async () => {
   await f.db.stockMovement.createMany({ data: rows.map(row => ({ offerId: row.offerId, deltaOnHand: row.stock, balanceBefore: 0, balanceAfter: row.stock,
     offerVersion: 1, reason: 'Massa sintética do perfil de carga', originKey: 'PERFORMANCE_SEED:' + row.offerId, actorId: f.admin.user.id })) });
   await f.db.productImage.createMany({ data: rows.map(row => ({ id: row.imageId, editionId: row.editionId, storageKey: row.imageId + extname(image.storageKey),
-    description: 'Capa sintética da carga', position: 0, contentHash: image.contentHash, mimeType: image.mimeType, byteSize: image.byteSize, width: image.width, height: image.height })) });
+    description: 'Capa sintética da carga', position: image.position, contentHash: image.contentHash, mimeType: image.mimeType, byteSize: image.byteSize, width: image.width, height: image.height })) });
   for (let offset = 0; offset < rows.length; offset += 50) await Promise.all(rows.slice(offset, offset + 50).map(row => writeFile(join(f.mediaRoot, row.imageId + extname(image.storageKey)), bytes, { mode: 0o600 })));
   const editionIds = [edition.id, ...rows.map(row => row.editionId)];
   const tracks = editionIds.flatMap(editionId => Array.from({ length: profile.tracksPerEdition }, (_, index) => ({ id: randomUUID(), editionId, position: index + 1, title: 'Faixa de carga ' + index, durationSeconds: 180 })));

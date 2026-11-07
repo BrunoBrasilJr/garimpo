@@ -3856,6 +3856,8 @@ DoR PASS após perfil congelado b78f868, antes de qualquer amostra. READY → IN
 
 Primeira preparação em 3ef6b8f: tipos/lint PASS, suite de carga FAILED antes de medir pela FK diferível Edition_principal_membership_fkey. Edição e associação ao gênero devem ser criadas na mesma transação, como no serviço real; nenhuma constraint desativada. IN_PROGRESS → FAILED → IN_PROGRESS para correção no próprio escopo de fixture. Metas/perfil b78f868 preservados; não há resultado de latência aprovado na primeira execução. Os clientes concorrentes passam a ser aguardados com allSettled para preservar todas as amostras mesmo em falha.
 
+Segunda preparação em recheck.log: tipos/lint PASS, carga ainda não medida. CHECK de ProductImage rejeitou posição zero; a fixture passa a copiar a posição válida da imagem original, sem alterar schema/validação. IN_PROGRESS → FAILED → IN_PROGRESS. A troca de um valor number por outro number não muda tipos/contratos; repetir lint dirigido e execução real, preservando os gates de tipos já aprovados e as metas congeladas.
+
 ### TASK-035 Executar restauração isolada
 
 #### Status
