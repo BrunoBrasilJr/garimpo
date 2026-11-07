@@ -71,4 +71,13 @@ test('customer can browse publicly without forwarding credentials; pagination, h
   await page.setViewportSize({ width: 390, height: 844 }); await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole('link', { name: 'Pular para o conteúdo', exact: true }).focus(); await page.keyboard.press('Enter'); await expect(page.locator('#account-main')).toBeFocused();
+  await page.goto(app.origin + '/#/edition?id=' + data.main);
+  await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+  await expect(page.getByRole('heading', { name: data.mainTitle, exact: true })).toBeVisible();
+  const labels = await page.locator('.shop-metadata dt').evaluateAll(elements => elements.map(element => {
+    const range = document.createRange(); range.selectNodeContents(element);
+    return { lines: range.getClientRects().length, words: element.textContent!.trim().split(/\s+/).length };
+  }));
+  expect(labels.length).toBeGreaterThan(0);
+  for (const label of labels) expect(label.lines).toBeLessThanOrEqual(label.words);
 });

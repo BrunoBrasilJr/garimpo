@@ -17,7 +17,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
-| 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
+| 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | IN_PROGRESS |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
 | 13 | TASK-013 Implementar avaliações e moderação | PHASE-02 | MEDIUM | TASK-008, TASK-010, TASK-011 | DONE |
@@ -1380,7 +1380,7 @@ Allowed Changes PASS, incluindo precisão PRIMARY registrada antes da edição; 
 
 #### Status
 
-DONE
+IN_PROGRESS
 
 #### Phase
 
@@ -1481,6 +1481,8 @@ Build PASS; Lint PASS; Unit Tests PASS (68); Integration Tests PASS (composiçã
 ##### Scope Validation e Definition of Done
 
 Allowed Changes PASS com precisão PRIMARY anterior à edição; Incidental Changes PASS (dois arquivos); Forbidden Changes PASS; Scope Creep NONE. IDs preservados, nenhuma compra/reserva/lista de desejos/avaliação antecipada. Definition of Done PASS. Total acumulado 150 casos distintos PASS = 68 unitários + 70 integrações + 12 E2E, sem duplicar repetições. Contagem 10/37 DONE. Next Eligible TASK: TASK-011, candidata com TASK-008 satisfeita; exige a própria DoR, sem saltar checkpoint. Continuidade explicitamente autorizada.
+
+Revisão de acessibilidade em 2026-11-07, fix/TASK-010-enlarged-metadata. DoR revalidada: dependência 008 DONE e 19 integrações PASS no checkpoint 032, ADR-001 aceito, autorização contínua até 100%, critérios/Scope Guard e código/testes conferidos. A captura da TASK-033 mostrou rótulos partidos em caracteres em 390px/texto 200%. PRIMARY somente CSS do catálogo, teste E2E próprio e TASKS. DONE → IN_PROGRESS; empilhar pares de metadados em tela estreita e verificar palavras legíveis, sem tocar APIs/regra de negócio.
 
 ### TASK-011 Criar catálogo público no aplicativo
 
