@@ -43,6 +43,7 @@ test('competing offer responses serialize and acceptance at the expiry boundary 
     await fixture.control.query('SELECT id FROM "User" WHERE id=$1 FOR UPDATE', [buyer.user.id]);
     const responses = Promise.all(['ACCEPT', 'REJECT'].map(decision => call('/exchanges/' + p.row.id + '/substitute-offers/' + sub.id + '/response',
       { version: offered.version, decision }, buyer)));
+    const reconciliation = expired ? new Exchanges(fixture.accounts).reconcile() : Promise.resolve(0);
     let contended = false;
     try {
       for (let attempt = 0; attempt < 150; attempt++) {
@@ -55,7 +56,7 @@ test('competing offer responses serialize and acceptance at the expiry boundary 
     expect((await responses).map(result => result.status).sort()).toEqual(expired ? [409, 409] : [200, 409]);
     expect(contended).toBe(true);
     if (expired) {
-      await new Exchanges(fixture.accounts).reconcile();
+      expect(await reconciliation).toBe(1);
       expect(await fixture.db.reservation.findUnique({ where: { substituteId: sub.id } })).toMatchObject({ status: 'EXPIRED' });
     }
   }
