@@ -101,11 +101,28 @@ a própria janela; sua cláusula finally remove a CA adicionada e verifica remo�
 
 ## Resultado desta rodada
 
-IN_PROGRESS. Treze jornadas de contas/catálogo/componentes RNW PASS em browser.log;
-dois E2E de estoque corrigidos PASS em inventory-fix.log; cinco dirigidos de
-catálogo/acessibilidade PASS em catalog-final.log. Trinta jornadas adicionais
-seguem em remaining.log. TEST-025 aguarda 035 e as conferências de plataforma
-acima ainda não foram concluídas. Nenhum DONE integral antecipado.
+BLOCKED por conferências externas de plataforma e evidência de restauração 035.
+Treze jornadas de contas/catálogo/componentes RNW PASS em browser.log; dois E2E
+de estoque corrigidos PASS em inventory-fix.log; cinco dirigidos de
+catálogo/acessibilidade PASS em catalog-final.log. remaining.log aprovou dois
+de engajamento e registrou timeout da primeira avaliação: faltava compilar o
+preview web específico. A preparação foi corrigida em d722d4b sem alterar a
+aplicação. final-browser.log terminou com saída 0 e 28 jornadas PASS: avaliações
+3, preços 2, carrinho 7, frete 3, checkout 6, pedidos 3 e ciclo de conta 4.
+
+São 45 jornadas distintas aprovadas nesta aceitação, mais quatro de pós-venda/
+relatórios do checkpoint 032 e dois casos novos de acessibilidade: 51 distintos.
+As três jornadas de catálogo repetidas na correção CSS não entram duas vezes
+na soma. São execuções acumuladas, com as falhas históricas preservadas.
+O roteiro nativo está em tests/e2e/acceptance/android-checklist.md; não é resultado.
+
+Build web, tipos, lint, regressão automática e critérios funcionais automatizados
+PASS no recorte aferido. Backend/API/segurança herdados do checkpoint 032 sobre
+a mesma implementação de domínio, sem alteração além do CSS e testes corrigidos.
+Aceitação integral e DoD FAIL/PENDENTE: não fechar enquanto faltarem a execução
+nativa, a jornada positiva dos navegadores ratificados e TEST-025/035. TalkBack
+continua NÃO EXECUTADO por recusa, sem certificação. Tarefas 034/035 independentes
+podem prosseguir na mesma fase, após suas próprias DoRs.
 
 PRIMARY desta revisão: tests/e2e/acceptance/**, tests/accessibility/**,
 este relatório e TASKS.md. Incidental Changes: NONE. Correções de produção/testes

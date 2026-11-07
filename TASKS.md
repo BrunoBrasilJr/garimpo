@@ -40,7 +40,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | DONE |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | DONE |
-| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | IN_PROGRESS |
+| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | BLOCKED |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | READY |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | BLOCKED |
@@ -3708,7 +3708,7 @@ Fechamento em 2026-11-07. docs/validation/phase-04.md consolida verify.log, core
 
 #### Status
 
-IN_PROGRESS
+BLOCKED
 
 #### Phase
 
@@ -3780,6 +3780,8 @@ IN_PROGRESS → FAILED pela legibilidade dos metadados ampliados constatada na c
 A correção visual 010 em 225ec18/60cf75f passou em build/tipos/lint e 5 E2E (catalog-final.log). Suítes acumuladas browser.log: contas 7, catálogo web 3 e componentes móveis 3 PASS; estoque administrativo 1 FAIL/1 PASS porque a expectativa histórica ainda pede vínculos UNAVAILABLE após a integração comercial real da TASK-023. Corrigir o teste na TASK-009 para conferir saldo real e impedir redução de estoque reservado, mantendo o caso de porta indisponível nos testes de integração existentes.
 
 Retomada após correções 010 e 009 concluídas e verificadas. Captura metadata-fixed.png inspecionada com fotos carregadas e rótulos legíveis. FAILED → IN_PROGRESS para completar as 30 jornadas restantes, preservando os resultados já aprovados. Chrome/Edge positivos e inspeção física permanecem sem resultado; não são PASS por inferência.
+
+Consolidação em 2026-11-07: 45 jornadas funcionais distintas PASS nesta rodada (13 browser.log, 2 estoque corrigido, 2 engajamento em remaining.log, 28 final-browser.log), mais 4 de pós-venda/relatórios do checkpoint 032 e 2 acessibilidade novas: 51 distintas. Repetições corretivas não duplicadas. Preview web de avaliações ausente no roteiro inicial causou timeout em remaining.log; corrigido d722d4b e 3/3 avaliações passaram. Demais totais: preços 2, carrinho 7, frete 3, checkout 6, pedidos 3, ciclo de conta 4. Build web/tipos/lint e bash -n PASS; API/domínio mantêm os 254 testes aprovados no checkpoint 032. docs/validation/acceptance.md registra matriz TEST-001–025/032–035 e limitações. IN_PROGRESS → IN_REVIEW → BLOCKED: faltam resultado físico Android, jornada positiva Chrome/Edge (confiança de CA exige ação humana) e restauração TEST-025 da tarefa 035. TalkBack recusado permanece NÃO EXECUTADO. PRIMARY somente escopo próprio; Incidental Changes: NONE; Scope Guard PASS, DoD FAIL/PENDENTE. Continuar 034/035 independentes; não iniciar 036/037 com dependência fictícia DONE.
 
 ### TASK-034 Validar desempenho e concorrência
 
