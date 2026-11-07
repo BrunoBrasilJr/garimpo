@@ -37,7 +37,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | DONE |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
-| 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | BLOCKED |
+| 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | IN_PROGRESS |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | BLOCKED |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | BLOCKED |
 | 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
@@ -3461,7 +3461,7 @@ PRIMARY em serviço/router/validação, contratos, painel, testes e TASKS. INCID
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -3524,7 +3524,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR em 2026-11-07. Dependência TASK-024 DONE e gates da 029 verificados. ADR-006 aceito. PD-008 operacional resolvida por delegação vigente do responsável para escolhas técnicas: perfil acadêmico local, 03h diárias com execução ao retornar, 30 dias de conjuntos íntegros em pasta privada e restauração mensal a implementar/validar na 035. Sem eliminação automática de dados pessoais. A política não é atribuída ao PDF nem a aceite específico de números pelo professor. BLOCKED → READY → IN_PROGRESS em feature/TASK-030-backups. PRIMARY em backup, BackupRun, scripts, testes e execution.md. CLI/comandos/runner somente registros incidentais necessários.
 
 ### TASK-031 Revisar auditoria e segurança integrada
 
