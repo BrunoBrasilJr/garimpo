@@ -40,7 +40,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | DONE |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | DONE |
-| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | READY |
+| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | IN_PROGRESS |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | BLOCKED |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | READY |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | BLOCKED |
@@ -3700,7 +3700,7 @@ Fechamento em 2026-11-07. docs/validation/phase-04.md consolida verify.log, core
 
 #### Status
 
-READY
+IN_PROGRESS
 
 #### Phase
 
@@ -3763,7 +3763,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR em 2026-11-07. TASK-032 DONE, base publicada 70ecc38, gates acumulados e artefatos presentes. ADR-001/002 aceitos e alvos iniciais Windows/WSL, Chrome/Edge/Android ratificados em 2026-10-25; iOS compatível sem alegar execução. Autorização contínua do responsável até os 100%. READY → IN_PROGRESS em chore/TASK-033-functional-acceptance. PRIMARY somente testes de aceitação/acessibilidade, relatório e TASKS; NO_INCIDENTAL_CHANGES. Executar jornadas acumuladas, teclado/foco/contraste/ampliação e conferir limites nativos sem inventar aceite humano. Recusa de TalkBack preservada; disponibilidade para inspeção no Android solicitada como resultado externo, sem bloquear verificações independentes. TEST-025 precisa da evidência de restauração 035 antes do aceite integral.
 
 ### TASK-034 Validar desempenho e concorrência
 
