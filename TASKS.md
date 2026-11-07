@@ -36,7 +36,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | DONE |
-| 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | IN_PROGRESS |
+| 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | BLOCKED |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | BLOCKED |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | BLOCKED |
@@ -3387,7 +3387,7 @@ Scope Guard e DoD PASS. PRIMARY em interfaces de pós-venda, suas jornadas e TAS
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3451,6 +3451,11 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 DoR em 2026-11-07. Continuidade até 100% explicitamente autorizada pelo responsável. Dependências 026/027 DONE na base a6d9684. ADR-004 aceito, RF-023/RN-030 e API-023 conferidos. BLOCKED → READY → IN_PROGRESS em feature/TASK-029-reports. PRIMARY em relatórios/API/contratos/painel/testes e TASKS. Registro do router e da navegação e configuração de testes serão INCIDENTAIS diretamente necessários. Sem migration.
+Fechamento em 2026-11-07. GATE-01 a GATE-08 PASS. Relatórios ADMIN web usam eventos financeiros por período e coorte por pagamento com ajustes conhecidos em asOf. Snapshot preserva gênero principal e título. Unidades gratuitas mantidas contam; pedidos totalmente desfeitos saem; troca não cria venda; restituição técnica é separada. Média arredondada ao centavo com aritmética inteira, datas em São Paulo e paginação de rankings.
+
+Build, tipos, lint, 126 unitários, regressões de devoluções 5 e trocas 4 e política do toolchain PASS em verify.log. Auditoria bruta manteve dois alertas baixos. Em final.log, 5 integrações e uma jornada Firefox ADMIN/OPERATOR PASS. Em cohorts.log, tipos e 6/6 integrações PASS no commit 89c53d9, incluindo devolução parcial e substituto entregue sem segunda venda. Ambiente Node 24.22.1/PostgreSQL 17/WSL, schemas isolados. Logs em test-results/reports. Revisão React e de consultas PostgreSQL aplicada.
+
+PRIMARY em serviço/router/validação, contratos, painel, testes e TASKS. INCIDENTAL em apps/api/src/app.ts e packages/contracts/src/index.ts para registro/export, navegação web para a nova tela, fixture para schema/relógio 029, runner e comando package.json. Scope Guard PASS, Forbidden Changes PASS, Incidental Changes PASS, Scope Creep NONE, DoD PASS. IN_PROGRESS → IN_REVIEW → DONE. 29/37 concluídas. Próxima candidata TASK-030.
 
 ### TASK-030 Implementar backup diário completo
 
