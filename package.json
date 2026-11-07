@@ -34,6 +34,8 @@
     "test:payments": "node tests/core/run-integration.mjs payments",
     "test:orders": "node tests/core/run-integration.mjs orders",
     "reconcile:exchanges": "node apps/api/src/modules/aftersales/exchanges/cli.ts",
+    "backup": "node apps/api/src/operations/backup/cli.ts",
+    "test:backup": "node tests/core/run-integration.mjs backup",
     "test:reports": "node tests/core/run-integration.mjs reports",
     "test:exchanges": "node tests/core/run-integration.mjs exchanges",
     "test:returns": "node tests/core/run-integration.mjs returns",
@@ -52,7 +54,7 @@
     "test": "vitest run --config tests/vitest.config.ts",
     "bundle:android": "npm run bundle:android --workspace @garimpo/mobile",
     "audit:toolchain": "node tests/bootstrap/security/check-audit.mjs",
-    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run test:catalog && npm run test:inventory && npm run test:engagement && npm run test:reviews && npm run test:pricing && npm run test:cart && npm run test:checkout && npm run test:payments && npm run test:orders && npm run test:lifecycle && npm run test:commerce && npm run test:cancellations && npm run test:returns && npm run test:exchanges && npm run test:reports && npm run audit:toolchain"
+    "verify": "npm run build && npm run typecheck && npm run lint && npm test && npm run test:integration && npm run test:accounts && npm run test:messaging && npm run test:catalog && npm run test:inventory && npm run test:engagement && npm run test:reviews && npm run test:pricing && npm run test:cart && npm run test:checkout && npm run test:payments && npm run test:orders && npm run test:lifecycle && npm run test:commerce && npm run test:cancellations && npm run test:returns && npm run test:exchanges && npm run test:reports && npm run test:backup && npm run audit:toolchain"
   },
   "overrides": {
     "node-forge": "1.4.2",

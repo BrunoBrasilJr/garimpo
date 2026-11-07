@@ -1056,6 +1056,16 @@ model RefundAttempt {
   appliedAt DateTime? @db.Timestamptz(3)
   @@index([refundId])
 }
+model BackupRun {
+  id String @id @db.Uuid
+  status String @db.VarChar(12)
+  createdAt DateTime @db.Timestamptz(3)
+  completedAt DateTime? @db.Timestamptz(3)
+  manifestHash String? @db.VarChar(64)
+  errorCode String? @db.VarChar(50)
+  @@index([createdAt])
+}
+
 model FinancialEvent {
   id String @id @default(uuid()) @db.Uuid
   orderId String? @db.Uuid

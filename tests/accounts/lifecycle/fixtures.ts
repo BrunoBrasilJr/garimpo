@@ -25,7 +25,7 @@ import { Logistics } from '../../../apps/api/src/modules/orders/logistics.ts';
 import { Pricing } from '../../../apps/api/src/modules/pricing/service.ts';
 import { openCatalogServer, web } from '../../catalog/http.ts';
 export const credentials = (session: SessionBundle) => web({ cookie: `__Host-garimpo-access=${session.accessToken}; __Host-garimpo-refresh=${session.refreshToken}; __Host-garimpo-csrf=${session.csrfToken}`, csrf: session.csrfToken });
-export async function foundation(wrap?: (gateway: LocalGateway) => PaymentGateway, task: '022' | '023' | '025' | '026' | '027' | '029' = '022', initialTime = Date.now()) {
+export async function foundation(wrap?: (gateway: LocalGateway) => PaymentGateway, task: '022' | '023' | '025' | '026' | '027' | '029' | '030' = '022', initialTime = Date.now()) {
   const value = process.env.TEST_DATABASE_URL; if (!value) throw new Error('Separate test database required.');
   const url = new URL(value), schema = url.searchParams.get('schema'); if (url.pathname !== '/garimpo_test' || !['localhost', '127.0.0.1'].includes(url.hostname) || !new RegExp('^task' + task + '_[a-f0-9]{32}$').test(schema ?? '')) throw new Error('Only the isolated schema for this task is accepted.');
   let current = initialTime, nextZip = 10000000; const clock = { now: () => new Date(current) }, advance = (milliseconds: number) => { current += milliseconds; };
@@ -70,6 +70,6 @@ export async function foundation(wrap?: (gateway: LocalGateway) => PaymentGatewa
     const accepted = await server.call<CheckoutView>('/checkouts/' + reserved.body.id + '/address', 'PATCH', { version: reserved.body.version, addressId: destination.id, freightRevision: quote.body.freightRevision }, credentials(buyer)); if (accepted.status !== 200) throw new Error('Freight acceptance failed: ' + accepted.status);
     return { checkout: accepted.body, quote: quote.body, offer: product, rate: area, address: destination, key: randomUUID(), body: { checkoutId: accepted.body.id, version: accepted.body.version, addressId: destination.id, freightRevision: quote.body.freightRevision, method: 'PIX' as const } };
   }
-  return { password, messages, history, logistics, secondLogistics, gateway, payments, secondPayments, db, other, accounts, secondAccounts, freight, secondFreight, carts, orders, secondOrders, quotes, pricing, catalog, clock, advance, server, control, freshRoles, customer, offer, rate, address, draft, ready,
+  return { password, mediaRoot, messages, history, logistics, secondLogistics, gateway, payments, secondPayments, db, other, accounts, secondAccounts, freight, secondFreight, carts, orders, secondOrders, quotes, pricing, catalog, clock, advance, server, control, freshRoles, customer, offer, rate, address, draft, ready,
     get admin() { return admin; }, get operator() { return operator; }, async close() { await server.close(); await control.end(); await Promise.all([db.$disconnect(), other.$disconnect()]); } };
 }

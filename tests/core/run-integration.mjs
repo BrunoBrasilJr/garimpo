@@ -13,8 +13,8 @@ if (url.pathname !== '/garimpo_test' || !['localhost', '127.0.0.1'].includes(url
   throw new Error('Integration tests require a separate loopback/garimpo_test database. No development fallback.');
 }
 const suite = process.argv[2] ?? 'core';
-if (!['core', 'accounts', 'messaging', 'catalog', 'inventory', 'engagement', 'reviews', 'pricing', 'cart', 'checkout', 'payments', 'orders', 'lifecycle', 'commerce', 'cancellations', 'returns', 'exchanges', 'reports'].includes(suite)) throw new Error('Unknown integration suite.');
-const schema = `task${suite === 'core' ? '003' : suite === 'accounts' ? '004' : suite === 'messaging' ? '005' : suite === 'catalog' ? '008' : suite === 'inventory' ? '009' : suite === 'engagement' ? '012' : suite === 'reviews' ? '013' : suite === 'pricing' ? '014' : suite === 'cart' ? '016' : suite === 'checkout' ? '018' : suite === 'payments' ? '019' : suite === 'orders' ? '021' : suite === 'lifecycle' ? '022' : suite === 'commerce' ? '023' : suite === 'cancellations' ? '025' : suite === 'returns' ? '026' : suite === 'exchanges' ? '027' : '029'}_${randomUUID().replaceAll('-', '')}`;
+if (!['core', 'accounts', 'messaging', 'catalog', 'inventory', 'engagement', 'reviews', 'pricing', 'cart', 'checkout', 'payments', 'orders', 'lifecycle', 'commerce', 'cancellations', 'returns', 'exchanges', 'reports', 'backup'].includes(suite)) throw new Error('Unknown integration suite.');
+const schema = `task${suite === 'core' ? '003' : suite === 'accounts' ? '004' : suite === 'messaging' ? '005' : suite === 'catalog' ? '008' : suite === 'inventory' ? '009' : suite === 'engagement' ? '012' : suite === 'reviews' ? '013' : suite === 'pricing' ? '014' : suite === 'cart' ? '016' : suite === 'checkout' ? '018' : suite === 'payments' ? '019' : suite === 'orders' ? '021' : suite === 'lifecycle' ? '022' : suite === 'commerce' ? '023' : suite === 'cancellations' ? '025' : suite === 'returns' ? '026' : suite === 'exchanges' ? '027' : suite === 'reports' ? '029' : '030'}_${randomUUID().replaceAll('-', '')}`;
 url.searchParams.set('schema', schema);
 const admin = new Client({ connectionString: value });
 try {
@@ -28,7 +28,7 @@ console.info(`Isolated integration schema: ${schema}; retained for evidence, no 
 const env = { ...process.env, DATABASE_URL: url.href, TEST_DATABASE_URL: url.href };
 for (const args of [
   ['node_modules/prisma/build/index.js', 'migrate', 'deploy', '--config', 'apps/api/prisma/prisma.config.ts'],
-  ['node_modules/vitest/vitest.mjs', 'run', '--config', suite === 'lifecycle' ? 'tests/accounts/lifecycle/vitest.integration.config.ts' : suite === 'exchanges' ? 'tests/aftersales/exchanges/vitest.integration.config.ts' : suite === 'returns' ? 'tests/aftersales/returns/vitest.integration.config.ts' : suite === 'cancellations' ? 'tests/aftersales/cancellations/vitest.integration.config.ts' : suite === 'commerce' ? 'tests/integration/commerce/vitest.integration.config.ts' : `tests/${suite}/vitest.integration.config.ts`]
+  ['node_modules/vitest/vitest.mjs', 'run', '--config', suite === 'backup' ? 'tests/operations/backup/vitest.integration.config.ts' : suite === 'lifecycle' ? 'tests/accounts/lifecycle/vitest.integration.config.ts' : suite === 'exchanges' ? 'tests/aftersales/exchanges/vitest.integration.config.ts' : suite === 'returns' ? 'tests/aftersales/returns/vitest.integration.config.ts' : suite === 'cancellations' ? 'tests/aftersales/cancellations/vitest.integration.config.ts' : suite === 'commerce' ? 'tests/integration/commerce/vitest.integration.config.ts' : `tests/${suite}/vitest.integration.config.ts`]
 ]) {
   const result = spawnSync(process.execPath, args, { cwd: root, env, stdio: 'inherit' });
   if (result.error) throw result.error;
