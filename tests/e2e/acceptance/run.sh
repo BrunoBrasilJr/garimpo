@@ -3,6 +3,7 @@ set -euo pipefail
 # Run from the repository after npm run build, with the private test environment.
 test -n "${TEST_DATABASE_URL:-}" && test -f apps/web/dist/index.html
 export NODE_OPTIONS="--max-old-space-size=768 --dns-result-order=ipv4first"
+node node_modules/vite/bin/vite.js build --config tests/reviews/preview.vite.config.ts
 cd apps/mobile
 for pair in \
   'tests/e2e/catalog-mobile/entry.tsx:catalog-mobile-preview.js' \
