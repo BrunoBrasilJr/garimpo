@@ -3,6 +3,7 @@ import sharp from 'sharp';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import type { ReturnView } from '@garimpo/contracts';
 import { credentials, foundation } from '../../accounts/lifecycle/fixtures.ts';
+import { consumeCommerce } from '../../../apps/api/src/modules/messaging/commerce.ts';
 
 let fixture: Awaited<ReturnType<typeof foundation>>;
 beforeAll(async () => { fixture = await foundation(undefined, '026'); });
@@ -142,4 +143,23 @@ test('an active return excludes another request for the same unit and expiry nee
   expect((await call(exception, proposed, fixture.operator)).status).toBe(403);
   expect((await call(exception, proposed, fixture.admin)).body.state).toBe('AWAITING_POSTING');
   expect(await fixture.db.auditLog.count({ where: { targetId: approved.id, action: 'RETURN.EXTENSION' } })).toBe(1);
+});
+
+test('customer notices preserve the original posting decision and omit intermediate processing', async () => {
+  const p = await purchase(1), opened = await open(p, 1), approved = await decision(opened);
+  const events = await fixture.db.domainEvent.findMany({ where: { aggregateId: opened.id, type: 'RETURN.UPDATED' }, orderBy: { createdAt: 'asc' } });
+  expect(events).toHaveLength(2);
+  await inspect(p, approved, 'FIT');
+  expect(await fixture.db.domainEvent.count({ where: { aggregateId: opened.id, type: 'RETURN.UPDATED' } })).toBe(2);
+  for (;;) {
+    const result = await consumeCommerce(fixture.messages);
+    if (result === 'EMPTY') break;
+    expect(result).toBe('PROCESSED');
+  }
+  const messages = await fixture.db.demoMessage.findMany({ where: { eventId: { in: events.map(event => event.id) } } });
+  const bodies = messages.map(message => JSON.parse(fixture.messages.protection.open(message.id, message.restrictedBody)) as { title: string; caseInfo: { state: string; deadline: string | null } });
+  expect(bodies).toContainEqual(expect.objectContaining({
+    title: 'Devolução aprovada; postagem necessária',
+    caseInfo: expect.objectContaining({ state: 'AWAITING_POSTING', deadline: approved.postingDueAt })
+  }));
 });

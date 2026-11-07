@@ -256,7 +256,12 @@ export class Returns {
     const { clock } = this.accounts;
     await appendAudit(tx, { actorId, action: 'RETURN.' + action, targetType: 'RETURN', targetId: id,
       result: 'SUCCESS', reason: 'RETURN_COMMAND', changes: { orderId, ...(reason ? { reason } : {}) } }, clock);
+    const request = await tx.returnRequest.findUniqueOrThrow({ where: { id }, select: { state: true, postingDueAt: true } });
+    const notify = ['OPENED', 'DECISION', 'EXTENSION', 'INSPECTION_EXCEPTION', 'REJECTED_SHIPMENT', 'REJECTED_DELIVERY', 'EXPIRED'].includes(action)
+      || action === 'RECEIPT' && request.state === 'REJECTED_AWAITING_SHIPMENT';
+    if (!notify) return;
     const order = await tx.order.findUniqueOrThrow({ where: { id: orderId }, select: { userId: true } });
-    await enqueue(tx, { type: 'RETURN.UPDATED', aggregateId: id, payload: { orderId, userId: order.userId } }, clock);
+    await enqueue(tx, { type: 'RETURN.UPDATED', aggregateId: id, payload: { orderId, userId: order.userId,
+      caseInfo: { id, action, state: request.state, deadline: request.postingDueAt?.toISOString() ?? null } } }, clock);
   }
 }

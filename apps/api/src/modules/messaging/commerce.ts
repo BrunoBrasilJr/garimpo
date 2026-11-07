@@ -5,7 +5,13 @@ import { serializable } from '../../persistence/transaction.ts';
 import { appendAudit } from '../../core/audit.ts';
 import type { AccessMessages } from './service.ts';
 import { shipmentView } from '../orders/history.ts';
-const payload = z.object({ userId: z.string().uuid(), orderId: z.string().uuid().nullable().optional(), paymentAttemptId: z.string().uuid().optional(), refundId: z.string().uuid().optional(), shipmentId: z.string().uuid().optional() }).strict();
+import { aftersalesDescription } from './aftersales-description.ts';
+const payload = z.object({
+  userId: z.string().uuid(), orderId: z.string().uuid().nullable().optional(), paymentAttemptId: z.string().uuid().optional(),
+  refundId: z.string().uuid().optional(), shipmentId: z.string().uuid().optional(),
+  caseInfo: z.object({ id: z.string().uuid(), action: z.string().regex(/^[A-Z_]{1,40}$/), state: z.string().regex(/^[A-Z_]{1,40}$/),
+    deadline: z.string().datetime().nullable() }).strict().optional()
+}).strict();
 const descriptions: Record<string, [string, string]> = {
   'ORDER.CREATED': ['Pedido criado', 'Seu pedido foi registrado. Confira os dados e, se estiver pendente, o prazo de pagamento.'],
   'ORDER.EXPIRED': ['Pedido cancelado por vencimento', 'O prazo de pagamento terminou. A reserva foi liberada. Um pagamento tardio será estornado.'],
@@ -35,9 +41,16 @@ export async function consumeCommerce(messages: AccessMessages): Promise<'EMPTY'
       const payment = value.paymentAttemptId ? await tx.paymentAttempt.findUniqueOrThrow({ where: { id: value.paymentAttemptId } }) : null;
       const refund = value.refundId ? await tx.refund.findUniqueOrThrow({ where: { id: value.refundId }, include: { paymentAttempt: true } }) : null;
       const shipment = value.shipmentId ? await tx.shipment.findUniqueOrThrow({ where: { id: value.shipmentId } }) : null;
+      const aftersales = event.type === 'RETURN.UPDATED' ? await tx.returnRequest.findUnique({ where: { id: event.aggregateId }, select: { orderId: true } })
+        : event.type === 'EXCHANGE.UPDATED' ? await tx.exchangeRequest.findUnique({ where: { id: event.aggregateId }, select: { orderId: true } }) : null;
+      if (['RETURN.UPDATED', 'EXCHANGE.UPDATED'].includes(event.type) && (!aftersales || aftersales.orderId !== order?.id)
+        || value.caseInfo && value.caseInfo.id !== event.aggregateId) throw new Error('After-sales message ownership mismatch.');
       if (shipment && (shipment.orderId !== order?.id || shipment.kind !== 'ORIGINAL') || ['ORDER.SHIPPED', 'ORDER.DELIVERED'].includes(event.type) && !shipment || event.type === 'ORDER.DELIVERED' && !shipment?.deliveredAt) throw new Error('Shipment event facts unavailable.');
       if ((event.type.startsWith('ORDER.') && event.aggregateId !== order?.id) || (event.type.startsWith('PAYMENT.') && event.aggregateId !== payment?.id) || (event.type.startsWith('REFUND.') && event.aggregateId !== refund?.id) || order && order.userId !== user.id || payment && payment.userId !== user.id || refund && refund.paymentAttempt.userId !== user.id) throw new Error('Commercial message ownership mismatch.');
-      const id = randomUUID(), dedupKey = 'commerce:' + event.id, description = descriptions[event.type]; if (!description) throw new Error('Unknown commercial event.');
+      const id = randomUUID(), dedupKey = 'commerce:' + event.id;
+      const description = value.caseInfo && (event.type === 'RETURN.UPDATED' || event.type === 'EXCHANGE.UPDATED')
+        ? aftersalesDescription(event.type === 'RETURN.UPDATED' ? 'RETURN' : 'EXCHANGE', value.caseInfo) : descriptions[event.type];
+      if (!description) throw new Error('Unknown commercial event.');
       if (!await tx.demoMessage.findUnique({ where: { dedupKey } })) await tx.demoMessage.create({ data: { id, userId: user.id, eventId: event.id, type: 'COMMERCE.' + event.type, dedupKey, restrictedBody: messages.protection.seal(id, JSON.stringify({ recipient: user.emailNormalized, purpose: event.type, title: description[0], message: description[1], ...value, ...(shipment ? { shipment: { ...shipmentView(shipment), deliveredAt: event.type === 'ORDER.SHIPPED' ? null : shipment.deliveredAt?.toISOString() ?? null } } : {}), notice: 'Simulação acadêmica; nenhuma movimentação financeira real.', link: value.orderId ? `${messages.webOrigin}/#/orders?id=${value.orderId}` : `${messages.webOrigin}/#/payments` })), createdAt: clock.now() } });
       await tx.domainEvent.update({ where: { id: event.id }, data: { processedAt: clock.now(), lastErrorCode: null } }); await tx.$executeRawUnsafe('RELEASE SAVEPOINT commerce_message'); return 'PROCESSED';
     } catch { await tx.$executeRawUnsafe('ROLLBACK TO SAVEPOINT commerce_message'); await tx.domainEvent.update({ where: { id: event.id }, data: { lastErrorCode: 'COMMERCE_PREPARATION_FAILED' } }); await appendAudit(tx, { action: 'COMMERCE.PREPARE_FAILED', targetType: 'EVENT', targetId: event.id, result: 'FAILURE', reason: 'LOCAL_PREPARATION_FAILED', changes: {} }, clock); await tx.$executeRawUnsafe('RELEASE SAVEPOINT commerce_message'); return 'FAILED'; }

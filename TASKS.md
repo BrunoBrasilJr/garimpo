@@ -33,7 +33,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | DONE |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
-| 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
+| 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | IN_PROGRESS |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | DONE |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
@@ -3150,7 +3150,7 @@ Escopo e DoD PASS. 13 arquivos PRIMARY em cancelamento, estoque, pedidos, estorn
 
 #### Status
 
-DONE
+IN_PROGRESS
 
 #### Phase
 
@@ -3226,6 +3226,8 @@ Fechamento em 2026-11-04. A abertura valida titularidade, unidades e janela. Pos
 Gates 01 a 08 PASS. Build, tipos, lint, 126 unitários e 87 integrações no commit 551ab86 em verify.log, saída 0. Integrações de devolução 4, cancelamento 6, avaliações 11, pagamentos 32, pedidos 18 e mensagens 16. Em 6aebbd3, build API, tipos, lint e 5/5 devoluções em final.log, saída 0, incluindo concorrência entre duas solicitações da mesma unidade e exceção ADMIN após expiração. WSL com Node 24.22.1 e PostgreSQL 17, migrations aplicadas em schemas separados em garimpo_test. A primeira checagem de lint em build.log rejeitou caracteres de controle em regex, corrigidos em 551ab86. Auditoria bruta preserva sete alertas baixos e política passou.
 
 Escopo e DoD PASS. PRIMARY: README, TASKS, persistência, contratos de devolução, serviço/rotas/testes do módulo, evidências, estoque, avaliações, estorno e mensagens. INCIDENTAL: apps/api/src/app.ts registra router e gateway, packages/contracts/src/index.ts exporta tipos, package.json registra suíte, tests/core/run-integration.mjs seleciona o schema próprio e tests/accounts/lifecycle/fixtures.ts admite schema 026. Nenhuma alteração proibida. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. 26/37 concluídas. Próxima candidata TASK-027.
+
+Revisão corretiva em 2026-11-07, fix/TASK-026-notification-boundaries. Achado da TASK-031/RN-042: preservar fatos da decisão de postagem, omitir avisos intermediários e validar caso/pedido/destinatário no consumidor. PRIMARY no serviço de devolução, mensagens e teste próprio, sem migration. DONE → IN_PROGRESS para correção e revalidação.
 
 ### TASK-027 Implementar trocas, ofertas e prazos
 
