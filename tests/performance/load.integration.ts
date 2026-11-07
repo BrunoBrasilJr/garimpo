@@ -56,7 +56,11 @@ async function request<T>(operation: Metric, expected: number, measured: boolean
   const start = performance.now();
   const reply = await work();
   if (measured) samples.push({ operation, status: reply.status, milliseconds: performance.now() - start });
-  if (reply.status !== expected) throw new Error('Unexpected ' + operation + ' HTTP status ' + reply.status);
+  if (reply.status !== expected) {
+    const body = reply.body as { code?: unknown } | null;
+    const code = body && typeof body.code === 'string' ? body.code : 'NO_CODE';
+    throw new Error('Unexpected ' + operation + ' HTTP status ' + reply.status + ' (' + code + ')');
+  }
   return reply.body;
 }
 async function cycle(actor: typeof actors[number], measured: boolean) {
@@ -82,9 +86,9 @@ async function cycle(actor: typeof actors[number], measured: boolean) {
 test('frozen local workload meets its predeclared p95 and preserves all sales and stock', async () => {
   expect(profile.customers).toBe(profile.concurrency);
   expect(profile.baselinePaidOrders % profile.customers).toBe(0);
-  const warmup = await Promise.allSettled(actors.map(async actor => { for (let index = 0; index < profile.baselinePaidOrders / profile.customers; index++) await cycle(actor, false); }));
-  const failedWarmup = warmup.find(result => result.status === 'rejected');
-  if (failedWarmup?.status === 'rejected') throw failedWarmup.reason;
+  // Establish the declared 100-order baseline first. Only the measured phase
+  // applies the frozen ten-client concurrency; no retries hide measured errors.
+  for (const actor of actors) for (let index = 0; index < profile.baselinePaidOrders / profile.customers; index++) await cycle(actor, false);
   expect(await f.db.order.count({ where: { status: 'PAID' } })).toBe(profile.baselinePaidOrders);
   for (const table of ['Edition', 'EditionArtist', 'EditionGenre', 'Track', 'TrackArtist', 'Offer', 'ProductImage', 'Order', 'OrderItem', 'OrderUnit', 'FinancialEvent', 'Checkout', 'CheckoutItem', 'Reservation', 'PaymentAttempt', 'PaymentCharge', 'User', 'Session']) await f.db.$executeRawUnsafe('ANALYZE "' + table + '"');
   const started = performance.now();

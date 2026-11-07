@@ -3858,6 +3858,8 @@ Primeira preparação em 3ef6b8f: tipos/lint PASS, suite de carga FAILED antes d
 
 Segunda preparação em recheck.log: tipos/lint PASS, carga ainda não medida. CHECK de ProductImage rejeitou posição zero; a fixture passa a copiar a posição válida da imagem original, sem alterar schema/validação. IN_PROGRESS → FAILED → IN_PROGRESS. A troca de um valor number por outro number não muda tipos/contratos; repetir lint dirigido e execução real, preservando os gates de tipos já aprovados e as metas congeladas.
 
+Terceira rodada em final.log montou catálogo, mas a preparação concorrente dos primeiros pedidos retornou HTTP 409 antes de formar a base declarada de 100 pagos. IN_PROGRESS → FAILED → IN_PROGRESS: preparar esses 100 de forma serial, fora da medição; preservar os 10 clientes simultâneos/120 amostras/zero erro no ensaio medido e todas as metas b78f868. Diagnóstico passa a registrar somente o código público do erro, sem payload/credenciais. Não fazer retry que esconda erro medido nem afirmar causa do 409 sem evidência.
+
 ### TASK-035 Executar restauração isolada
 
 #### Status
