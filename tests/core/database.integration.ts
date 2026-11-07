@@ -179,6 +179,12 @@ test('killing a separate consumer process rolls back its incomplete effect and a
     const exited = new Promise<void>(resolve => { child.once('exit', () => resolve()); });
     child.kill('SIGKILL');
     await exited;
+    // Process exit precedes the server observing its closed socket. Wait for the
+    // actual row lock to be released; SKIP LOCKED correctly skips it meanwhile.
+    await other.$transaction(async tx => {
+      await tx.$executeRawUnsafe("SET LOCAL lock_timeout = '5s'");
+      await tx.$queryRaw`SELECT id FROM "DomainEvent" WHERE id=${event.id}::uuid FOR UPDATE`;
+    });
     // Querying through another connection observes the rollback after connection loss.
     expect(await other.demoMessage.count({ where: { dedupKey: event.id } })).toBe(0);
     expect(await processNext(other, async (tx, row) => {
