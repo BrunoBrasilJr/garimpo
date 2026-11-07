@@ -39,7 +39,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | DONE |
-| 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | READY |
+| 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | IN_PROGRESS |
 | 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | BLOCKED |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | BLOCKED |
@@ -3621,7 +3621,7 @@ Fechamento em 2026-11-07: correções 026/027 incorporadas por fast-forward até
 
 #### Status
 
-READY
+IN_PROGRESS
 
 #### Phase
 
@@ -3684,7 +3684,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR em 2026-11-07. Dependências 028/029/030/031 DONE, publicadas em 0a2a168, correções 026/027 revalidadas. ADR-001 a 006 aceitos, contratos e Scope Guard conferidos. Autorização contínua do responsável até os 100% prevalece sobre registro histórico documental. READY → IN_PROGRESS em chore/TASK-032-checkpoint-phase04. PRIMARY somente docs/validation/phase-04.md e TASKS; NO_INCIDENTAL_CHANGES. Executar gates acumulados, segurança dirigida, UI pós-venda/relatórios e bundles.
 
 ### TASK-033 Executar aceitação funcional e acessibilidade
 
