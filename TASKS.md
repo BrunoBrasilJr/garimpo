@@ -38,7 +38,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | DONE |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
-| 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | BLOCKED |
+| 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | IN_PROGRESS |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | BLOCKED |
 | 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | BLOCKED |
@@ -3537,7 +3537,7 @@ PRIMARY nos módulos/scripts/testes de backup, migration/modelo BackupRun, execu
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -3601,7 +3601,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR em 2026-11-07. Dependências 028/029/030 DONE e publicadas. ADR-002/005/006 aceitos e RNF de acesso/dados conferidos. BLOCKED → READY → IN_PROGRESS em chore/TASK-031-security-review. PRIMARY somente tests/security, docs/validation/security.md e TASKS. NO_INCIDENTAL_CHANGES. Validar matriz de papéis, transporte e privacidade, segredos/auditoria e concorrência do último ADMIN por suítes reais.
 
 ### TASK-032 Checkpoint PHASE-04
 
