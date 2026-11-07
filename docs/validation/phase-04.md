@@ -44,4 +44,18 @@ leitor de tela ou certificação. A recusa do responsável em usar TalkBack é m
 
 ## Resultado
 
-IN_PROGRESS. Nenhum resultado antecipado. Incidental Changes: NONE.
+Primeira rodada em verify.log: build/tipos/lint e 126 unitários PASS, mas a
+fundação terminou com oito PASS e um FAIL. O teste de morte do processo esperava
+que a saída do filho significasse liberação imediata da trava no PostgreSQL.
+SKIP LOCKED retornou EMPTY corretamente enquanto o servidor encerrava a sessão.
+O checkpoint foi FAILED e a correção ficou na tarefa de origem TASK-003:
+054c328/36c8a9b, branch fix/TASK-003-crash-recovery-barrier. O teste agora espera
+a própria trava com limite de cinco segundos, preservando todas as verificações
+de rollback e processamento único. Não houve mudança de código de produção.
+
+core-fix.log: tipos dos testes, lint dirigido e nove integrações PASS, saída 0.
+preview.log: componentes móveis de pedidos/pós-venda compilados para o ensaio
+RNW, 254 módulos. A retomada em resume.log executa as demais integrações e gates;
+build, tipos, lint e unitários do mesmo código de produção não foram repetidos.
+
+IN_PROGRESS. Consolidação pendente dos gates restantes. Incidental Changes: NONE.
