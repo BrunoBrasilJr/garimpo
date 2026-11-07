@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, expect, test } from 'vitest';
 import type { CancellationResult, RankingReport, SalesReport } from '@garimpo/contracts';
 import { credentials, foundation } from '../accounts/lifecycle/fixtures.ts';
+import { Returns } from '../../apps/api/src/modules/aftersales/returns/service.ts';
+import { AutomaticRefunds } from '../../apps/api/src/modules/refunds/automatic.ts';
 
 let f: Awaited<ReturnType<typeof foundation>>;
 const september = '/admin/reports/sales?from=2026-09-01&to=2026-09-30';
@@ -58,6 +60,20 @@ test('technical late payment refunds do not count as new sales', async () => {
   const result = await f.server.call<SalesReport>('/admin/reports/sales?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
   expect(result.body.financial).toMatchObject({ saleProductsCents: 0, technicalRefundCents: 11500 });
   expect(result.body.cohort.paidOrders).toBe(1);
+});
+
+test('a partial return adjusts its original cohort and keeps the free order in the denominator', async () => {
+  const p = await paid(2);
+  const order = await f.db.order.findUniqueOrThrow({ where: { id: p.order.id } });
+  await f.logistics.change(f.operator.accessToken, order.id, { version: order.version, status: 'PREPARING', reason: 'Separação de teste' }, randomUUID());
+  const item = await f.db.orderItem.findFirstOrThrow({ where: { orderId: order.id } });
+  const service = new Returns(f.accounts, new AutomaticRefunds(f.accounts, f.gateway));
+  const opened = await service.open(p.buyer.accessToken, order.id, { reason: 'Devolução parcial antes de envio', items: [{ orderItemId: item.id, quantity: 1 }] }, randomUUID());
+  const approved = await service.change(f.operator.accessToken, opened.id, { type: 'decision', data: { version: opened.version, decision: 'APPROVE', reason: 'Conferência de teste' } }, true);
+  await service.change(f.admin.accessToken, opened.id, { type: 'authorization', data: { version: approved.version, reason: 'Estorno parcial autorizado', unitIds: approved.items.map(unit => unit.id) } }, true, randomUUID());
+  const result = await f.server.call<SalesReport>('/admin/reports/sales?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
+  expect(result.body.cohort).toMatchObject({ paidOrders: 2, retainedOrders: 2, retainedUnits: 2, retainedProductsCents: 10000, averageTicketCents: 5000 });
+  expect(result.body.financial).toMatchObject({ saleProductsCents: 20000, refundedProductsCents: 30000 });
 });
 
 test('ADMIN web authorization runs before filter parsing, and private totals require HTTPS', async () => {
