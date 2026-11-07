@@ -4,6 +4,7 @@ import type { CancellationResult, RankingReport, SalesReport } from '@garimpo/co
 import { credentials, foundation } from '../accounts/lifecycle/fixtures.ts';
 import { Returns } from '../../apps/api/src/modules/aftersales/returns/service.ts';
 import { AutomaticRefunds } from '../../apps/api/src/modules/refunds/automatic.ts';
+import { Exchanges } from '../../apps/api/src/modules/aftersales/exchanges/service.ts';
 
 let f: Awaited<ReturnType<typeof foundation>>;
 const september = '/admin/reports/sales?from=2026-09-01&to=2026-09-30';
@@ -74,6 +75,30 @@ test('a partial return adjusts its original cohort and keeps the free order in t
   const result = await f.server.call<SalesReport>('/admin/reports/sales?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
   expect(result.body.cohort).toMatchObject({ paidOrders: 2, retainedOrders: 2, retainedUnits: 2, retainedProductsCents: 10000, averageTicketCents: 5000 });
   expect(result.body.financial).toMatchObject({ saleProductsCents: 20000, refundedProductsCents: 30000 });
+});
+
+test('shipping a replacement does not add a sale or count a second edition unit', async () => {
+  const p = await paid();
+  let order = await f.db.order.findUniqueOrThrow({ where: { id: p.order.id } });
+  for (const status of ['PREPARING', 'SEPARATED', 'SHIPPED', 'DELIVERED'] as const) {
+    const at = f.clock.now().toISOString(), base = { version: order.version, reason: 'Entrega sintética para troca' };
+    const command = status === 'SHIPPED' ? { ...base, status, trackingCode: 'REPORT-ORIGINAL', postedAt: at }
+      : status === 'DELIVERED' ? { ...base, status, deliveredAt: at } : { ...base, status };
+    await f.logistics.change(f.admin.accessToken, order.id, command, randomUUID());
+    order = await f.db.order.findUniqueOrThrow({ where: { id: order.id } });
+  }
+  const item = await f.db.orderItem.findFirstOrThrow({ where: { orderId: order.id } }), exchanges = new Exchanges(f.accounts);
+  const opened = await exchanges.open(p.buyer.accessToken, order.id, { reason: 'Condição divergente', items: [{ orderItemId: item.id, quantity: 1 }] }, randomUUID());
+  const approved = await exchanges.change(f.operator.accessToken, opened.id, { type: 'decision', data: { version: opened.version, decision: 'APPROVE', reason: 'Troca conferida' } }, true);
+  const posted = await exchanges.change(p.buyer.accessToken, opened.id, { type: 'posting', data: { version: approved.version, trackingCode: 'REPORT-RETURN', postedAt: f.clock.now() } }, false);
+  const inspected = await exchanges.change(f.operator.accessToken, opened.id, { type: 'receipt', data: { version: posted.version, reason: 'Original conferido', receivedAt: f.clock.now(), units: [{ id: opened.items[0]!.id, result: 'FIT' }], evidenceIds: [] } }, true);
+  const offered = await exchanges.change(f.operator.accessToken, opened.id, { type: 'offer', data: { version: inspected.version, offerId: p.held.offer.id, equivalenceReason: 'Mesma edição' } }, true);
+  const accepted = await exchanges.change(p.buyer.accessToken, opened.id, { type: 'response', substituteId: offered.substitutes[0]!.id, data: { version: offered.version, decision: 'ACCEPT' } }, false);
+  const sent = await exchanges.change(f.operator.accessToken, opened.id, { type: 'shipment', data: { version: accepted.version, trackingCode: 'REPORT-REPLACEMENT', postedAt: f.clock.now() } }, true);
+  await exchanges.change(f.operator.accessToken, opened.id, { type: 'delivery', data: { version: sent.version, deliveredAt: f.clock.now() } }, true);
+  const result = await f.server.call<RankingReport>('/admin/reports/products?from=2026-10-01&to=2026-10-31', 'GET', undefined, credentials(f.admin));
+  expect(result.body.items.find(row => row.id === p.held.offer.editionId)).toMatchObject({ units: 1, productCents: 10000 });
+  expect(await f.db.financialEvent.count({ where: { orderId: order.id, type: 'SALE' } })).toBe(1);
 });
 
 test('ADMIN web authorization runs before filter parsing, and private totals require HTTPS', async () => {
