@@ -33,7 +33,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 23 | TASK-023 Integrar regras comerciais e validar fronteiras | PHASE-03 | CRITICAL | TASK-012, TASK-013, TASK-016, TASK-018, TASK-019, TASK-020, TASK-021, TASK-022 | DONE |
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
-| 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | IN_PROGRESS |
+| 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | DONE |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
@@ -3150,7 +3150,7 @@ Escopo e DoD PASS. 13 arquivos PRIMARY em cancelamento, estoque, pedidos, estorn
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3228,6 +3228,8 @@ Gates 01 a 08 PASS. Build, tipos, lint, 126 unitários e 87 integrações no com
 Escopo e DoD PASS. PRIMARY: README, TASKS, persistência, contratos de devolução, serviço/rotas/testes do módulo, evidências, estoque, avaliações, estorno e mensagens. INCIDENTAL: apps/api/src/app.ts registra router e gateway, packages/contracts/src/index.ts exporta tipos, package.json registra suíte, tests/core/run-integration.mjs seleciona o schema próprio e tests/accounts/lifecycle/fixtures.ts admite schema 026. Nenhuma alteração proibida. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. 26/37 concluídas. Próxima candidata TASK-027.
 
 Revisão corretiva em 2026-11-07, fix/TASK-026-notification-boundaries. Achado da TASK-031/RN-042: preservar fatos da decisão de postagem, omitir avisos intermediários e validar caso/pedido/destinatário no consumidor. PRIMARY no serviço de devolução, mensagens e teste próprio, sem migration. DONE → IN_PROGRESS para correção e revalidação.
+
+Revalidação da correção 09e6a99 em test-results/security/returns-fix.log, saída 0: build/tipos/lint PASS, devoluções 6, mensagens 16 e segurança integrada 6 PASS. Regressão antes da correção: 5 PASS/1 FAIL em event-check.log; após a correção nenhum aviso para caso inexistente. PRIMARY: serviço de devolução, consumidor/descrição de mensagens, teste de devolução e TASKS. Incidental Changes: NONE. Gates aplicáveis 01–08 PASS; sem migration/alteração proibida. IN_PROGRESS → IN_REVIEW → DONE.
 
 ### TASK-027 Implementar trocas, ofertas e prazos
 
