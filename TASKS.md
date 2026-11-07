@@ -37,7 +37,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | DONE |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
-| 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | IN_PROGRESS |
+| 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | BLOCKED |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | BLOCKED |
 | 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
@@ -3461,7 +3461,7 @@ PRIMARY em serviço/router/validação, contratos, painel, testes e TASKS. INCID
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3525,6 +3525,13 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 DoR em 2026-11-07. Dependência TASK-024 DONE e gates da 029 verificados. ADR-006 aceito. PD-008 operacional resolvida por delegação vigente do responsável para escolhas técnicas: perfil acadêmico local, 03h diárias com execução ao retornar, 30 dias de conjuntos íntegros em pasta privada e restauração mensal a implementar/validar na 035. Sem eliminação automática de dados pessoais. A política não é atribuída ao PDF nem a aceite específico de números pelo professor. BLOCKED → READY → IN_PROGRESS em feature/TASK-030-backups. PRIMARY em backup, BackupRun, scripts, testes e execution.md. CLI/comandos/runner somente registros incidentais necessários.
+Fechamento 2026-11-07. GATE-01 a GATE-08 PASS no recorte. Backup por snapshot exportado, dump custom, manifesto e hashes de todas as tabelas, referências atuais/históricas, mídia pública e evidências privadas do banco. Publicação atômica após verificação; lock de banco impede concorrência; interrupção é recuperável; falha não elimina o conjunto bom. Retenção de 30 dias aplicada somente após novo conjunto verificado, ignorando diretórios desconhecidos e conjuntos alterados.
+
+verify.log: build, tipos, lint, 126 unitários, 6 integrações e política de auditoria PASS. final.log no código 396bae6: build API, tipos, lint, 6 integrações PASS; migrations aplicadas sem reset na base local original, e primeira cópia completa SUCCEEDED em 2ddc559c-ef08-4bfb-a4a9-2a654940a608. Casos cobrem mídia histórica/evidência privada, falha do pg_dump, adulteração/symlink, retenção, recuperação de registro perdido e lock concorrente real. Auditoria bruta preserva dois alertas baixos. WSL/Node24/PostgreSQL17. Scripts de execução/saídas locais em test-results/backup.
+
+Agendamento Garimpo-DailyBackup registrado e consultado no Windows: Ready, diário 03h, StartWhenAvailable=True, sessão interativa e ação WSL sem credenciais na linha. Script PowerShell com UTF-8 BOM em 2a264b8 para preservar o texto no Windows PowerShell. Destino ~/.local/share/garimpo/backups com acesso privado. Ensaio mensal e restauração seguem TASK-035.
+
+PRIMARY nos módulos/scripts/testes de backup, migration/modelo BackupRun, execution.md e TASKS. INCIDENTAL no comando/runner package.json/tests/core/run-integration.mjs e na fixture compartilhada para schema030/mediaRoot. Scope Guard PASS, Forbidden Changes PASS, Scope Creep NONE, DoD PASS. IN_PROGRESS → IN_REVIEW → DONE. 30/37 concluídas. Próxima candidata TASK-031.
 
 ### TASK-031 Revisar auditoria e segurança integrada
 
