@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
+import type { CartView } from '@garimpo/contracts';
 import { test, expect } from '../e2e/account/fixtures';
+import { session } from '../e2e/cart/http';
 
 test('operator administers metadata, edition, tracks, publication, offers and stock through the real secure UI', async ({ page, app }) => {
   const login = page.getByRole('form', { name: 'Bom te ver de novo' });
@@ -31,16 +33,26 @@ test('operator administers metadata, edition, tracks, publication, offers and st
   await page.getByRole('form', { name: 'Publicar edição', exact: true }).getByRole('button').click();
   await expect(page.getByRole('heading', { name: title + ' · Publicada', exact: true })).toBeVisible();
   const newOffer = page.getByRole('form', { name: 'Criar oferta', exact: true });
-  await newOffer.getByLabel('Preço em reais').fill('129,90'); await newOffer.getByLabel('Quantidade física inicial').fill('2'); await newOffer.getByRole('button').click();
+  await newOffer.getByLabel('Preço em reais').fill('129,90'); await newOffer.getByLabel('Quantidade física inicial').fill('2');
+  const creation = page.waitForResponse(response => response.url().endsWith('/offers') && response.request().method() === 'POST' && response.status() === 201);
+  await newOffer.getByRole('button').click();
+  const offerId = ((await (await creation).json()) as { id: string }).id;
   await expect(page.getByRole('heading', { name: /Oferta 1 · Novos/ })).toBeVisible();
   await page.getByRole('form', { name: 'Ativar oferta 1', exact: true }).getByRole('button').click();
   await expect(page.getByRole('heading', { name: /Oferta 1 · Novos.*Ativa/ })).toBeVisible();
   const adjustment = page.getByRole('form', { name: 'Ajustar quantidade física', exact: true });
   await adjustment.getByLabel('Variação da quantidade').fill('3'); await adjustment.getByLabel('Motivo do ajuste').fill('Entrada conferida no painel'); await adjustment.getByRole('button').click();
-  await expect(page.getByText('Físico: 5 · reservado: Não conferido · disponível: Não conferido', { exact: true })).toBeVisible();
+  await expect(page.getByText('Físico: 5 · reservado: 0 · disponível: 5', { exact: true })).toBeVisible();
   await expect(page.getByText(/Entrada conferida no painel/).last()).toBeVisible();
+  const customer = await app.customer(), buyer = await session(app, customer.input.email, customer.input.password);
+  const empty = await buyer.call<CartView>('/me/cart');
+  expect((await buyer.call('/me/cart/items', 'POST', { version: empty.body.version, offerId, quantity: 5 }, randomUUID())).status).toBe(201);
+  const cart = (await buyer.call<CartView>('/me/cart')).body;
+  expect(cart.pricing.status).toBe('READY');
+  if (cart.pricing.status !== 'READY') throw new Error('Synthetic cart pricing must be ready.');
+  expect((await buyer.call('/checkouts', 'POST', { version: cart.version, pricingRevision: cart.pricing.revision }, randomUUID())).status).toBe(201);
   await adjustment.getByLabel('Variação da quantidade').fill('-1'); await adjustment.getByLabel('Motivo do ajuste').fill('Avaria a conferir'); await adjustment.getByRole('button').click();
-  await expect(adjustment.getByRole('alert')).toContainText('redução ou exclusão está protegida');
+  await expect(adjustment.getByRole('alert')).toContainText('unidade reservada ou comprometida');
   await expect(adjustment.getByRole('alert')).toBeFocused();
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

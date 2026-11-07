@@ -16,7 +16,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
 | 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
-| 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
+| 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | IN_PROGRESS |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
 | 12 | TASK-012 Implementar desejos e alertas de disponibilidade | PHASE-02 | HIGH | TASK-008, TASK-009, TASK-010, TASK-011 | DONE |
@@ -1265,7 +1265,7 @@ Scope Validation: Allowed Changes PASS; Incidental Changes PASS, cinco arquivos 
 
 #### Status
 
-DONE
+IN_PROGRESS
 
 #### Phase
 
@@ -1375,6 +1375,8 @@ Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; 
 ##### Scope Validation e Definition of Done
 
 Allowed Changes PASS, incluindo precisão PRIMARY registrada antes da edição; Incidental Changes PASS (tabela acima); Forbidden Changes PASS; Scope Creep NONE. IDs preservados, nenhuma tarefa futura executada, nenhum serviço externo/cobrança/túnel novo; ZIP alheio preservado. Definition of Done: PASS. Contagem 9/37 DONE. Next Eligible TASK: TASK-010, candidata com dependência TASK-008 satisfeita; sua própria DoR será revalidada antes da promoção. Continuidade explicitamente autorizada.
+
+Revisão do teste integrado em 2026-11-07, fix/TASK-009-integrated-stock-test. Dependência 008 DONE, 19 testes de catálogo e 12 de estoque PASS no checkpoint 032, ADRs aceitos, autorização contínua até 100%, requisitos/Scope Guard conferidos. O teste UI ainda pressupunha porta comercial ausente, mas runtime já compõe checkout/pedidos reais em TASK-023. PRIMARY: teste E2E de estoque e TASKS, sem mudança de aplicação/modelo. DONE → IN_PROGRESS; usar reserva real de checkout existente para provar a guarda de redução, preservando o teste unitário/integrado da porta UNAVAILABLE.
 
 ### TASK-010 Criar catálogo público no site
 
