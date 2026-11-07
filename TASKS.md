@@ -34,7 +34,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 24 | TASK-024 Checkpoint PHASE-03 | PHASE-03 | CRITICAL | TASK-020, TASK-021, TASK-022, TASK-023 | DONE |
 | 25 | TASK-025 Implementar cancelamentos e indisponibilidade parcial | PHASE-04 | HIGH | TASK-024 | DONE |
 | 26 | TASK-026 Implementar devoluções, inspeção e evidências | PHASE-04 | HIGH | TASK-025 | DONE |
-| 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | IN_PROGRESS |
+| 27 | TASK-027 Implementar trocas, ofertas e prazos | PHASE-04 | HIGH | TASK-026 | DONE |
 | 28 | TASK-028 Criar interfaces de pós-venda | PHASE-04 | HIGH | TASK-025, TASK-026, TASK-027 | DONE |
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
@@ -3235,7 +3235,7 @@ Revalidação da correção 09e6a99 em test-results/security/returns-fix.log, sa
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3311,6 +3311,8 @@ Gates 01 a 08 PASS. Build, tipos, lint, 126 unitários e 132 integrações em re
 Scope Guard e DoD PASS. PRIMARY em persistência de trocas, serviço, contratos, estoque, mensagens, atendimento compartilhado e testes. INCIDENTAL em exports, comandos/runner e fixture de testes, e nos pontos de chamada do atendimento de devolução para registrar rotas compartilhadas e usar o guard de unidade comum. Nenhuma mudança proibida. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. 27/37 concluídas. Próxima candidata TASK-028.
 
 Revisão corretiva em 2026-11-07, fix/TASK-027-notification-boundaries. DoR revalidada após correção 026 em 09e6a99/6e80139, com build/tipos/lint e devoluções/mensagens/segurança PASS. Autorização contínua aos 100%, ADR-003/004 aceitos e RN-042 conferida. DONE → IN_PROGRESS. PRIMARY em serviço de troca, descrição de mensagens, testes próprios e TASKS; sem mudança de regra ou migration. Validar silêncio nas etapas internas, fatos originais da oferta e corrida real de aceite/recusa/expiração.
+
+Revalidação: build/tipos/lint e 6 devoluções PASS em exchanges-fix.log (4781590); a nova posição dos cenários de relógio interferiu em duas contagens antigas, preservadas no log. Corrigido o isolamento por ordem em d4f740e, sem mudar expectativas: tipos/lint, 6 trocas, 16 mensagens e 6 segurança PASS em exchanges-final.log. 5626ae3 acrescenta reconciliação concorrente real na expiração. PRIMARY: serviço de troca, descrição de mensagens, testes próprios e TASKS; Incidental Changes: NONE. Gates 01–08 aplicáveis PASS, DoD/Scope Guard PASS. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE.
 
 ### TASK-028 Criar interfaces de pós-venda
 
