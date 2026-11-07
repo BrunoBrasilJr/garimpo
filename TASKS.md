@@ -3773,6 +3773,8 @@ Primeiros dois E2E de acessibilidade PASS em accessibility.log. Inspeção visua
 
 IN_PROGRESS → FAILED pela legibilidade dos metadados ampliados constatada na captura acceptance-200-edition.png. A TASK-010 fará a correção CSS; os ensaios acumulados no snapshot anterior continuam para localizar outros problemas sem alterar o código em execução.
 
+A correção visual 010 em 225ec18/60cf75f passou em build/tipos/lint e 5 E2E (catalog-final.log). Suítes acumuladas browser.log: contas 7, catálogo web 3 e componentes móveis 3 PASS; estoque administrativo 1 FAIL/1 PASS porque a expectativa histórica ainda pede vínculos UNAVAILABLE após a integração comercial real da TASK-023. Corrigir o teste na TASK-009 para conferir saldo real e impedir redução de estoque reservado, mantendo o caso de porta indisponível nos testes de integração existentes.
+
 ### TASK-034 Validar desempenho e concorrência
 
 #### Status
