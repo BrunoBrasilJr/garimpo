@@ -1,0 +1,19 @@
+{
+  "id": "academic-local-20261107-v1",
+  "editions": 1000,
+  "tracksPerEdition": 2,
+  "customers": 10,
+  "concurrency": 10,
+  "baselinePaidOrders": 100,
+  "iterationsPerCustomer": 12,
+  "samplesPerOperation": 120,
+  "unexpectedErrorsAllowed": 0,
+  "p95Milliseconds": {
+    "search": 1500,
+    "reservation": 3500,
+    "quote": 2500,
+    "order": 4000,
+    "payment": 5500,
+    "reports": 3500
+  }
+}

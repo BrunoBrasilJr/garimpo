@@ -41,7 +41,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | DONE |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | DONE |
 | 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
-| 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | BLOCKED |
+| 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | READY |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | READY |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | BLOCKED |
 | 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | BLOCKED |
@@ -3787,7 +3787,7 @@ Consolidação em 2026-11-07: 45 jornadas funcionais distintas PASS nesta rodada
 
 #### Status
 
-BLOCKED
+READY
 
 #### Phase
 
@@ -3850,7 +3850,7 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+Prontidão em 2026-11-07. TASK-032 DONE em 70ecc38 e aplicação de domínio sem mudança posterior; 254 integrações e demais gates válidos. ADR-003/004 aceitos. Autorização contínua até 100% e delegação de escolhas técnicas vigentes. PD-007 definida antes de medir em tests/performance/profile.json e docs/validation/performance.md: 1.000 edições, 10 clientes concorrentes, 100 pedidos de preparação e 120 amostras por operação, metas p95 explícitas e zero erro inesperado. Não atribuir números ao PDF/professor nem interpretar “não entendi” como aprovação; origem é a delegação técnica anterior. BLOCKED → READY em chore/TASK-034-performance-concurrency. Scope Guard conferido: somente testes próprios, relatório e TASKS, NO_INCIDENTAL_CHANGES. A 033 está bloqueada por conferências externas e restauração; não depende desta tarefa e não impede este ensaio independente na PHASE-05.
 
 ### TASK-035 Executar restauração isolada
 
