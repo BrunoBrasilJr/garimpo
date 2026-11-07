@@ -4,6 +4,9 @@ import { afterAll, beforeAll, expect, test } from 'vitest';
 import type { ReturnView } from '@garimpo/contracts';
 import { credentials, foundation } from '../accounts/lifecycle/fixtures.ts';
 import { Customers } from '../../apps/api/src/modules/accounts/blocking.ts';
+import { enqueue } from '../../apps/api/src/core/outbox.ts';
+import { serializable } from '../../apps/api/src/persistence/transaction.ts';
+import { consumeCommerce } from '../../apps/api/src/modules/messaging/commerce.ts';
 
 let f: Awaited<ReturnType<typeof foundation>>;
 let buyer: Awaited<ReturnType<Awaited<ReturnType<typeof foundation>>['customer']>>;
@@ -75,6 +78,16 @@ test('audit records exclude raw credentials and public order views exclude passw
   const detail = await f.server.call('/me/orders/' + orderId, 'GET', undefined, credentials(buyer));
   expect(detail.status).toBe(200);
   expect(JSON.stringify(detail.body)).not.toMatch(/passwordHash|credentialHash|csrfHash|refreshHash|technicalSecret/);
+});
+
+test('an outbox event cannot impersonate a nonexistent after-sales case', async () => {
+  for (;;) { const result = await consumeCommerce(f.messages); if (result === 'EMPTY') break; expect(result).toBe('PROCESSED'); }
+  const event = await serializable(f.db, tx => enqueue(tx, {
+    type: 'RETURN.UPDATED', aggregateId: randomUUID(), payload: { orderId, userId: buyer.user.id }
+  }, f.clock));
+  expect(await consumeCommerce(f.messages)).toBe('FAILED');
+  expect(await f.db.domainEvent.findUnique({ where: { id: event.id } })).toMatchObject({ processedAt: null, lastErrorCode: 'COMMERCE_PREPARATION_FAILED' });
+  expect(await f.db.demoMessage.count({ where: { eventId: event.id } })).toBe(0);
 });
 
 test('blocking revokes old case and evidence access while paid processing stays available to staff', async () => {
