@@ -58,4 +58,26 @@ preview.log: componentes móveis de pedidos/pós-venda compilados para o ensaio
 RNW, 254 módulos. A retomada em resume.log executa as demais integrações e gates;
 build, tipos, lint e unitários do mesmo código de produção não foram repetidos.
 
-IN_PROGRESS. Consolidação pendente dos gates restantes. Incidental Changes: NONE.
+Integrações acumuladas PASS: fundação 9, contas 14, mensagens 16, catálogo 19,
+estoque 12, engajamento 12, avaliações 11, preços 12, carrinho 22, checkout 24,
+pagamentos 32, pedidos 18, ciclo de conta 16, composição comercial 6,
+cancelamentos 6, devoluções 7, trocas 6, relatórios 6 e backup 6: total 254.
+Segurança dirigida: seis adicionais PASS. Política de auditoria PASS; o relatório
+npm bruto conserva dois LOW/exit 1 e não é tratado como auditoria limpa.
+
+resume.log terminou com saída 0: três jornadas de pós-venda e uma de relatórios
+PASS em Firefox/HTTPS, incluindo componente React Native via RNW, evidência
+privada, atuação por e-mail de conta bloqueada, estorno falho visível, aceite de
+substituto e relatórios restritos ao ADMIN. Exportações Android (654 módulos) e
+iOS (656 módulos) PASS. RNW e bundles não são execução física ou leitor de tela.
+
+Gates 01 a 08 PASS no recorte da fase: build/tipos, lint, 126 unitários,
+254 integrações, seis verificações adicionais de segurança, quatro jornadas
+de navegador, critérios e regressão. O resultado soma execuções acumuladas
+explicitadas acima, não uma única execução sem falhas históricas. Metas de carga,
+restauração isolada e aceitação física seguem as tarefas 034/035/033.
+
+PRIMARY desta TASK: este relatório e TASKS.md. Incidental Changes: NONE.
+O ajuste de teste possui branch e commits próprios de TASK-003. Allowed Changes
+PASS, Forbidden Changes PASS, Scope Creep NONE, DoD PASS.
+IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. Próxima TASK-033.

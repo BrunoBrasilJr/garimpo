@@ -39,10 +39,10 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 29 | TASK-029 Implementar relatórios financeiros e comerciais | PHASE-04 | MEDIUM | TASK-026, TASK-027 | DONE |
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | DONE |
-| 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | IN_PROGRESS |
-| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
+| 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | DONE |
+| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | READY |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | BLOCKED |
-| 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | BLOCKED |
+| 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | READY |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | BLOCKED |
 | 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | BLOCKED |
 
@@ -3625,7 +3625,7 @@ Fechamento em 2026-11-07: correções 026/027 incorporadas por fast-forward até
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -3694,11 +3694,13 @@ Primeira rodada em verify.log: build/tipos/lint e 126 unitários PASS; fundaçã
 
 Retomada após 054c328 e fechamento da TASK-003: nove integrações PASS, tipos/lint dos testes PASS; código de produção idêntico ao build/tipos/lint/126 unitários já aprovados em verify.log. FAILED → IN_PROGRESS; continuar gates acumulados restantes, sem repetir gates não afetados.
 
+Fechamento em 2026-11-07. docs/validation/phase-04.md consolida verify.log, core-fix.log, preview.log e resume.log (último saída 0): build/tipos/lint, 126 unitários, 254 integrações, 6 segurança adicionais, 4 jornadas Firefox/HTTPS e bundles Android 654/iOS 656 PASS. RN-042 mapeada por evento e produtor/consumidor; corridas reais de resposta/reconciliação de oferta e janela de 48h PASS. Auditoria bruta mantém dois LOW/exit 1; política restrita PASS. PRIMARY deste checkpoint somente relatório/TASKS; fix de teste 054c328/36c8a9b pertence à TASK-003. Incidental Changes: NONE; gates 01–08, Scope Guard e DoD PASS. IN_PROGRESS → FAILED → IN_PROGRESS → IN_REVIEW → DONE. 32/37 concluídas. Próxima TASK-033; TASK-035 pronta quanto às dependências/política, TASK-034 precisa fixar PD-007 antes de medir.
+
 ### TASK-033 Executar aceitação funcional e acessibilidade
 
 #### Status
 
-BLOCKED
+READY
 
 #### Phase
 
@@ -3836,7 +3838,7 @@ Não executada. Estado inicial preservado; a conciliação documental não é ex
 
 #### Status
 
-BLOCKED
+READY
 
 #### Phase
 
