@@ -3765,6 +3765,8 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 DoR em 2026-11-07. TASK-032 DONE, base publicada 70ecc38, gates acumulados e artefatos presentes. ADR-001/002 aceitos e alvos iniciais Windows/WSL, Chrome/Edge/Android ratificados em 2026-10-25; iOS compatível sem alegar execução. Autorização contínua do responsável até os 100%. READY → IN_PROGRESS em chore/TASK-033-functional-acceptance. PRIMARY somente testes de aceitação/acessibilidade, relatório e TASKS; NO_INCIDENTAL_CHANGES. Executar jornadas acumuladas, teclado/foco/contraste/ampliação e conferir limites nativos sem inventar aceite humano. Recusa de TalkBack preservada; disponibilidade para inspeção no Android solicitada como resultado externo, sem bloquear verificações independentes. TEST-025 precisa da evidência de restauração 035 antes do aceite integral.
 
+Primeiros dois E2E de acessibilidade PASS em accessibility.log. Inspeção visual identificou rótulos de metadados quebrando palavras com texto 200%/390px; teste reforçado em 83bafba para leitura e fotos carregadas. Ajuste de catálogo deve ficar em TASK-010. Chrome 156.0.8078.80/Edge 156.0.4314.58 rejeitaram a CA não confiada (probe.json); a parte positiva ficou pendente de confirmação humana do Windows. Launcher próprio encerrado e ausência da CA temporária conferida; nenhum teste positivo desses navegadores é alegado. Suítes Firefox independentes continuam em browser.log.
+
 ### TASK-034 Validar desempenho e concorrência
 
 #### Status
