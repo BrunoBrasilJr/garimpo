@@ -38,6 +38,16 @@ test('catalog and account remain usable at 390px and 200 percent text with descr
       await expect(page.getByRole('heading', { name: data.mainTitle, exact: true })).toBeVisible();
       const images = page.locator('img'); expect(await images.count()).toBeGreaterThan(0);
       expect(await images.evaluateAll(elements => elements.every(element => Boolean(element.getAttribute('alt')?.trim())))).toBe(true);
+      for (const image of await images.all()) {
+        await image.scrollIntoViewIfNeeded();
+        await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).complete && (element as HTMLImageElement).naturalWidth > 0)).toBe(true);
+      }
+      const labels = await page.locator('.shop-metadata dt').evaluateAll(elements => elements.map(element => {
+        const range = document.createRange(); range.selectNodeContents(element);
+        return { lines: range.getClientRects().length, words: element.textContent!.trim().split(/\s+/).length };
+      }));
+      expect(labels.length).toBeGreaterThan(0);
+      for (const label of labels) expect(label.lines).toBeLessThanOrEqual(label.words);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.screenshot({ path: resolve(app.directory, 'acceptance-200-' + (path.includes('edition') ? 'edition' : path.includes('catalog') ? 'catalog' : 'account') + '.png'), fullPage: true });
