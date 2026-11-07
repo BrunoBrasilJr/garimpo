@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$LinuxProject = "/home/brasi/.local/share/garimpo/validation/task002-20261101",
   [switch]$Remove
 )
