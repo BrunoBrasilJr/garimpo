@@ -2,8 +2,13 @@ import { createServer as createHttpsServer } from 'node:https';
 import { createServer as createHttpServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { createApp } from './app.ts';
+import { createDatabase } from './persistence/client.ts';
 
-const app = createApp();
+const connectionString = process.env['DATABASE_URL'];
+const db = process.env['GARIMPO_DB_POOL_SIZE'] !== undefined && connectionString
+  ? createDatabase(connectionString) : undefined;
+const options = db ? { db } : undefined;
+const app = createApp(options, options);
 const port = Number(process.env['PORT'] ?? 3001);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error('PORT must be an integer from 1 to 65535.');
@@ -22,5 +27,8 @@ server.listen(port, host, () => {
   console.info(`Garimpo bootstrap: ${cert ? 'https' : 'http'}://${host}:${port}/health`);
 });
 for (const signal of ['SIGTERM', 'SIGINT'] as const) {
-  process.on(signal, () => server.close(() => process.exit(0)));
+  process.on(signal, () => server.close(() => {
+    if (!db) process.exit(0);
+    void db.$disconnect().then(() => process.exit(0), () => process.exit(1));
+  }));
 }
