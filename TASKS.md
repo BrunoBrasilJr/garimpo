@@ -10,7 +10,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | --- | --- | --- | --- | --- | --- |
 | 1 | TASK-001 Validar decisões técnicas e parâmetros pendentes | PHASE-01 | CRITICAL | NONE | DONE |
 | 2 | TASK-002 Preparar estrutura de desenvolvimento | PHASE-01 | CRITICAL | TASK-001 | DONE |
-| 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | IN_PROGRESS |
+| 3 | TASK-003 Criar persistência e fundação transacional | PHASE-01 | CRITICAL | TASK-002 | IN_REVIEW |
 | 4 | TASK-004 Implementar contas, autenticação e gestão interna na API | PHASE-01 | CRITICAL | TASK-003 | DONE |
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
@@ -387,7 +387,7 @@ Next Eligible TASK: NONE promovida neste fechamento. TASK-003 é a próxima cand
 
 #### Status
 
-IN_PROGRESS
+IN_REVIEW
 
 #### Phase
 
@@ -553,6 +553,8 @@ Revisão corretiva de teste em 2026-11-07, fix/TASK-003-crash-recovery-barrier. 
 Correção 054c328 revalidada: tipos dos testes, lint dirigido e 9/9 integrações fundacionais PASS, saída 0, test-results/phase-04/core-fix.log. A barreira espera a liberação da trava no PostgreSQL com lock_timeout limitado a 5s, sem espera arbitrária nem relaxamento da asserção de recuperação. PRIMARY: teste próprio/TASKS; Incidental Changes: NONE. Build de produção N/A (nenhuma mudança); gates de teste/API/segurança/aceitação/regressão aplicáveis PASS, Scope Guard e DoD PASS. IN_PROGRESS → IN_REVIEW → DONE.
 
 Revisão em 2026-11-09, fix/TASK-003-local-db-profile. Dependência 002 DONE, ADRs 003/004 aceitos, Scope Guard e contrato relidos. DONE → IN_PROGRESS nesta branch. A configuração global de uma conexão em ebcfe48 passou a carga, mas a regressão de contas provou que o limite global impede o teste de sessões simultâneas. Manter o padrão anterior e permitir um tamanho explícito de pool por processo para o perfil local. PRIMARY em persistence/client.ts e TASKS. Incidental previsto em server.ts: injetar o mesmo pool em contas/mensagens quando configurado, pois o entrypoint sem injeção abre um pool por módulo. Ligação direta, mínima e necessária para que o limite seja do processo real, sem nova funcionalidade independente ou mudança de contrato, negócio, arquitetura ratificada, autenticação ou proteção de dados. Preservar o comportamento anterior quando a opção está ausente. Manter SERIALIZABLE, limite de tentativas e testes de concorrência real.
+
+IN_PROGRESS → IN_REVIEW. Em 47b7483, `npm run verify` passou em build, tipos, lint, 126 unitários e 254 integrações com a opção ausente. As nove corridas dirigidas também passaram, inclusive a de dois ADMINs que falhou em ebcfe48. O smoke no servidor HTTPS compilado, com a opção igual a 1, consultou 1.000 edições, rejeitou login inexistente com HTTP 401, observou uma conexão compartilhada no PostgreSQL e encerrou com código 0. Auditoria bruta exit 1 com dois LOW, política restrita PASS. Logs em test-results/performance/local-profile-gates.log e local-profile-smoke.log. Carga final e revalidação de concorrência/segurança no perfil local em andamento.
 
 ### TASK-004 Implementar contas, autenticação e gestão interna na API
 
