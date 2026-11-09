@@ -41,7 +41,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | DONE |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | DONE |
 | 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
-| 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | IN_REVIEW |
+| 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | DONE |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | DONE |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | BLOCKED |
 | 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | BLOCKED |
@@ -3797,7 +3797,7 @@ Ainda em 2026-11-09: build web, tipos e lint dirigido PASS. Chrome 157 e Edge 15
 
 #### Status
 
-IN_REVIEW
+DONE
 
 #### Phase
 
@@ -3873,6 +3873,8 @@ Terceira rodada em final.log montou catálogo, mas a preparação concorrente do
 Medição no commit 32e3494 FAILED em measured.log: a base de 100 pedidos pagos foi formada, mas clientes concorrentes abortaram em Carts.change com TRANSACTION_CONFLICT após três tentativas imediatas. Amostras parciais preservadas em tests/performance/results/32e3494-failed.json (21 buscas e 12 de cada outra operação), sem aprovar p95 com volume incompleto. IN_PROGRESS → FAILED. Corrigir a repetição da transação na tarefa de origem 003, sem aumentar as três tentativas, sem relaxar isolamento/validação nem esconder erros do cliente; revalidar a fundação e os fluxos afetados antes da nova medição.
 
 Retomada em 2026-11-09. DoR revalidada sobre TASK-032 e perfil PD-007 congelado. FAILED → IN_PROGRESS → IN_REVIEW em chore/TASK-034-local-load-evidence. A correção verificada da TASK-003 entrou em 1d0bc9f. O ensaio em 47b7483, com `GARIMPO_DB_POOL_SIZE=1`, coletou 720 amostras, 120 por operação, sem respostas inesperadas. Os seis p95 passaram. Confirmados 220 pedidos pagos, 220 eventos de venda, saldo 478 nas dez ofertas exercitadas e nenhuma reserva ativa ao fim. Build, tipos, lint, 126 unitários, 254 integrações, nove corridas dirigidas no padrão, cinco no perfil local e seis verificações de segurança no perfil local passaram. Relatório docs/validation/performance.md e dados brutos tests/performance/results/47b7483-pass.json. PRIMARY em relatório, evidência e TASKS. Incidental Changes: NONE.
+
+IN_REVIEW → DONE. Perfil e metas originais conferidos, gates aplicáveis, Scope Guard e DoD PASS. TASK-036 e TASK-037 continuam bloqueadas pela aceitação da TASK-033.
 
 ### TASK-035 Executar restauração isolada
 
