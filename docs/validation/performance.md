@@ -50,3 +50,15 @@ não relaxar limites para fabricar PASS.
 PD-007 resolvida para este ensaio delegado. READY, resultados ainda NÃO EXECUTADOS.
 Escopo primário: tests/performance, tests/concurrency/final, este documento e
 TASKS.md. NO_INCIDENTAL_CHANGES; código de produção/migrations proibidos.
+
+## Resultado pendente
+
+A massa de 100 pedidos pagos foi estabelecida. A primeira medição concorrente
+parou por TRANSACTION_CONFLICT em carrinho e produziu 81 amostras parciais.
+O arquivo tests/performance/results/32e3494-failed.json preserva essa execução.
+Na branch experimental fix/TASK-003-serialization-backoff, b63165f ainda falhou
+em carrinho. e71c465 favoreceu índices na transação, mas ainda retornou 409
+TRANSACTION_CONFLICT na reserva. Os logs locais são backoff.log e indexed.log.
+As alterações de produção desse experimento ficam na branch de investigação.
+TASK-034 segue FAILED com as metas originais. TASK-035 pode avançar com a base
+estável e as dependências 030/032 já concluídas.
