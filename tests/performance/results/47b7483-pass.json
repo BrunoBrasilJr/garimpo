@@ -1,0 +1,3659 @@
+{
+  "profile": "academic-local-20261107-v1",
+  "profileSha256": "153fb1ed36dc2318dabe171f58816f9eea9e092c18bead0c6c14aaedcb9b4f93",
+  "source": "47b7483bdfbdef242be5aaca8d12af0ccf7e057d",
+  "environment": {
+    "node": "v24.22.1",
+    "kernel": "6.6.87.2-microsoft-standard-WSL2",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "memoryBytes": 3962785792
+  },
+  "elapsedMilliseconds": 83246.074696,
+  "unexpectedFailure": null,
+  "metrics": {
+    "search": {
+      "samples": 120,
+      "p50": 182.66115999998874,
+      "p95": 449.5152529999905,
+      "max": 627.2635429999937,
+      "limitP95": 1500
+    },
+    "reservation": {
+      "samples": 120,
+      "p50": 992.7513369999942,
+      "p95": 2019.4716159999953,
+      "max": 2156.0079429999896,
+      "limitP95": 3500
+    },
+    "quote": {
+      "samples": 120,
+      "p50": 567.7730480000027,
+      "p95": 1661.0649889999913,
+      "max": 2004.2416450000019,
+      "limitP95": 2500
+    },
+    "order": {
+      "samples": 120,
+      "p50": 640.3702080000076,
+      "p95": 1337.9755850000074,
+      "max": 1743.9136520000175,
+      "limitP95": 4000
+    },
+    "payment": {
+      "samples": 120,
+      "p50": 2019.0586699999985,
+      "p95": 3263.1646719999844,
+      "max": 3595.3897920000018,
+      "limitP95": 5500
+    },
+    "reports": {
+      "samples": 120,
+      "p50": 197.03406100001303,
+      "p95": 705.6355789999943,
+      "max": 1075.4579629999935,
+      "limitP95": 3500
+    }
+  },
+  "samples": [
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 144.46820000000298
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 188.74501400000008
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 215.64480399999593
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 242.15485599999374
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 274.81806000000506
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 307.28898800000024
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 352.5521759999974
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 410.85936600000423
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 449.5152529999905
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 483.63257400000293
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1490.296629999997
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1561.1033370000077
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1612.2217260000034
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1653.7397700000001
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1704.8456270000024
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1808.1941360000055
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1839.3332649999938
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1814.4638819999964
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1806.9476679999934
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1819.255615999995
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1661.0649889999913
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1496.2313599999907
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1358.5053600000101
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1223.226238000003
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1082.8519430000015
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 930.2500359999976
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 810.9549759999936
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 724.3500559999957
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 661.1600390000094
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 589.3728089999931
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 997.1287020000018
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1008.1884879999998
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1012.9755530000111
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 997.7790550000063
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 963.3426319999999
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 932.1448859999946
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 891.7559769999934
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 850.4260019999929
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 854.5848350000015
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 899.2603999999992
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3165.817956999992
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3082.826034999991
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3025.0438679999934
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2952.7591580000008
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2892.0979269999953
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2854.505097999994
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2805.7899199999956
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2758.842069999999
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 164.11870700000145
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 196.22795700001006
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2728.3147419999877
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 213.33940399999847
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 258.41692600000533
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 274.3107339999988
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 209.94965399999637
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2776.590083000003
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 315.40234699999564
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 240.66711300000316
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 237.35413300000073
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 231.25807300000452
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 266.8236460000044
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 514.4660989999975
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 372.75204799999483
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 818.1647149999917
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 627.2635429999937
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 1067.4788570000092
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 445.52901199999906
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 1075.4579629999935
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 232.85856199999398
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 209.3877199999988
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1825.3005790000025
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1833.6802360000001
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1936.7069080000074
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 2027.7536450000043
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 2104.6947570000048
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 2143.381132999988
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 2136.1435769999953
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 2156.0079429999896
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 2019.4716159999953
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 2121.221636999995
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 2004.2416450000019
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1897.811195999995
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1820.8312670000014
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1789.0952620000025
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1734.507488000003
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1674.4424390000058
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1587.609215999997
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1401.9067959999957
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1281.6840800000064
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1036.9700819999998
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1116.3597609999997
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1143.4759599999961
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1125.5046000000002
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1205.2804689999903
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1266.1515930000023
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1285.9492739999987
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1337.9755850000074
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1337.5144449999934
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1350.1796009999962
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1359.7547170000034
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3236.103381000008
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3126.9142939999874
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3061.9396759999945
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2880.2681180000072
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2737.202931000007
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2626.2135590000107
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 151.45584600001166
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 174.50351700000465
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2541.6210680000077
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 175.59157399999094
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2463.418936000002
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 122.4371039999969
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2415.640980000011
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2316.8717319999996
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 137.1733830000012
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 271.4389039999951
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 165.35609699999623
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 311.9055500000104
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 408.1045849999937
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 226.4426620000013
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 285.5727790000092
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 519.5387520000077
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 511.387023999996
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 282.2847279999987
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 678.4113150000048
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 705.6355789999943
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 329.68434900000284
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 393.63921700000355
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 450.4746790000063
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 582.2799039999954
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1627.4578959999926
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1657.112466999999
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1498.5879489999934
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1160.059408000001
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1169.897850999987
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1059.978020999988
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 964.2396919999883
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 986.9779310000158
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1000.0063179999852
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1015.223622000005
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 914.8385779999953
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 855.8036490000086
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 785.4589680000063
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 696.3319489999994
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 631.921274999986
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 574.9152520000061
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 515.2972940000182
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 457.84904699999606
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 417.87412299998687
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 362.23391899999115
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 579.4307079999999
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 603.6687789999996
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 617.5164840000216
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 640.3702080000076
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 671.738857999997
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 689.9641899999988
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 732.5919490000233
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 767.5590629999933
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 827.1833699999843
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 871.2748989999818
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2931.8622019999893
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2854.0078470000008
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2787.596953
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2728.7244869999995
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2644.8525910000026
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2594.8554239999794
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2513.8350659999996
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2447.6550219999917
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 127.2088329999824
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 136.54087500000605
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2411.3013609999907
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 159.3490120000206
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 105.16554300001008
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 201.24710599999526
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2406.267861999979
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 231.04163100000005
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 170.5441249999858
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 165.54434599998058
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 331.6558190000069
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 204.74781600001734
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 380.6905839999963
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 383.20263200000045
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 253.4782739999937
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 260.79923500001314
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 302.3406599999871
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 326.10805200002505
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 660.7329390000086
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 656.3270259999845
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 290.6335449999897
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 288.87084399999003
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1121.8556350000144
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 997.7789380000031
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1032.355282000004
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 994.1162130000012
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 959.420700000017
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 997.7724739999976
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1013.3638970000029
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1058.3489289999998
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 982.8123710000073
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1015.8505779999832
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 929.1513049999776
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 858.5356380000012
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 826.8061140000063
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 792.6956189999764
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 730.4811530000006
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 678.3553660000034
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 652.2970199999982
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 598.2542869999888
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 529.4132349999854
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 461.6470140000165
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 658.6299749999889
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 749.6253879999858
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 787.4601719999919
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 811.8141060000053
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 851.4366889999947
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 906.5526470000041
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 953.2963830000081
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 979.705071000004
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 977.3867160000082
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 984.3020609999949
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2619.477346999978
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2502.654687000002
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2415.3805190000276
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2350.951686000015
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2295.0790330000164
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2230.653921000019
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2142.904515000002
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 151.74321400001645
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 149.55775799998082
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2100.5057130000205
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 182.9102759999805
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2062.60143900002
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 219.971944000019
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 159.5934689999849
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2087.225349000015
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 276.59568800000125
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 240.04046600000584
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 257.27645000000484
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 290.98406899999827
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 481.3649620000215
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 393.65734299999895
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 638.456652999972
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 396.407635999989
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 827.9682709999906
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 344.0234540000092
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 906.5109329999832
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 910.0179749999952
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 312.44031999999424
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 508.4603429999843
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 478.88104599999497
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1756.7181619999756
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1606.7742410000064
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1600.6609929999977
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1609.506693000003
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1466.198429000011
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1227.7002910000156
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1135.5575090000057
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 940.0751500000188
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 912.3180810000049
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 917.3445829999982
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 856.9741170000052
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 817.9968800000206
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 761.4681209999835
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 701.7491049999953
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 652.386158999987
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 597.8707510000095
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 509.3323929999897
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 431.72495099998196
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 371.7640229999961
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 317.3555869999982
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 581.696717999992
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 611.8047509999888
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 647.7155990000174
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 652.6544749999885
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 637.8328270000056
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 640.2949779999908
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 662.0845520000148
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 669.3939300000202
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 666.0144750000036
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 642.4123050000053
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1483.6924809999764
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1421.0857729999989
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1349.1792890000215
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1303.1135560000257
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1265.479748999991
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 72.14232699997956
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1240.6529500000179
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1176.0072539999965
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 92.9915500000061
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1134.7104400000244
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1102.6256899999862
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1072.6648450000212
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 115.64046000002418
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 94.77796099998523
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 136.4987619999738
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 94.93627500001458
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 78.87704900000244
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 192.99946900000214
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 92.69241799999145
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 192.00548799999524
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 204.34808199998224
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 212.3382949999941
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 217.594528000016
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 218.94957699999213
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 117.80180499999551
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 123.99022900001728
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 123.02245599997696
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 118.13143900001887
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 123.96424899998237
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 127.03634500000044
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1202.5591630000272
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1071.8156709999894
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1126.4131390000111
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1120.3592919999792
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 992.7513369999942
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1081.207063000009
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1103.2371419999981
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1153.3248449999955
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1167.190168000001
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1204.3148810000275
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1136.80931099999
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 1052.8031910000136
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 981.8687600000121
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 918.3564699999988
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 837.5814010000031
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 723.0227899999882
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 658.6452009999775
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 570.5166979999922
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 493.3286209999933
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 427.68953599999077
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 589.2868920000037
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 663.0911020000058
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 724.2056530000118
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 774.9131369999959
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 810.8231680000026
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 853.5955180000165
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 910.8039950000239
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 964.1773960000137
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1039.94462200001
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1114.912634999986
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3546.592313000001
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3449.712265000009
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3349.5954140000104
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3263.1646719999844
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3192.722639000014
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3134.7228389999946
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3054.2350279999955
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2953.1265079999866
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 102.01348599998164
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 101.05277999999817
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2843.3966889999865
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 116.08252899997751
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 129.08467400001246
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 136.40913099999307
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2769.8227880000195
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 113.20834400001331
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 177.24910899999668
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 148.65629300000728
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 147.87089199997718
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 169.6745879999944
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 278.49556999999913
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 223.88299199999892
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 240.16483100000187
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 482.84961800000747
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 330.3854649999994
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 601.6971860000049
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 259.03122500001336
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 661.8474909999932
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 217.51438899998902
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 218.16178299998865
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 949.2226340000052
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 933.5077630000014
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1000.3938119999948
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1084.4244900000049
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1088.7709299999988
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1151.38133199999
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1155.046388000017
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1121.4832210000022
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1053.3271930000046
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 1040.8138020000188
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 954.1972079999978
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 901.7448619999923
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 837.6718600000022
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 754.141924000025
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 687.7999739999941
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 611.0602030000009
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 550.188284999982
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 459.740466999996
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 396.72095499999705
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 313.58894399998826
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 427.94002300000284
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 456.3287790000031
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 493.38099299999885
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 522.7531029999955
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 551.4440799999866
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 571.4242289999966
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 589.4360689999885
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 624.8735789999773
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 624.9770790000039
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 636.7332860000024
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2019.0586699999985
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1978.1338120000146
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1925.6906449999951
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1880.109937000001
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1843.42375300001
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1813.9737529999984
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 128.3564630000037
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 145.30804199998965
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1815.4387999999744
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1759.5733230000187
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 163.839295999991
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1724.8743740000064
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 124.27088499997626
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1723.9172480000125
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 220.26211600002716
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 153.18235099999583
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 181.37445500001195
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 343.8234330000123
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 353.7235030000156
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 249.67169999997714
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 225.27521200000774
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 509.1774420000147
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 520.457705000008
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 279.273973000003
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 579.244412
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 604.994383000012
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 299.6932059999963
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 343.5719859999954
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 344.72610800000257
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 377.56544000000576
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 635.5661959999998
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 478.2808850000147
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 468.74288700000034
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 384.42392299999483
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 409.0909110000066
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 374.01840199998696
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 335.7743140000093
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 340.82945499999914
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 345.8034780000162
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 357.7799069999892
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 332.98469899999327
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 307.2403859999904
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 293.7243830000225
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 280.0900440000114
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 239.92416699999012
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 217.1604529999895
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 198.1059499999974
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 182.49808599997777
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 171.22381399999722
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 152.12119199999142
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 210.32049499999266
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 218.70970400000806
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 224.63664100001915
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 231.55133599997498
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 238.1546929999895
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 246.3743620000023
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 248.3338179999846
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 258.54563400000916
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 276.86366199998884
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 292.95495899999514
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1208.7301369999768
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1186.7416039999807
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1173.3977849999792
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1149.7035019999894
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1133.701688000001
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1116.504299000022
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 57.104896999982884
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1109.7071730000025
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 70.52977900000405
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1097.991868000012
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1070.2712699999975
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 83.44783799999277
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 60.99994499998866
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 105.64103500000783
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1073.5995809999877
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 110.29434299998684
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 87.11447699999553
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 78.13782699999865
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 155.8028789999953
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 97.49161500000628
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 113.34299299999839
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 213.85063100000843
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 221.37467199997627
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 126.9757099999988
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 255.17133900002227
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 117.2067270000116
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 286.04382599997916
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 135.03281599999173
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 129.15941100000055
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 127.48185799998464
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 451.56427600001916
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 381.89323899999727
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 393.59734000000753
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 372.35517500000424
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 382.4602120000054
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 359.85367000001133
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 355.0496109999949
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 307.5815040000016
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 320.7687760000117
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 349.34485100000165
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 333.74743799999123
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 320.971114999993
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 313.16623200001777
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 320.0450159999891
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 326.6322710000095
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 333.8375319999759
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 339.3934050000098
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 338.9144769999839
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 334.50774899998214
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 311.5301230000041
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 633.9526579999947
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 749.5332770000095
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 877.6365339999902
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1017.3021720000252
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1108.0387300000002
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1201.1258619999862
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1351.7461289999774
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1478.4933420000016
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1639.7566170000064
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 1743.9136520000175
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3595.3897920000018
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3447.849856999994
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3268.824850999983
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 3079.9521890000033
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2949.211924000003
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2821.7215070000093
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 86.63936699999613
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2641.8369179999863
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 104.96328900000663
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2495.2172560000035
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2284.1821190000046
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 123.2572560000117
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 2136.4627640000253
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 103.36577499998384
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 162.56405399998766
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 115.06992900001933
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 188.75634300001548
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 114.44376599998213
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 223.82401499999105
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 131.2997289999912
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 288.40010899998015
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 175.5212959999917
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 334.7145759999985
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 341.70787399998517
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 213.583713
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 397.90105899999617
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 206.12595899999724
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 185.9305179999792
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 192.731483999989
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 167.70037299999967
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 731.406994000019
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 645.5475229999865
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 641.0770639999828
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 643.8418779999774
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 649.1182499999995
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 641.2653089999803
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 607.1816330000001
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 631.9649790000112
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 676.0171269999992
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 743.2641749999893
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 713.1164960000024
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 698.0008859999944
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 661.8891309999744
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 616.1482019999821
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 621.7005300000019
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 580.1278889999958
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 557.6754460000084
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 567.7730480000027
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 555.4055180000141
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 505.69221099998686
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 385.2688119999948
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 376.6621570000134
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 368.5074130000139
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 381.1744980000076
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 398.98630600000615
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 405.81342300001415
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 409.47806500000297
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 408.87175099999877
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 417.51920100001735
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 445.15620800000033
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1565.6938139999984
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1534.374466999987
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1499.0029479999794
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1452.502249000012
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1410.57726000002
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1382.8527929999982
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 69.35174700000789
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1368.8225579999853
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 81.60990599999786
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1359.080707999994
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 92.86186899998575
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 100.13583099999232
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1348.631091999996
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 1297.8408729999792
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 101.13445900002262
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 142.12500500000897
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 106.46767099999124
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 104.63361700001406
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 109.41086999999243
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 197.03406100001303
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 106.58122000002186
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 235.93756900000153
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 110.96573399999761
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 268.4808600000106
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 94.67757899998105
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 278.16791200000443
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 283.4043360000069
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 84.82013700000243
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 69.85521199999494
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 96.89919699999155
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 462.26346500002546
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 389.89178500001435
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 393.1050160000159
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 395.1827690000064
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 337.47200000000885
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 329.4431760000007
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 317.54140199997346
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 294.75254600000335
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 300.74563799999305
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 307.67774899999495
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 282.5023050000018
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 264.37644100000034
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 249.51114400001825
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 236.71845799998846
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 218.2124199999962
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 203.9119490000012
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 187.11632200001623
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 178.7002039999934
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 164.54829600002267
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 151.78438199998345
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 210.1221009999863
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 228.4931590000051
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 242.3552990000171
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 282.60625899999286
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 299.79150399999344
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 312.02729600001476
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 331.22586100001354
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 344.27076699997997
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 353.6958250000025
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 358.4967910000123
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 875.3076479999872
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 849.9141339999915
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 824.9550499999896
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 773.3614910000178
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 741.7217090000049
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 717.4866550000152
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 51.33300300000701
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 696.2001120000205
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 674.1746940000157
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 62.614214000001084
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 656.1813130000082
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 71.64858199999435
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 644.6507860000129
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 61.6352509999997
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 95.36418199999025
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 65.88280799999484
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 114.70546500000637
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 75.24974600001588
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 157.32641499998863
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 95.11161600000923
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 186.09473300000536
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 113.13773099999526
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 204.23832400000538
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 217.00082499999553
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 113.34111400000984
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 244.1608230000129
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 134.7520460000087
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 177.54443500001798
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 182.66115999998874
+    },
+    {
+      "operation": "search",
+      "status": 200,
+      "milliseconds": 192.37407099999837
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 942.984735999984
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 879.866760999983
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 760.0209240000113
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 744.3454740000016
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 710.489533999993
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 535.343703999999
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 421.1631340000022
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 404.625704999984
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 416.21197299999767
+    },
+    {
+      "operation": "reservation",
+      "status": 201,
+      "milliseconds": 418.2552189999842
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 393.87864199999603
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 353.7700590000022
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 336.38293600000907
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 311.46591400000034
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 291.57799399999203
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 270.71188899999834
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 254.0515969999833
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 234.71327400000882
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 211.48501599999145
+    },
+    {
+      "operation": "quote",
+      "status": 200,
+      "milliseconds": 190.93248799999128
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 408.0257280000078
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 421.29228300001705
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 434.3012419999868
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 444.6629879999964
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 423.8024399999995
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 409.6689490000135
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 411.5312050000066
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 390.3881490000058
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 376.0672959999938
+    },
+    {
+      "operation": "order",
+      "status": 201,
+      "milliseconds": 383.07947100000456
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 955.2967479999934
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 934.8091039999854
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 908.0472720000253
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 877.707877000008
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 853.9251189999923
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 837.951973999996
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 75.37463400000706
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 820.7417959999875
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 85.44092900000396
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 800.9117700000061
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 97.3588339999842
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 106.1233840000059
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 790.7788319999818
+    },
+    {
+      "operation": "payment",
+      "status": 200,
+      "milliseconds": 756.1807109999936
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 122.52956600001198
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 121.02432799999951
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 115.96250700001838
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 102.88622800001758
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 82.74020500000915
+    },
+    {
+      "operation": "reports",
+      "status": 200,
+      "milliseconds": 94.83567599998787
+    }
+  ]
+}
