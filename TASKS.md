@@ -42,7 +42,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | DONE |
 | 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | FAILED |
-| 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | IN_PROGRESS |
+| 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | IN_REVIEW |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | BLOCKED |
 | 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | BLOCKED |
 
@@ -3866,7 +3866,7 @@ Medição no commit 32e3494 FAILED em measured.log: a base de 100 pedidos pagos 
 
 #### Status
 
-IN_PROGRESS
+IN_REVIEW
 
 #### Phase
 
@@ -3930,6 +3930,8 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 DoR em 2026-11-09. Dependências 030 e 032 DONE, backup privado existente e seis integrações de backup aprovadas no checkpoint. ADR-006 aceito e política local PD-008 definida em docs/architecture/execution.md. Autorização de continuidade reafirmada pelo responsável. READY → IN_PROGRESS em chore/TASK-035-isolated-restore. Escopo PRIMARY em scripts de restauração, testes próprios, relatório e TASKS. NO_INCIDENTAL_CHANGES. A tarefa é independente da 034 e parte da aplicação estável, sem o experimento de transações.
+
+IN_PROGRESS → IN_REVIEW em 2026-11-09. Implementação e5ba849 e launcher d9bcdd6. Tipos, lint, instalação pelo lockfile e dois testes em PostgreSQL real passaram. Ensaio sintético restaurou 57 tabelas, 106 linhas, duas fotos e uma evidência em 890 ms com hashes da origem preservados. Destino sobreposto e cópia adulterada foram rejeitados. O agendador Windows executou a restauração em cópia Git dedicada, código 0, com 57 tabelas e 25 linhas em 621 ms. Primeiro calendário para 01/12 às 04h, sessão interativa. Evidências e gates em docs/validation/restore.md. PRIMARY somente escopo próprio. Incidental Changes: NONE.
 
 ### TASK-036 Consolidar documentação operacional
 
