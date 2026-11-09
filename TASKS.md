@@ -3785,6 +3785,8 @@ Consolidação em 2026-11-07: 45 jornadas funcionais distintas PASS nesta rodada
 
 Em 2026-11-09, TEST-025 passou com a TASK-035 concluída em d775913. A evidência de restauração e periodicidade está em docs/validation/restore.md. TASK-033 segue BLOCKED por validação nativa e jornada positiva Chrome/Edge. Somente relatório e TASKS, ambos PRIMARY. Incidental Changes: NONE.
 
+Ainda em 2026-11-09: build web, tipos e lint dirigido PASS. Chrome 157 e Edge 157 executaram em Ubuntu WSL2 com HTTPS e PostgreSQL real. Controle negativo da CA e jornada positiva de catálogo, reserva, frete, pagamento e papéis PASS em ambos. Perfis NSS temporários removidos e capturas a 200% inspecionadas. Os executáveis nativos Windows mantêm somente o controle negativo anterior. O responsável confirmou indisponibilidade do Android; roteiro nativo continua pendente, sem TalkBack por instrução anterior. TASK-033 segue BLOCKED. PRIMARY somente testes próprios, relatório e TASKS. Incidental Changes: NONE.
+
 ### TASK-034 Validar desempenho e concorrência
 
 #### Status

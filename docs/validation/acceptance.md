@@ -88,7 +88,7 @@ proteção quando a porta está indisponível continua nos testes de integraçã
 Firefox tem CA isolada por perfil e não ignora erros TLS. Android/iOS têm bundles
 aprovados no checkpoint 032, sem execução física nova presumida. A recusa expressa
 de TalkBack permanece registrada como NÃO EXECUTADO; não é um teste aprovado.
-Disponibilidade para conferência nativa sem TalkBack foi solicitada ao responsável.
+Em 2026-11-09 o responsável confirmou que ainda não pode testar no aparelho.
 
 Chrome 156.0.8078.80 e Edge 156.0.4314.58 instalados no Windows rejeitaram a CA
 desconhecida, conforme windows-20261107/probe.json. A jornada positiva preparada
@@ -98,6 +98,23 @@ CA no Root do usuário foi conferida. verify.log conserva o timeout da ponte.
 Não houve bypass TLS, clique automático de segurança ou aceite positivo inferido.
 O script windows-browsers.ps1 só deve continuar quando o responsável confirmar
 a própria janela; sua cláusula finally remove a CA adicionada e verifica remoção.
+
+Em 2026-11-09, Chrome 157.0.8103.50 e Edge 157.0.4341.42 passaram a jornada
+positiva em Ubuntu WSL2. Ambos rejeitaram a CA desconhecida no controle negativo.
+A CA de teste foi então confiada apenas em uma base NSS criada para cada
+processo descartável. O teste confirmou login, catálogo, reserva, frete,
+pagamento simulado, relatório ADMIN e ausência de acesso do OPERATOR.
+As capturas de relatório a 390 px e texto a 200% foram conferidas, e a remoção
+dos perfis temporários foi verificada. Nenhuma mudança na confiança do Windows.
+O ensaio usa os executáveis Linux dos dois navegadores e não cobre suas
+instalações nativas Windows.
+[Chromium — certificados no Linux](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/cert_management.md)
+
+Build web, tipos, lint dirigido e o caso Playwright passaram na cópia WSL
+`79c79627`, com o pool local de uma conexão. Evidências em
+`test-results/acceptance/linux-browsers.log` e
+`test-results/acceptance/chromium-wsl`. A configuração global de pool daquele
+ensaio ficou fora da versão estável após a regressão na TASK-003.
 
 ## Resultado desta rodada
 
