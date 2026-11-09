@@ -3783,6 +3783,8 @@ Retomada após correções 010 e 009 concluídas e verificadas. Captura metadata
 
 Consolidação em 2026-11-07: 45 jornadas funcionais distintas PASS nesta rodada (13 browser.log, 2 estoque corrigido, 2 engajamento em remaining.log, 28 final-browser.log), mais 4 de pós-venda/relatórios do checkpoint 032 e 2 acessibilidade novas: 51 distintas. Repetições corretivas não duplicadas. Preview web de avaliações ausente no roteiro inicial causou timeout em remaining.log; corrigido d722d4b e 3/3 avaliações passaram. Demais totais: preços 2, carrinho 7, frete 3, checkout 6, pedidos 3, ciclo de conta 4. Build web/tipos/lint e bash -n PASS; API/domínio mantêm os 254 testes aprovados no checkpoint 032. docs/validation/acceptance.md registra matriz TEST-001–025/032–035 e limitações. IN_PROGRESS → IN_REVIEW → BLOCKED: faltam resultado físico Android, jornada positiva Chrome/Edge (confiança de CA exige ação humana) e restauração TEST-025 da tarefa 035. TalkBack recusado permanece NÃO EXECUTADO. PRIMARY somente escopo próprio; Incidental Changes: NONE; Scope Guard PASS, DoD FAIL/PENDENTE. Continuar 034/035 independentes; não iniciar 036/037 com dependência fictícia DONE.
 
+Em 2026-11-09, TEST-025 passou com a TASK-035 concluída em d775913. A evidência de restauração e periodicidade está em docs/validation/restore.md. TASK-033 segue BLOCKED por validação nativa e jornada positiva Chrome/Edge. Somente relatório e TASKS, ambos PRIMARY. Incidental Changes: NONE.
+
 ### TASK-034 Validar desempenho e concorrência
 
 #### Status

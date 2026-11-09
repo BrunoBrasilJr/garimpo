@@ -38,7 +38,7 @@ separado do planejamento original em docs/architecture/testing.md.
 | TEST-022 Moderação | tests/reviews; tests/integration/commerce |
 | TEST-023 Relatórios | tests/reports |
 | TEST-024 Notificações | tests/messaging; tests/engagement; tests/payments; tests/orders; tests/aftersales; tests/security |
-| TEST-025 Backup/restauração | tests/operations/backup; restauração/periodicidade na TASK-035, pendente nesta abertura |
+| TEST-025 Backup/restauração | tests/operations/backup e tests/operations/restore. Restauração e agendamento aprovados na [TASK-035](restore.md). |
 | TEST-032 Equipe/último ADMIN | tests/accounts; tests/e2e/staff; tests/security |
 | TEST-033 Encerramento/reativação | tests/accounts/lifecycle |
 | TEST-034 Confirmação/alteração de e-mail | tests/messaging; tests/e2e/account |
@@ -101,7 +101,8 @@ a própria janela; sua cláusula finally remove a CA adicionada e verifica remo�
 
 ## Resultado desta rodada
 
-BLOCKED por conferências externas de plataforma e evidência de restauração 035.
+BLOCKED por conferências externas de plataforma. Em 2026-11-09, a TASK-035
+validou a restauração isolada e o disparo pelo agendador, concluindo o TEST-025.
 Treze jornadas de contas/catálogo/componentes RNW PASS em browser.log; dois E2E
 de estoque corrigidos PASS em inventory-fix.log; cinco dirigidos de
 catálogo/acessibilidade PASS em catalog-final.log. remaining.log aprovou dois
@@ -119,10 +120,9 @@ O roteiro nativo está em tests/e2e/acceptance/android-checklist.md; não é res
 Build web, tipos, lint, regressão automática e critérios funcionais automatizados
 PASS no recorte aferido. Backend/API/segurança herdados do checkpoint 032 sobre
 a mesma implementação de domínio, sem alteração além do CSS e testes corrigidos.
-Aceitação integral e DoD FAIL/PENDENTE: não fechar enquanto faltarem a execução
-nativa, a jornada positiva dos navegadores ratificados e TEST-025/035. TalkBack
-continua NÃO EXECUTADO por recusa, sem certificação. Tarefas 034/035 independentes
-podem prosseguir na mesma fase, após suas próprias DoRs.
+Aceitação integral e DoD continuam pendentes da execução nativa e da jornada
+positiva dos navegadores ratificados. TalkBack continua NÃO EXECUTADO por
+recusa, sem certificação. A TASK-034 é independente.
 
 PRIMARY desta revisão: tests/e2e/acceptance/**, tests/accessibility/**,
 este relatório e TASKS.md. Incidental Changes: NONE. Correções de produção/testes
