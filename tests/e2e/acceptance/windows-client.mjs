@@ -1,4 +1,5 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { chromium, expect } from '@playwright/test';
 
@@ -6,14 +7,36 @@ const [directory, mode] = process.argv.slice(2);
 if (!directory || !['probe', 'run'].includes(mode)) throw new Error('Explicit bridge directory and mode required.');
 const input = JSON.parse(await readFile(resolve(directory, 'bridge.json'), 'utf8'));
 if (!/^https:\/\/localhost:\d{1,5}$/.test(input.origin)) throw new Error('Only isolated localhost origin accepted.');
-const results = [];
-for (const [name, executablePath] of [
+const linux = process.platform === 'linux';
+const browsers = linux ? [
+  ['Chrome', process.env.GARIMPO_LINUX_CHROME],
+  ['Edge', process.env.GARIMPO_LINUX_EDGE]
+] : [
   ['Chrome', 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'],
   ['Edge', 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe']
-]) {
-  let browser, page, step = 'launch';
+];
+if (browsers.some(([, executable]) => !executable)) throw new Error('Both browser executables are required.');
+
+async function isolatedBrowserEnvironment(home) {
+  const nss = resolve(home, '.local/share/pki/nssdb');
+  await mkdir(nss, { recursive: true, mode: 0o700 });
+  const certutil = args => execFileSync('certutil', [...args, '-d', 'sql:' + nss], { stdio: 'ignore' });
+  certutil(['-N', '--empty-password']);
+  if (mode === 'run') {
+    const certificate = resolve(home, 'ca.pem');
+    await writeFile(certificate, Buffer.from(input.ca, 'base64'), { mode: 0o600 });
+    certutil(['-A', '-n', 'Garimpo isolated test CA', '-t', 'C,,', '-i', certificate]);
+  }
+  return { ...process.env, HOME: home, XDG_DATA_HOME: resolve(home, '.local/share'), XDG_CONFIG_HOME: resolve(home, '.config'), XDG_CACHE_HOME: resolve(home, '.cache') };
+}
+
+const results = [];
+for (const [name, executablePath] of browsers) {
+  let browser, home, page, step = 'launch';
   try {
-    browser = await chromium.launch({ executablePath, headless: true });
+    home = linux ? await mkdtemp(resolve(directory, 'browser-home-')) : undefined;
+    const env = home ? await isolatedBrowserEnvironment(home) : undefined;
+    browser = await chromium.launch({ executablePath, headless: true, env });
     const context = await browser.newContext({ ignoreHTTPSErrors: false, locale: 'pt-BR', viewport: { width: 1280, height: 900 } });
     page = await context.newPage();
     if (mode === 'probe') {
@@ -66,6 +89,9 @@ for (const [name, executablePath] of [
     await writeFile(resolve(directory, 'failure.json'), JSON.stringify({ browser: name, step, error: error.name }));
     if (page) await page.screenshot({ path: resolve(directory, name.toLowerCase() + '-failure.png'), fullPage: true }).catch(() => {});
     console.error(name + ': FAILED at ' + step); process.exitCode = 1; break;
-  } finally { await browser?.close(); }
+  } finally {
+    await browser?.close();
+    if (home) await rm(home, { recursive: true, force: true });
+  }
 }
 await writeFile(resolve(directory, mode === 'probe' ? 'probe.json' : 'result.json'), JSON.stringify({ status: process.exitCode ? 'FAIL' : 'PASS', results }, null, 2));
