@@ -4106,3 +4106,5 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 DoR PASS em 2026-11-10. TASK-033 a TASK-036 DONE e com relatórios. ADR-001 a ADR-006 aceitos e autorização contínua reafirmada. BLOCKED → READY → IN_PROGRESS em chore/TASK-037-final-checkpoint, base 7fb93de. PRIMARY somente docs/validation/final.md e TASKS. Incidental Changes: NONE. Executar regressões acumuladas e consolidar resultados, rastreabilidade e limites aferidos.
+
+IN_PROGRESS → FAILED → IN_PROGRESS em 2026-11-10. A rodada c002c14 passou build, tipos, lint, 126 unitários e as integrações até avaliações. Preços retornou quatro erros de validade inicial do certificado da fixture. O reensaio sem alterações de código, relógio ou TLS passou 12/12 em pricing-retry.log. Retomada das suítes seguintes na mesma revisão executável em final-resume.log. O ajuste documental 05333b7 da TASK-036 não alterou código, testes, scripts nem dependências.
