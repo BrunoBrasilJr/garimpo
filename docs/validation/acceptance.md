@@ -173,7 +173,9 @@ confirmou o status FAILED do estorno simulado e releu a oferta ACCEPTED.
 A primeira execução detectou uso indevido da imagem do cliente no comando
 de inspeção da equipe e recebeu HTTP 422. A correção ficou no teste.
 Este caso cobre a persistência em outro schema e complementa a inspeção
-humana. A fixture física anterior foi preservada como observada.
+humana. A fixture física anterior foi preservada como observada. Em
+`4671969`, Playwright, tipos e lint dirigido terminaram com saída zero,
+registrados em `test-results/acceptance/android-recheck-validated.log`.
 
 Build web, tipos, lint, regressão automática e critérios funcionais automatizados
 PASS no recorte aferido. Backend/API/segurança herdados do checkpoint 032 sobre
@@ -181,6 +183,9 @@ a mesma implementação de domínio, sem alteração além do CSS e testes corri
 TalkBack continua NÃO EXECUTADO por escolha expressa do responsável. A
 execução nativa de iOS também permanece sem evidência. O recorte avaliado
 preserva essas limitações de acessibilidade e plataforma.
+
+TASK-033 DONE em 2026-11-10 no recorte aprovado pelo responsável, com
+confirmação humana e evidências automatizadas de persistência separadas.
 
 PRIMARY desta revisão: tests/e2e/acceptance/**, tests/accessibility/**,
 este relatório e TASKS.md. Incidental Changes: NONE. Correções de produção/testes
