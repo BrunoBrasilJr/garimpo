@@ -3795,6 +3795,8 @@ Ainda em 2026-11-09: build web, tipos e lint dirigido PASS. Chrome 157 e Edge 15
 
 Na retomada de 2026-11-09, o responsável participou da conferência. Chrome 157.0.8103.50 e Edge 157.0.4341.42 nativos Windows passaram o controle negativo de TLS e a jornada positiva na revisão 0e2fe31. Compra paga, relatório visível para ADMIN, link ausente para OPERATOR e texto a 200%. O certificado temporário foi removido e sua ausência conferida pelo thumbprint. A execução nativa Android aguarda resultado. Autorização expressa para um túnel HTTPS de até 45 minutos com catálogo sintético e rotas de cliente. Painel, banco e caixa técnica locais. Escopo PRIMARY somente testes próprios, relatório e TASKS. Incidental Changes: NONE.
 
+Preparação Android em cfe6755 validada com tipos, lint, dois pedidos sintéticos pagos/entregues, TLS e controles do relay, além de bundle Metro Android com 784 módulos e HTTP 200 pela LAN. As duas primeiras preparações falharam no roteiro de criação de pedido e no formato de resposta do carrinho. A correção manteve as regras e usou os contratos reais. Sessão nativa disponibilizada ao responsável e resultado humano pendente. PRIMARY somente testes próprios, roteiro e relatório desta tarefa. Incidental Changes: NONE.
+
 ### TASK-034 Validar desempenho e concorrência
 
 #### Status

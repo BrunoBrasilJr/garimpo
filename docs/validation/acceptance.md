@@ -110,6 +110,13 @@ A CA temporária foi removida do repositório Root do usuário, com ausência
 conferida pelo thumbprint. Evidência local em
 `test-results/acceptance/windows-live-20261109-210653`.
 
+A preparação Android em `cfe6755` passou em tipos e lint dirigido. A fixture
+criou dois pedidos pagos e entregues pela API no banco isolado. O controle
+externo confirmou HTTP 200 em busca, detalhe e capa, e HTTP 404 no painel,
+na caixa de mensagens e no acesso à chave. A requisição da rede local ao Metro
+recebeu o bundle Android com HTTP 200 e 784 módulos. Esses resultados
+comprovam a preparação. A conferência no aparelho é registrada separadamente.
+
 Em 2026-11-09, Chrome 157.0.8103.50 e Edge 157.0.4341.42 passaram a jornada
 positiva em Ubuntu WSL2. Ambos rejeitaram a CA desconhecida no controle negativo.
 A CA de teste foi então confiada apenas em uma base NSS criada para cada
