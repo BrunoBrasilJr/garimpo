@@ -15,7 +15,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
-| 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
+| 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | IN_PROGRESS |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
@@ -1168,7 +1168,7 @@ Conferência final própria PASS: 37 tarefas, 79 dependências, grafo sem ciclos
 
 #### Status
 
-DONE
+IN_PROGRESS
 
 #### Phase
 
@@ -1266,6 +1266,8 @@ Tests Executed: no checkout Linux isolado do commit f64f5d1, Node 24.22.1/npm 11
 Quality Gates: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; API Tests PASS; Security PASS no critério restrito vigente, npm audit bruto FAIL/exit 1 com sete low somente da cadeia deepmerge e zero moderate/high/critical, hashes/regressões conferidos, nenhum advisory novo aceito; Acceptance Criteria PASS no recorte de API deste incremento; Regression Tests PASS. Warning pg preservado, trace aponta a execução interna de PgTransaction em @prisma/adapter-pg; versão 8.23.1 mantida, sem ocultação, falha observada ou alteração oportunista. Não há nova execução física Android, TalkBack, iOS ou inspeção humana atribuída a esta tarefa de API. Publicação/GUI pertencem aos incrementos seguintes; histórico comercial real será integrado nos checkpoints previstos, sem tomar a tabela de prova de FK como pedido implementado.
 
 Scope Validation: Allowed Changes PASS; Incidental Changes PASS, cinco arquivos acima; Forbidden Changes PASS; Scope Creep NONE. Definition of Done: PASS. Contagem 8/37 DONE. Next Eligible TASK: TASK-009, candidata com dependência satisfeita, ainda BLOCKED até sua própria DoR. Continuidade já autorizada.
+
+Revisão corretiva em 2026-11-10, fix/TASK-008-fixture-certificate-window. Dependência 007 DONE, ADRs pertinentes aceitos, autorização contínua e Scope Guard conferido. DONE → IN_PROGRESS. O checkpoint 037 observou certificados recém-gerados ainda fora da validade no handshake de preços e checkout. O ajuste PRIMARY em tests/catalog/http.ts usa a mesma chave e SAN de loopback, com início de validade cinco minutos antes da geração e expiração um dia depois. Confiança explícita e checagem TLS continuam ativas. Sem alteração de relógio, runtime, política de segurança ou contratos. Incidental Changes: NONE. Reexecutar as suítes afetadas.
 
 ### TASK-009 Administrar catálogo e estoque inicial
 

@@ -1,6 +1,6 @@
 import { createServer, request as secureRequest } from 'node:https';
 import { createServer as plainServer, request as plainRequest } from 'node:http';
-import { mkdtempSync, readFileSync, chmodSync } from 'node:fs';
+import { mkdtempSync, readFileSync, chmodSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -17,8 +17,30 @@ export const web = (reply: Pick<Reply<unknown>, 'cookie' | 'csrf'>) => ({ Origin
 export async function openCatalogServer(options: CatalogOptions, reviews?: ReviewOptions, checkout?: CheckoutOptions, payments?: PaymentOptions, messaging?: MessagingOptions) {
   const directory = mkdtempSync(join(tmpdir(), 'garimpo-catalog-http-'));
   const key = join(directory, 'server.key'), cert = join(directory, 'server.pem');
-  execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '1', '-keyout', key,
-    '-out', cert, '-subj', '/CN=localhost', '-addext', 'subjectAltName=DNS:localhost,IP:127.0.0.1'], { stdio: 'ignore' });
+  const openssl = (args: string[]) => execFileSync('openssl', args, { cwd: directory, stdio: 'ignore' });
+  writeFileSync(join(directory, 'index.txt'), '');
+  writeFileSync(join(directory, 'serial'), '01\n');
+  writeFileSync(join(directory, 'signing.cnf'), `
+[ca]
+default_ca = fixture
+[fixture]
+database = index.txt
+serial = serial
+new_certs_dir = .
+default_md = sha256
+policy = identity
+x509_extensions = https
+[identity]
+commonName = supplied
+[https]
+basicConstraints = critical,CA:TRUE
+subjectAltName = DNS:localhost,IP:127.0.0.1
+`);
+  openssl(['req', '-new', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', 'server.csr', '-subj', '/CN=localhost']);
+  // Leave a small margin for WSL clock corrections between signing and the first handshake.
+  const validFrom = new Date(Date.now() - 5 * 60_000).toISOString().replace(/\D/g, '').slice(0, 14) + 'Z';
+  openssl(['ca', '-selfsign', '-batch', '-notext', '-config', 'signing.cnf', '-keyfile', key,
+    '-startdate', validFrom, '-days', '1', '-in', 'server.csr', '-out', cert]);
   chmodSync(key, 0o600); const ca = readFileSync(cert);
   const app = createApp(options, messaging, options, reviews, checkout, payments), secure = createServer({ key: readFileSync(key), cert: ca }, app), plain = plainServer(app);
   await Promise.all([secure, plain].map(server => new Promise<void>(resolve => { server.listen(0, '127.0.0.1', resolve); })));
