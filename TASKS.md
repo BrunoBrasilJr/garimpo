@@ -4032,6 +4032,8 @@ IN_PROGRESS → IN_REVIEW. docs/operations/garimpo-local.md consolida ambiente, 
 
 IN_REVIEW → DONE em 2026-11-10. Aceitação documental, Scope Guard e DoD PASS. Build, lint e testes de código N/A para a edição documental. Evidências de software referenciadas. Próxima elegível TASK-037.
 
+Revisão documental da própria TASK-036 em 2026-11-10. DONE → IN_PROGRESS → IN_REVIEW → DONE. README §19 reconciliado com as decisões registradas das PD-002/005/007/008. Limites de implantação e critérios acadêmicos adicionais continuam documentados. PRIMARY em README e TASKS. Incidental Changes: NONE. Links, conteúdo e escopo PASS, runtime preservado.
+
 ### TASK-037 Checkpoint PHASE-05 e entrega da implementação
 
 #### Status
