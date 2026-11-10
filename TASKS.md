@@ -15,7 +15,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 5 | TASK-005 Implementar recuperação, confirmação e mensagens de acesso | PHASE-01 | HIGH | TASK-004 | DONE |
 | 6 | TASK-006 Criar interfaces de contas e administração interna | PHASE-01 | HIGH | TASK-004, TASK-005 | DONE |
 | 7 | TASK-007 Checkpoint PHASE-01 | PHASE-01 | CRITICAL | TASK-003, TASK-004, TASK-005, TASK-006 | DONE |
-| 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | IN_PROGRESS |
+| 8 | TASK-008 Implementar catálogo, metadados e imagens na API | PHASE-02 | HIGH | TASK-007 | DONE |
 | 9 | TASK-009 Administrar catálogo e estoque inicial | PHASE-02 | HIGH | TASK-008 | DONE |
 | 10 | TASK-010 Criar catálogo público no site | PHASE-02 | HIGH | TASK-008 | DONE |
 | 11 | TASK-011 Criar catálogo público no aplicativo | PHASE-02 | HIGH | TASK-008 | DONE |
@@ -1168,7 +1168,7 @@ Conferência final própria PASS: 37 tarefas, 79 dependências, grafo sem ciclos
 
 #### Status
 
-IN_PROGRESS
+DONE
 
 #### Phase
 
@@ -1268,6 +1268,8 @@ Quality Gates: Build PASS; Lint PASS; Unit Tests PASS; Integration Tests PASS; A
 Scope Validation: Allowed Changes PASS; Incidental Changes PASS, cinco arquivos acima; Forbidden Changes PASS; Scope Creep NONE. Definition of Done: PASS. Contagem 8/37 DONE. Next Eligible TASK: TASK-009, candidata com dependência satisfeita, ainda BLOCKED até sua própria DoR. Continuidade já autorizada.
 
 Revisão corretiva em 2026-11-10, fix/TASK-008-fixture-certificate-window. Dependência 007 DONE, ADRs pertinentes aceitos, autorização contínua e Scope Guard conferido. DONE → IN_PROGRESS. O checkpoint 037 observou certificados recém-gerados ainda fora da validade no handshake de preços e checkout. O ajuste PRIMARY em tests/catalog/http.ts usa a mesma chave e SAN de loopback, com início de validade cinco minutos antes da geração e expiração um dia depois. Confiança explícita e checagem TLS continuam ativas. Sem alteração de relógio, runtime, política de segurança ou contratos. Incidental Changes: NONE. Reexecutar as suítes afetadas.
+
+IN_PROGRESS → IN_REVIEW → DONE em 2026-11-10. OpenSSL verificou a janela e o hostname localhost. Em 97a91f8, build, tipos, lint, 126 unitários e 254 integrações PASS, incluindo catálogo 19/19, preços 12/12 e checkout 24/24 com TLS ativo. Nove corridas e seis testes adicionais de segurança PASS. Evidência em test-results/phase-05/final-verify-corrected.log. PRIMARY em fixture própria e TASKS, Incidental Changes: NONE, Scope Guard e DoD PASS.
 
 ### TASK-009 Administrar catálogo e estoque inicial
 
