@@ -37,11 +37,8 @@ function reject(response, status) {
   response.end('{}');
 }
 
-export async function androidTunnel(app, directory) {
+export async function androidRelay(app) {
   if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') throw new Error('TLS must remain verified.');
-  const executable = resolve(homedir(), '.local/share/garimpo/cloudflared/cloudflared-2026.10.3');
-  const hash = createHash('sha256').update(readFileSync(executable)).digest('hex');
-  if (hash !== '053b80b0a23031a038fdbf3c073f59f82b8f1f152aa67971d7383ffafc0dbab0') throw new Error('Unexpected cloudflared bytes.');
   const ca = readFileSync(app.caPath);
   const relay = createServer({ key: readFileSync(resolve(app.directory, 'server.key')), cert: readFileSync(resolve(app.directory, 'server.pem')) },
     (request, response) => {
@@ -61,7 +58,18 @@ export async function androidTunnel(app, directory) {
       request.pipe(upstream);
     });
   await new Promise((ready, fail) => { relay.once('error', fail); relay.listen(0, '127.0.0.1', ready); });
-  const child = spawn(executable, ['tunnel', '--no-autoupdate', '--protocol', 'http2', '--url', 'https://localhost:' + relay.address().port,
+  return {
+    origin: 'https://localhost:' + relay.address().port,
+    close: () => new Promise(done => { relay.close(done); relay.closeAllConnections(); })
+  };
+}
+
+export async function androidTunnel(app, directory) {
+  const executable = resolve(homedir(), '.local/share/garimpo/cloudflared/cloudflared-2026.10.3');
+  const hash = createHash('sha256').update(readFileSync(executable)).digest('hex');
+  if (hash !== '053b80b0a23031a038fdbf3c073f59f82b8f1f152aa67971d7383ffafc0dbab0') throw new Error('Unexpected cloudflared bytes.');
+  const relay = await androidRelay(app);
+  const child = spawn(executable, ['tunnel', '--no-autoupdate', '--protocol', 'http2', '--url', relay.origin,
     '--origin-ca-pool', app.caPath, '--origin-server-name', 'localhost', '--no-tls-verify=false'], { stdio: ['ignore', 'pipe', 'pipe'] });
   const log = createWriteStream(resolve(directory, 'android-tunnel.log'), { mode: 0o600 });
   let origin, failure, buffer = '', closing;
@@ -79,7 +87,7 @@ export async function androidTunnel(app, directory) {
       const timer = setTimeout(() => child.kill('SIGKILL'), 5000);
       try { await exited; } finally { clearTimeout(timer); }
     }
-    await new Promise(done => { relay.close(done); relay.closeAllConnections(); });
+    await relay.close();
     log.end();
   })();
   const expiry = setTimeout(() => { void close(); }, 45 * 60000);
