@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import type { CartView, CheckoutQuote, CheckoutView, OrderCreationView, OrderDetail, PaymentView } from '@garimpo/contracts';
+import type { CartChange, CartView, CheckoutQuote, CheckoutView, OrderCreationView, OrderDetail, PaymentView } from '@garimpo/contracts';
 import { test as base, expect } from '../checkout/fixtures';
 import { startHarness } from '../account/harness.mjs';
 import { androidTunnel } from './android-relay.mjs';
@@ -30,12 +30,13 @@ test('prepare and hold the Android acceptance fixture until the operator ends it
   for (let index = 0; index < 2; index++) {
     const cart = await buyer.call<CartView>('/me/cart');
     expect(cart.status).toBe(200);
-    const added = await buyer.call<CartView>('/me/cart/items', 'POST',
+    const added = await buyer.call<CartChange>('/me/cart/items', 'POST',
       { version: cart.body.version, offerId: scenario.offer.id, quantity: 1 }, randomUUID());
     expect(added.status).toBe(201);
-    if (added.body.pricing.status !== 'READY') throw new Error('Android fixture cart is unpriced.');
+    const { version, pricing } = added.body.cart;
+    if (pricing.status !== 'READY') throw new Error('Android fixture cart is unpriced.');
     const reserved = await buyer.call<CheckoutView>('/checkouts', 'POST',
-      { version: added.body.version, pricingRevision: added.body.pricing.revision }, randomUUID());
+      { version, pricingRevision: pricing.revision }, randomUUID());
     expect(reserved.status).toBe(201);
     const checkoutId = reserved.body.id;
     const quote = await buyer.call<CheckoutQuote>('/checkout/quote', 'POST', { checkoutId, addressId });

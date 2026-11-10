@@ -72,6 +72,7 @@ export async function androidTunnel(app, directory) {
     origin ||= /https:\/\/[a-z0-9-]+\.trycloudflare\.com/.exec(buffer)?.[0];
   });
   const close = () => closing ??= (async () => {
+    clearTimeout(expiry);
     if (child.pid && child.exitCode === null && child.signalCode === null) {
       const exited = new Promise(done => child.once('exit', done));
       child.kill('SIGTERM');
@@ -81,6 +82,7 @@ export async function androidTunnel(app, directory) {
     await new Promise(done => { relay.close(done); relay.closeAllConnections(); });
     log.end();
   })();
+  const expiry = setTimeout(() => { void close(); }, 45 * 60000);
   try {
     const headers = { 'X-Garimpo-Client': 'mobile' };
     for (let attempt = 0; attempt < 60; attempt++) {
