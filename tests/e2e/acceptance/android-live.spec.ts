@@ -91,7 +91,8 @@ delivered('loopback Android client persists private evidence, refund status and 
   try {
     const ca = await readFile(app.caPath);
     const transport: typeof fetch = (input, init) => new Promise((resolveResponse, reject) => {
-      const headers = Object.fromEntries(new Headers(init?.headers));
+      const headers: Record<string, string> = {};
+      new Headers(init?.headers).forEach((value, name) => { headers[name] = value; });
       const call = request(String(input), { method: init?.method, headers, ca, rejectUnauthorized: true }, response => {
         const chunks: Buffer[] = [];
         response.on('data', bytes => chunks.push(Buffer.from(bytes)));
