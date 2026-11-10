@@ -44,7 +44,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | DONE |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | DONE |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | DONE |
-| 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | IN_PROGRESS |
+| 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | IN_REVIEW |
 
 ## Regras operacionais
 
@@ -4042,7 +4042,7 @@ Revisão documental da própria TASK-036 em 2026-11-10. DONE → IN_PROGRESS →
 
 #### Status
 
-IN_PROGRESS
+IN_REVIEW
 
 #### Phase
 
@@ -4108,3 +4108,5 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 DoR PASS em 2026-11-10. TASK-033 a TASK-036 DONE e com relatórios. ADR-001 a ADR-006 aceitos e autorização contínua reafirmada. BLOCKED → READY → IN_PROGRESS em chore/TASK-037-final-checkpoint, base 7fb93de. PRIMARY somente docs/validation/final.md e TASKS. Incidental Changes: NONE. Executar regressões acumuladas e consolidar resultados, rastreabilidade e limites aferidos.
 
 IN_PROGRESS → FAILED → IN_PROGRESS em 2026-11-10. A rodada c002c14 passou build, tipos, lint, 126 unitários e as integrações até avaliações. Preços retornou quatro erros de validade inicial do certificado da fixture. O reensaio sem alterações de código, relógio ou TLS passou 12/12 em pricing-retry.log. Retomada das suítes seguintes na mesma revisão executável em final-resume.log. O ajuste documental 05333b7 da TASK-036 não alterou código, testes, scripts nem dependências.
+
+A retomada passou em carrinho, mas dois casos de checkout repetiram a falha de validade do certificado. IN_PROGRESS → FAILED → IN_PROGRESS. Corrigida a fixture na tarefa de origem 008 em 97a91f8 e encerrada em d89242e. A execução final-verify-corrected.log saiu com código 0 em build, tipos, lint, 126 unitários, 254 integrações, nove corridas dirigidas, seis casos de segurança, dois de restauração e bundles Android 654/iOS 656. Auditoria bruta exit 1 com dois LOW, política restrita PASS. Código, testes, scripts e dependências iguais aos da execução corrigida. Relatório em docs/validation/final.md. IN_PROGRESS → IN_REVIEW.
