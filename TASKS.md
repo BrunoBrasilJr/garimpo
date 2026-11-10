@@ -43,7 +43,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | DONE |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | DONE |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | DONE |
-| 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | IN_PROGRESS |
+| 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | IN_REVIEW |
 | 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | BLOCKED |
 
 ## Regras operacionais
@@ -3961,7 +3961,7 @@ IN_REVIEW → DONE em 2026-11-09. TEST-025, gates aplicáveis, Scope Guard e DoD
 
 #### Status
 
-IN_PROGRESS
+IN_REVIEW
 
 #### Phase
 
@@ -4027,6 +4027,8 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 #### Evidência operacional
 
 Em 2026-11-10, DoR PASS após a TASK-033 concluída em 4d1a7a2 e evidências verificadas das TASK-034 e TASK-035. ADR-001/002/006 aceitos, comandos e limites do ambiente local conferidos. BLOCKED → READY → IN_PROGRESS em chore/TASK-036-operations-guide. PRIMARY somente guia operacional, referências estruturais e TASKS. Incidental Changes: NONE.
+
+IN_PROGRESS → IN_REVIEW. docs/operations/garimpo-local.md consolida ambiente, execução HTTPS, contas, simulações, workers, backup, restauração e limites. README e execução apontam para o guia. Validados 14 scripts contra package.json, todos os links locais e a sintaxe dos launchers de backup e restauração. TEST-028/030 rastreados às evidências de aceitação e segurança na mesma implementação. Alteração documental, sem mudança de runtime ou de requisito.
 
 ### TASK-037 Checkpoint PHASE-05 e entrega da implementação
 

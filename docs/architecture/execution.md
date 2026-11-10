@@ -1,5 +1,8 @@
 # Execução do Garimpo
 
+O [guia de operação local](../operations/garimpo-local.md) reúne os comandos
+atuais do sistema. Os registros a seguir preservam a evolução por incremento.
+
 ## Validação vigente da correção — 2026-11-01
 
 Branch fix/TASK-002-toolchain-security, código da correção em 2ebf90a. Continuidade e decisões rotineiras já foram autorizadas; não solicitar novas permissões genéricas. TASK-002 DONE após os gates abaixo; TASK-007 deve retomar a revisão documental na branch própria. Nenhum catálogo foi iniciado neste fechamento.
