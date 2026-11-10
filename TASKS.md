@@ -40,7 +40,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 30 | TASK-030 Implementar backup diário completo | PHASE-04 | HIGH | TASK-024 | DONE |
 | 31 | TASK-031 Revisar auditoria e segurança integrada | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030 | DONE |
 | 32 | TASK-032 Checkpoint PHASE-04 | PHASE-04 | CRITICAL | TASK-028, TASK-029, TASK-030, TASK-031 | DONE |
-| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | BLOCKED |
+| 33 | TASK-033 Executar aceitação funcional e acessibilidade | PHASE-05 | HIGH | TASK-032 | IN_REVIEW |
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | DONE |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | DONE |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | BLOCKED |
@@ -3714,7 +3714,7 @@ Fechamento em 2026-11-07. docs/validation/phase-04.md consolida verify.log, core
 
 #### Status
 
-BLOCKED
+IN_REVIEW
 
 #### Phase
 
@@ -3796,6 +3796,8 @@ Ainda em 2026-11-09: build web, tipos e lint dirigido PASS. Chrome 157 e Edge 15
 Na retomada de 2026-11-09, o responsável participou da conferência. Chrome 157.0.8103.50 e Edge 157.0.4341.42 nativos Windows passaram o controle negativo de TLS e a jornada positiva na revisão 0e2fe31. Compra paga, relatório visível para ADMIN, link ausente para OPERATOR e texto a 200%. O certificado temporário foi removido e sua ausência conferida pelo thumbprint. A execução nativa Android aguarda resultado. Autorização expressa para um túnel HTTPS de até 45 minutos com catálogo sintético e rotas de cliente. Painel, banco e caixa técnica locais. Escopo PRIMARY somente testes próprios, relatório e TASKS. Incidental Changes: NONE.
 
 Preparação Android em cfe6755 validada com tipos, lint, dois pedidos sintéticos pagos/entregues, TLS e controles do relay, além de bundle Metro Android com 784 módulos e HTTP 200 pela LAN. As duas primeiras preparações falharam no roteiro de criação de pedido e no formato de resposta do carrinho. A correção manteve as regras e usou os contratos reais. Sessão nativa disponibilizada ao responsável e resultado humano pendente. PRIMARY somente testes próprios, roteiro e relatório desta tarefa. Incidental Changes: NONE.
+
+Retomada em 2026-11-10 após o responsável informar que todos os testes foram feitos e autorizar o fechamento. BLOCKED → READY → IN_PROGRESS → IN_REVIEW no recorte validado. A execução física registrou login, reserva, pagamento e abertura dos dois atendimentos. A confirmação humana de foto e aceite divergiu da leitura final do schema, que mostrou zero fotos e oferta OFFERED. A rechecagem do cliente móvel pelo mesmo relay HTTPS em loopback, com schema novo, passou na gravação e leitura de foto, estorno FAILED e oferta ACCEPTED em b455ae1. TalkBack permanece sem execução por escolha expressa do responsável. O relatório separa a confirmação visual, o estado físico observado e a prova automatizada. PRIMARY em testes próprios, relatório e TASKS. Incidental Changes: NONE. Tipos e lint da revisão final em andamento.
 
 ### TASK-034 Validar desempenho e concorrência
 

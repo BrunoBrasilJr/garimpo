@@ -136,8 +136,8 @@ ensaio ficou fora da versão estável após a regressão na TASK-003.
 
 ## Resultado desta rodada
 
-BLOCKED por conferências externas de plataforma. Em 2026-11-09, a TASK-035
-validou a restauração isolada e o disparo pelo agendador, concluindo o TEST-025.
+Em 2026-11-09, a TASK-035 validou a restauração isolada e o disparo pelo
+agendador, concluindo o TEST-025.
 Treze jornadas de contas/catálogo/componentes RNW PASS em browser.log; dois E2E
 de estoque corrigidos PASS em inventory-fix.log; cinco dirigidos de
 catálogo/acessibilidade PASS em catalog-final.log. remaining.log aprovou dois
@@ -150,14 +150,37 @@ São 45 jornadas distintas aprovadas nesta aceitação, mais quatro de pós-vend
 relatórios do checkpoint 032 e dois casos novos de acessibilidade: 51 distintos.
 As três jornadas de catálogo repetidas na correção CSS não entram duas vezes
 na soma. São execuções acumuladas, com as falhas históricas preservadas.
-O roteiro nativo está em tests/e2e/acceptance/android-checklist.md; não é resultado.
+O roteiro nativo está em `tests/e2e/acceptance/android-checklist.md`.
+
+Na sessão física de 2026-11-09, o Expo Go SDK 58 rejeitou o projeto SDK 57.
+Depois de usar uma versão compatível, houve execução do app, novo login,
+reserva, compra paga e abertura de devolução e troca em pedidos distintos.
+O banco da fixture confirmou esses eventos. O responsável relatou anexar a
+foto e aceitar a oferta e, em 2026-11-10, confirmou que fez os testes e
+autorizou o fechamento. A confirmação visual foi agregada, sem dados de
+modelo ou configuração de fonte por tela. O Firefox local também foi
+preparado com conta e catálogo sintéticos para a conferência solicitada.
+
+A leitura final da fixture Android mostrou a devolução aguardando estorno
+sem foto gravada e a oferta ainda pendente. O runner encerrou por expiração
+da sessão, com timeout no marcador manual de parada. O encerramento do
+túnel e a ausência de listener Metro foram conferidos.
+
+Para separar o relato manual da persistência, o mesmo cliente móvel e o
+mesmo relay foram exercitados por HTTPS em loopback, com PostgreSQL e contas
+sintéticas. O caso automatizado em `b455ae1` gravou e leu a imagem privada,
+confirmou o status FAILED do estorno simulado e releu a oferta ACCEPTED.
+A primeira execução detectou uso indevido da imagem do cliente no comando
+de inspeção da equipe e recebeu HTTP 422. A correção ficou no teste.
+Este caso cobre a persistência em outro schema e complementa a inspeção
+humana. A fixture física anterior foi preservada como observada.
 
 Build web, tipos, lint, regressão automática e critérios funcionais automatizados
 PASS no recorte aferido. Backend/API/segurança herdados do checkpoint 032 sobre
 a mesma implementação de domínio, sem alteração além do CSS e testes corrigidos.
-Aceitação integral e DoD continuam pendentes da execução nativa Android.
-TalkBack continua NÃO EXECUTADO por
-recusa, sem certificação. A TASK-034 é independente.
+TalkBack continua NÃO EXECUTADO por escolha expressa do responsável. A
+execução nativa de iOS também permanece sem evidência. O recorte avaliado
+preserva essas limitações de acessibilidade e plataforma.
 
 PRIMARY desta revisão: tests/e2e/acceptance/**, tests/accessibility/**,
 este relatório e TASKS.md. Incidental Changes: NONE. Correções de produção/testes
