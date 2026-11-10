@@ -30,3 +30,19 @@ Não se declara iOS físico a partir de Android/RNW/bundle.
 Informar os passos executados e resultados reais. “Não executado” é diferente de
 “funcionou”. Não enviar senha, token, código de e-mail ou QR no chat/relatório.
 Encerrar o ambiente e os encaminhamentos temporários depois da conferência.
+
+## Sessão local com Expo Go pelo Wi-Fi
+
+Quando houver autorização para o túnel desta conferência, rodar no Ubuntu
+`GARIMPO_ANDROID_TUNNEL=1 GARIMPO_ANDROID_ACCEPTANCE_DIR=<diretório-novo> npx playwright test --config tests/e2e/acceptance/android.config.ts`.
+O diretório precisa estar sob `test-results/acceptance/android-live-*` no
+workspace Windows. O roteiro reutiliza o PostgreSQL de teste, prepara dois
+pedidos entregues e grava a origem HTTPS e a conta fictícia em
+`android-ready.json`. Não versionar esses dados.
+
+Iniciar Metro com essa origem em `EXPO_PUBLIC_API_ORIGIN`, usando a rede
+local para o bundle. Abrir no Android somente o endereço Metro da execução
+atual. Registrar evidências humanas separadamente dos controles do túnel.
+Ao concluir, gravar `stop` em `stop.txt` no diretório da sessão, encerrar
+Metro e remover o encaminhamento temporário. O processo do túnel tem limite
+de 45 minutos.
