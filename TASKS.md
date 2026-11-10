@@ -44,7 +44,7 @@ Reconciliado com o PDF final por autorização do responsável. IDs TASK-001 a T
 | 34 | TASK-034 Validar desempenho e concorrência | PHASE-05 | CRITICAL | TASK-032 | DONE |
 | 35 | TASK-035 Executar restauração isolada | PHASE-05 | HIGH | TASK-030, TASK-032 | DONE |
 | 36 | TASK-036 Consolidar documentação operacional | PHASE-05 | HIGH | TASK-033, TASK-034, TASK-035 | DONE |
-| 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | BLOCKED |
+| 37 | TASK-037 Checkpoint PHASE-05 e entrega da implementação | PHASE-05 | CRITICAL | TASK-033, TASK-034, TASK-035, TASK-036 | IN_PROGRESS |
 
 ## Regras operacionais
 
@@ -4042,7 +4042,7 @@ Revisão documental da própria TASK-036 em 2026-11-10. DONE → IN_PROGRESS →
 
 #### Status
 
-BLOCKED
+IN_PROGRESS
 
 #### Phase
 
@@ -4105,4 +4105,4 @@ Objetivo e critérios acima cumpridos; DoD global e gates aplicáveis de AGENTS.
 
 #### Evidência operacional
 
-Não executada. Estado inicial preservado; a conciliação documental não é execução da TASK. Branch: N/A; commits: N/A; testes de software: NÃO EXECUTADOS.
+DoR PASS em 2026-11-10. TASK-033 a TASK-036 DONE e com relatórios. ADR-001 a ADR-006 aceitos e autorização contínua reafirmada. BLOCKED → READY → IN_PROGRESS em chore/TASK-037-final-checkpoint, base 7fb93de. PRIMARY somente docs/validation/final.md e TASKS. Incidental Changes: NONE. Executar regressões acumuladas e consolidar resultados, rastreabilidade e limites aferidos.
