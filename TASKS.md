@@ -3793,6 +3793,8 @@ Em 2026-11-09, TEST-025 passou com a TASK-035 concluída em d775913. A evidênci
 
 Ainda em 2026-11-09: build web, tipos e lint dirigido PASS. Chrome 157 e Edge 157 executaram em Ubuntu WSL2 com HTTPS e PostgreSQL real. Controle negativo da CA e jornada positiva de catálogo, reserva, frete, pagamento e papéis PASS em ambos. Perfis NSS temporários removidos e capturas a 200% inspecionadas. Os executáveis nativos Windows mantêm somente o controle negativo anterior. O responsável confirmou indisponibilidade do Android; roteiro nativo continua pendente, sem TalkBack por instrução anterior. TASK-033 segue BLOCKED. PRIMARY somente testes próprios, relatório e TASKS. Incidental Changes: NONE.
 
+Na retomada de 2026-11-09, o responsável participou da conferência. Chrome 157.0.8103.50 e Edge 157.0.4341.42 nativos Windows passaram o controle negativo de TLS e a jornada positiva na revisão 0e2fe31. Compra paga, relatório visível para ADMIN, link ausente para OPERATOR e texto a 200%. O certificado temporário foi removido e sua ausência conferida pelo thumbprint. A execução nativa Android aguarda resultado. Autorização expressa para um túnel HTTPS de até 45 minutos com catálogo sintético e rotas de cliente. Painel, banco e caixa técnica locais. Escopo PRIMARY somente testes próprios, relatório e TASKS. Incidental Changes: NONE.
+
 ### TASK-034 Validar desempenho e concorrência
 
 #### Status

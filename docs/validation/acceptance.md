@@ -88,7 +88,10 @@ proteção quando a porta está indisponível continua nos testes de integraçã
 Firefox tem CA isolada por perfil e não ignora erros TLS. Android/iOS têm bundles
 aprovados no checkpoint 032, sem execução física nova presumida. A recusa expressa
 de TalkBack permanece registrada como NÃO EXECUTADO; não é um teste aprovado.
-Em 2026-11-09 o responsável confirmou que ainda não pode testar no aparelho.
+O responsável inicialmente informou indisponibilidade do aparelho. Mais tarde
+em 2026-11-09 retomou a conferência e autorizou uma sessão HTTPS temporária de
+até 45 minutos com dados sintéticos. O relay tem uma lista de rotas do
+catálogo e do cliente, TLS validado, painel e caixa técnica em loopback.
 
 Chrome 156.0.8078.80 e Edge 156.0.4314.58 instalados no Windows rejeitaram a CA
 desconhecida, conforme windows-20261107/probe.json. A jornada positiva preparada
@@ -98,6 +101,14 @@ CA no Root do usuário foi conferida. verify.log conserva o timeout da ponte.
 Não houve bypass TLS, clique automático de segurança ou aceite positivo inferido.
 O script windows-browsers.ps1 só deve continuar quando o responsável confirmar
 a própria janela; sua cláusula finally remove a CA adicionada e verifica remoção.
+
+Na retomada de 2026-11-09, Chrome 157.0.8103.50 e Edge 157.0.4341.42 nativos
+do Windows passaram o controle negativo de TLS e a jornada positiva na
+revisão `0e2fe31`. A compra simulada foi paga, o relatório apareceu para
+ADMIN, o link ficou ausente para OPERATOR e a ampliação de 200% passou.
+A CA temporária foi removida do repositório Root do usuário, com ausência
+conferida pelo thumbprint. Evidência local em
+`test-results/acceptance/windows-live-20261109-210653`.
 
 Em 2026-11-09, Chrome 157.0.8103.50 e Edge 157.0.4341.42 passaram a jornada
 positiva em Ubuntu WSL2. Ambos rejeitaram a CA desconhecida no controle negativo.
@@ -137,8 +148,8 @@ O roteiro nativo está em tests/e2e/acceptance/android-checklist.md; não é res
 Build web, tipos, lint, regressão automática e critérios funcionais automatizados
 PASS no recorte aferido. Backend/API/segurança herdados do checkpoint 032 sobre
 a mesma implementação de domínio, sem alteração além do CSS e testes corrigidos.
-Aceitação integral e DoD continuam pendentes da execução nativa e da jornada
-positiva dos navegadores ratificados. TalkBack continua NÃO EXECUTADO por
+Aceitação integral e DoD continuam pendentes da execução nativa Android.
+TalkBack continua NÃO EXECUTADO por
 recusa, sem certificação. A TASK-034 é independente.
 
 PRIMARY desta revisão: tests/e2e/acceptance/**, tests/accessibility/**,
