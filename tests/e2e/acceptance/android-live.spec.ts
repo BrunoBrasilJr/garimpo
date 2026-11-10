@@ -135,7 +135,7 @@ delivered('loopback Android client persists private evidence, refund status and 
     expect(posted.status).toBe(200);
     const unit = posted.body.items[0]!.id;
     const checked = await scenario.admin.call<ReturnView>(returns + '/receipt', 'POST', {
-      version: posted.body.version, reason, receivedAt: postedAt, units: [{ id: unit, result: 'FIT' }], evidenceIds: [image.id]
+      version: posted.body.version, reason, receivedAt: postedAt, units: [{ id: unit, result: 'FIT' }]
     });
     expect(checked.status).toBe(200);
     const refund = await scenario.admin.call<ReturnView>(returns + '/refund-authorization', 'POST',
